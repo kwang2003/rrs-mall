@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+   -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="NS_ThirdUser">
+    <resultMap id="thirdUserMap" type="ThirdUser">
+        <id property="id" column="id"/>
+        <result property="sourceName" column="sourceName"/>
+        <result property="rrsUserName" column="rrsUserName"/>
+        <result property="createTime" column="createTime"/>
+    </resultMap>
+
+    <insert id="saveThirdUser" parameterType="ThirdUser" useGeneratedKeys="true" keyProperty="id">
+        insert into thirdUser (sourceName,rrsUserName,createTime)
+        values (#{sourceName},#{rrsUserName},now())
+    </insert>
+
+    <select id="isExists" parameterType="ThirdUser" resultMap="thirdUserMap">
+        select * from thirdUser where sourceName = #{sourceName}
+    </select>
+
+    <select id="findThirdUserBySourceName" parameterType="ThirdUser" resultMap="thirdUserMap">
+        select * from thirdUser where sourceName = #{sourceName}
+    </select>
+
+    <update id="updateUserInfo" parameterType="ThirdUser">
+        update thirdUser set rrsUserName = #{rrsUserName} where sourceName = #{sourceName}
+    </update>
+</mapper>

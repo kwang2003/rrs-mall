@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+   -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--table rrs_coupons_users-->
+<mapper namespace="RrsCouponsUserView">
+    <resultMap id="rrsCouponsUserViewMap" type="RrsCouponsUserView">
+        <id property="id" column="id"/>
+        <result property="couponId" column="couponId"/>
+        <result property="cpName" column="cpName"/>
+        <result property="userId" column="userId"/>
+        <result property="status" column="status"/>
+        <result property="amount" column="amount"/>
+        <result property="categoryId" column="categoryId"/>
+        <result property="term" column="term"/>
+    </resultMap>
+
+    <select id="queryCouponsAllByUser" resultMap="rrsCouponsUserViewMap">
+            SELECT * FROM (
+            SELECT a.id,a.userId,a.couponId,a.status,b.amount,b.categoryId,b.cpName,b.startTime,b.endTime,b.term,b.status AS coustatus FROM rrs_coupons_users a LEFT JOIN rrs_coupons b
+            ON a.couponId = b.id) c
+            where
+             <![CDATA[  startTime <= #{startTime} and endTime >= #{endTime}   ]]>
+            and status = #{status}
+            and coustatus = 2
+            and userId = #{userId}
+            GROUP BY userId,couponId
+    </select>
+
+</mapper>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project name="admin" basedir="." default="package">
+    <target name="clean">
+        <delete dir="${basedir}/aixforce-admin/target"/>
+    </target>
+    <target name="package">
+        <exec executable="${basedir}/admin-package.sh"
+              failonerror="true"
+              osfamily="unix"/>
+    </target>
+</project>

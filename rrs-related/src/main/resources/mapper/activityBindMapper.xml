@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2014 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ActivityBind">
+    <resultMap id="activityBindMap" type="ActivityBind">
+        <id property="id" column="id"/>
+        <result property="activityId" column="activity_id"/>
+        <result property="targetId" column="target_id"/>
+        <result property="targetType" column="target_type"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="column">
+        activity_id, target_id, target_type, created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="ActivityBind" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO activity_binds (<include refid="column"/>)
+        VALUES (#{activityId}, #{targetId}, #{targetType}, now(), now());
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        DELETE from activity_binds WHERE id = #{id}
+    </delete>
+
+    <update id="update" parameterType="ActivityBind">
+        UPDATE activity_binds
+        <set>
+            updated_at=now(),
+            <if test="activityId != null">activity_id = #{activityId},</if>
+            <if test="targetId != null">target_id = #{targetId},</if>
+            <if test="targetType != null">target_type = #{targetType},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="findById" parameterType="long" resultMap="activityBindMap">
+        SELECT id, <include refid="column"/> FROM activity_binds WHERE id = #{id}
+    </select>
+
+    <select id="findByActivityId" parameterType="long" resultMap="activityBindMap">
+        SELECT id, <include refid="column"/> FROM activity_binds WHERE activity_id = #{activityId}
+    </select>
+
+    <select id="findBindIdsByActivityId" resultType="long">
+        select target_id
+        from activity_binds
+        where activity_id = #{activityId}
+        <if test="targetType !=null">
+        and target_type = #{targetType}
+        </if>
+    </select>
+
+    <delete id="deleteActivityBindByActivityId" parameterType="long">
+        DELETE from activity_binds WHERE activity_id = #{activityId}
+    </delete>
+
+</mapper>

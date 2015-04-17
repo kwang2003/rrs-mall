@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+   -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BrandWRlView">
+    <resultMap id="brandWRlView" type="BrandWRlView">
+        <result property="brandName" column="brandname"/>
+        <result property="shopName" column="shopname"/>
+        <result property="shopId" column="shopid"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="address" column="address"/>
+        <result property="businessLicence" column="business_licence"/>
+        <result property="taxCertificate" column="tax_certificate"/>
+        <result property="accountPermit" column="account_permit"/>
+        <result property="organizationCode" column="organization_code"/>
+        <result property="corporateIdentity" column="corporate_identity"/>
+        <result property="corporateIdentityB" column="corporate_identityB"/>
+        <result property="contractImage1" column="contract_image1"/>
+        <result property="contractImage2" column="contract_image2"/>
+        <result property="domain" column="domain"/>
+        <result property="business" column="business"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <select id="findWrl" resultMap="brandWRlView" parameterType="map">
+         SELECT DISTINCT
+            b.`name` as brandname,
+            s.`name` as shopname,
+            s.id as shopid,
+            s.phone,
+	        s.email,
+            up.address,
+            sp.business_licence,
+            sp.tax_certificate,
+            sp.account_permit,
+            sp.organization_code,
+            sp.corporate_identity,
+            sp.corporate_identityB,
+            sp.contract_image1,
+            sp.contract_image2,
+            '' as domain,
+                CASE
+            WHEN s.business_id = 1 THEN
+                '家电'
+            WHEN s.business_id = 2 THEN
+                '家具'
+            WHEN s.business_id = 3 THEN
+                '家装'
+            WHEN s.business_id = 4 THEN
+                '家饰'
+            WHEN s.business_id = 5 THEN
+                '净水'
+                END AS business,
+            '正常' as `status`
+            FROM
+                brands b,
+                shop_authorize_infos sai
+                LEFT JOIN shop_paperworks sp on sai.shop_id=sp.shop_id
+                INNER JOIN shops s on sai.shop_id=s.id
+                INNER JOIN user_profiles up on s.user_id=up.user_id
+            WHERE
+                sai.json_authorize LIKE CONCAT('%',#{brandid},'%')
+            AND sai.shop_id NOT IN (
+                SELECT
+                    shop_id
+                FROM
+                    brands_club_key bck
+            ) and b.id=#{brand_id}
+    </select>
+
+    <select id="findWrltj" resultMap="brandWRlView" parameterType="map">
+        SELECT
+        b.`name` as brandname,
+        s.`name` as shopname,
+        s.id as shopid,
+        s.phone,
+        s.email,
+        up.address,
+        sp.business_licence,
+        sp.tax_certificate,
+        sp.account_permit,
+        sp.organization_code,
+        sp.corporate_identity,
+        sp.corporate_identityB,
+        sp.contract_image1,
+        sp.contract_image2,
+        '' as domain,
+        CASE
+        WHEN s.business_id = 1 THEN
+        '家电'
+        WHEN s.business_id = 2 THEN
+        '家具'
+        WHEN s.business_id = 3 THEN
+        '家装'
+        WHEN s.business_id = 4 THEN
+        '家饰'
+        WHEN s.business_id = 5 THEN
+        '净水'
+        END AS business,
+        '正常' as `status`
+        FROM
+        brands b,
+        shop_authorize_infos sai
+        LEFT JOIN shop_paperworks sp on sai.shop_id=sp.shop_id
+        INNER JOIN shops s on sai.shop_id=s.id
+        INNER JOIN user_profiles up on s.user_id=up.user_id
+        WHERE
+        sai.json_authorize LIKE CONCAT('%',#{brandid},'%')
+        AND sai.shop_id NOT IN (
+        SELECT
+        shop_id
+        FROM
+        brands_club_key bck
+        ) and b.id=#{brand_id} and s.`name` LIKE CONCAT('%',#{shopname},'%') GROUP BY s.id
+    </select>
+
+</mapper>

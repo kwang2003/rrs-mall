@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BaskOrder">
+    <resultMap id="baskOrderMap" type="BaskOrder">
+        <id property="id" column="id"/>
+        <result property="orderCommentId" column="order_comment_id"/>
+        <result property="orderItemId" column="order_item_id"/>
+        <result property="itemId" column="item_id"/>
+        <result property="content" column="content"/>
+        <result property="pic" column="pic"/>
+        <result property="skuName" column="sku_name"/>
+        <result property="userName" column="user_name"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        order_comment_id,order_item_id, item_id,content, pic,sku_name, user_name, created_at, updated_at
+    </sql>
+
+    <select id="findById" parameterType="long" resultMap="baskOrderMap">
+        select id,
+        <include refid="columns"/>
+        from bask_orders where id=#{id}
+    </select>
+
+
+    <insert id="create" parameterType="BaskOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into bask_orders (<include refid="columns"/>) values (#{orderCommentId},#{orderItemId},#{itemId}, #{content},
+        #{pic},#{skuName},#{userName},now(), now())
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        delete from bask_orders where id=#{id} <!-- and user_id=#{user_id}-->
+    </delete>
+
+    <update id="update" parameterType="BaskOrder">
+        update bask_orders
+        <set>
+            updated_at = now(),
+            <if test="content!=null">content=#{content},</if>
+            <if test="pic!=null">pic=#{pic},</if>
+            <if test="userName!=null">user_name=#{userName},</if>
+        </set>
+        where id=#{id} <!--and user_id=#{user_id}-->
+    </update>
+
+    <select id="countByItemId" parameterType="map" resultType="long">
+        select count(1)
+        from bask_orders
+        <if test="itemId!=null">
+            where item_id = #{itemId}
+        </if>
+    </select>
+
+    <select id="pagingByItemId" parameterType="map" resultMap="baskOrderMap">
+        select id,
+        <include refid="columns"/>
+        from bask_orders
+        <if test="itemId!=null">
+            where item_id = #{itemId}
+        </if>
+        order by created_at desc limit #{offset},#{limit}
+    </select>
+
+    <select id="findByOrderCommentId" parameterType="long" resultMap="baskOrderMap">
+        select id, <include refid="columns"/>
+        from bask_orders where order_comment_id=#{id};
+    </select>
+
+    <select id="findByOrderItemId" parameterType="long" resultMap="baskOrderMap">
+        select id, <include refid="columns"/>
+        from bask_orders where order_item_id=#{id};
+    </select>
+</mapper>

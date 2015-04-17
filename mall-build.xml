@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project name="mall" basedir="." default="package">
+    <target name="clean">
+        <delete dir="${basedir}/aixforce-mall-web/target"/>
+    </target>
+    <target name="package">
+        <exec executable="${basedir}/mall-package.sh"
+              failonerror="true"
+              osfamily="unix"/>
+    </target>
+</project>

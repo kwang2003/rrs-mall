@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2012 杭州端点网络科技有限公司
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+
+    <context:component-scan base-package="com.aixforce.common,com.rrs,com.rrs.third"/>
+
+    <util:properties id="app" location="classpath:app.properties"/>
+
+
+
+    <bean id = "alipayEventBus" class="com.aixforce.alipay.event.AlipayEventBus">
+        <constructor-arg index="0" value="2" />
+    </bean>
+
+    <bean id= "tradeCloseEventListener" class="com.aixforce.alipay.event.TradeCloseEventListener">
+        <constructor-arg index="0" ref="alipayEventBus" />
+    </bean>
+
+
+    <bean id="mallHandlebarsHelper" class="com.aixforce.web.MallHandlebarsHelper" />
+
+    <!--
+      Including this aspectj-autoproxy element will cause spring to automatically
+      create proxies around any beans defined in this file that match the pointcuts
+      of any aspects defined in this file.
+    -->
+    <aop:aspectj-autoproxy/>
+    <bean class="com.aixforce.aspect.AuthorizationAspect"/>
+
+    <import resource="classpath*:/spring/site-service-context.xml"/>
+    <import resource="classpath*:search-context.xml"/>
+    <import resource="classpath*:/spring/terminus-web-context.xml"/>
+
+
+
+</beans>

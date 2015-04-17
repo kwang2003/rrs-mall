@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2012 杭州端点网络科技有限公司
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/task
+       http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <!-- AOP support -->
+    <bean class="com.aixforce.aspect.AuthorizationAspect"/>
+
+    <context:component-scan base-package="com.aixforce.common,com.aixforce.admin.service,com.aixforce.admin.event,com.rrs,com.aixforce.sms,com.aixforce.web.controller.api.userEvent"/>
+
+    <util:properties id="app" location="classpath:app.properties"/>
+
+
+    <bean id = "alipayEventBus" class="com.aixforce.alipay.event.AlipayEventBus">
+        <constructor-arg index="0" value="2" />
+    </bean>
+
+    <bean id= "tradeCloseEventListener" class="com.aixforce.alipay.event.TradeCloseEventListener">
+        <constructor-arg index="0" ref="alipayEventBus" />
+    </bean>
+
+    <bean id="smsCountValidator" class="com.aixforce.web.controller.api.validator.SmsCountValidator"  />
+    <bean id="adminHandleBarsHelper" class="com.aixforce.admin.web.AdminHandleBarsHelper"  />
+
+    <!-- schedule job -->
+    <task:annotation-driven/>
+    <bean class="com.aixforce.admin.web.jobs.AdminLeader"/>
+    <bean class="com.aixforce.admin.web.jobs.ItemSearchDumper"/>
+    <bean class="com.aixforce.admin.web.jobs.ShopSearchDumper"/>
+    <bean class="com.aixforce.admin.web.jobs.OrderJobs"/>
+    <bean class="com.aixforce.admin.web.jobs.OrderCommentJobs"/>
+    <!--<bean class="com.aixforce.admin.web.jobs.SettlementInvoker"/>-->
+    <bean class="com.aixforce.admin.web.jobs.CouponJobs"/>
+    <bean class="com.aixforce.admin.web.jobs.ActivityDefinitionStatusJobs"/>
+    <bean class="com.aixforce.admin.web.jobs.PresaleOrderSmsJobs"/>
+
+
+    <import resource="classpath*:search-context.xml"/>
+    <import resource="classpath*:/spring/site-service-context.xml"/>
+    <import resource="classpath*:/spring/terminus-web-context.xml"/>
+</beans>

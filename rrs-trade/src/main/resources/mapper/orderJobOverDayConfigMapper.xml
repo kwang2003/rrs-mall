@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="OrderJobOverDayConfig">
+    <resultMap id="orderJobOverDayConfigMap" type="OrderJobDayConfig">
+        <id property="id" column="id"/>
+        <result property="skuId" column="sku_id"/>
+        <result property="expireDay" column="day"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        sku_id, `day`, created_at, updated_at
+    </sql>
+
+    <select id="findBySkuId" parameterType="long" resultMap="orderJobOverDayConfigMap">
+        select id,
+        <include refid="columns"/>
+        from order_job_day_config where sku_id=#{skuId}
+    </select>
+
+    <sql id="updatedCondition">
+        <where>
+            <![CDATA[ updated_at >= #{startAt} and updated_at <= #{endAt} ]]>
+        </where>
+    </sql>
+
+    <select id="countOfUpdated" parameterType="map" resultType="long">
+        select count(1)
+        from order_job_day_config
+        <include refid="updatedCondition" />
+    </select>
+
+    <select id="findUpdated" parameterType="map" resultMap="orderJobOverDayConfigMap">
+        select id,
+        <include refid="columns"/>
+        from order_job_day_config
+        <include refid="updatedCondition" />
+        order by id desc limit #{offset},#{limit}
+    </select>
+
+    <insert id="create" parameterType="OrderJobDayConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into order_job_day_config (<include refid="columns"/>) values (#{skuId},#{expireDay}, now(), now()
+        )
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        delete from order_job_day_config where id=#{id} <!-- and user_id=#{user_id}-->
+    </delete>
+
+    <update id="update" parameterType="OrderJobDayConfig">
+        update order_job_day_config
+        <set>
+            updated_at = now(),
+            <if test="status!=null">status=#{status},</if>
+            <if test="overDay!=null">`day`=#{expireDay},</if>
+            <if test="skuId!=null">sku_id=#{skuId},</if>
+            <if test="orderId!=null">order_id=#{orderId},</if>
+        </set>
+        where id=#{id} <!--and user_id=#{user_id}-->
+    </update>
+
+    <sql id="condition">
+        <where>
+            <if test="criteria != null and criteria.skuId != null">
+                sku_id = #{criteria.skuId}
+            </if>
+            <if test="createdStartAt != null">
+                AND <![CDATA[ created_at >= #{createdStartAt} ]]>
+            </if>
+            <if test="createdEndAt != null">
+                AND <![CDATA[ created_at < #{createdEndAt} ]]>
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from order_job_day_config
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="orderJobOverDayConfigMap">
+        select id,
+        <include refid="columns"/>
+        from order_job_day_config
+    </select>
+
+</mapper>

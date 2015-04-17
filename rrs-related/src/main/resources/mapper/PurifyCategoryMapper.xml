@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 净水选择类目(Created by Michael Zhao) -->
+<mapper namespace="PurifyCategory">
+    <resultMap id="purifyCategoryMap" type="PurifyCategory">
+        <id property="id" column="id"/>
+        <result property="seriesId" column="series_id"/>
+        <result property="stage" column="stage"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="categoryImage" column="category_image"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="column">
+        series_id, stage, category_name, category_image, rrs_purify_category.created_at, rrs_purify_category.updated_at
+    </sql>
+
+    <insert id="create" parameterType="purifyCategory" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO rrs_purify_category (<include refid="column"/>)
+        VALUES (#{seriesId}, #{stage}, #{categoryName}, #{categoryImage}, now(), now());
+    </insert>
+
+    <update id="update" parameterType="purifyCategory">
+        UPDATE rrs_purify_category
+        <set>
+            <if test="seriesId!=null">series_id=#{seriesId},</if>
+            <if test="stage!=null">stage=#{stage},</if>
+            <if test="categoryName!=null">category_name=#{categoryName},</if>
+            updated_at=now()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from rrs_purify_category
+        where id=#{id}
+    </delete>
+
+    <!-- 执行批量删除操作通过系列编号 -->
+    <delete id="deleteBySeriesIds">
+        delete from rrs_purify_category
+        where series_id in
+        <foreach collection="array" item="seriesId"  open="(" separator="," close=")">
+            #{seriesId}
+        </foreach>
+    </delete>
+
+    <select id="findById" parameterType="long" resultMap="purifyCategoryMap">
+        SELECT id, <include refid="column"/> FROM rrs_purify_category WHERE id = #{id}
+    </select>
+
+    <!-- 查询最深阶段 -->
+    <select id="findMaxStage" parameterType="long" resultMap="purifyCategoryMap">
+        SELECT id, <include refid="column"/> FROM rrs_purify_category
+        WHERE series_id = #{seriesId} order by stage desc limit 0,1
+    </select>
+
+    <!-- 通过参数查询是否存在该类目 -->
+    <select id="findByName" parameterType="map" resultMap="purifyCategoryMap">
+        SELECT id, <include refid="column"/> FROM rrs_purify_category
+        where series_id=#{seriesId} and category_name=#{categoryName}
+    </select>
+
+    <!-- 通过系列编号返回默认的类目 -->
+    <select id="findDefaultBySeriesId" parameterType="long" resultMap="purifyCategoryMap">
+        SELECT id, <include refid="column"/> FROM rrs_purify_category
+        where series_id=#{seriesId} and stage = 1
+    </select>
+
+    <!-- 根据系列编号查询组件属性 -->
+    <select id="findBySeriesId" parameterType="long" resultMap="purifyCategoryMap">
+        SELECT id, <include refid="column"/> FROM rrs_purify_category
+        <where>
+            <if test="_parameter!=null">series_id=#{_parameter}</if>
+        </where>
+    </select>
+
+    <!-- 通过传入的数组查询多个category信息 -->
+    <select id="findByCategoryIds" resultMap="purifyCategoryMap">
+        SELECT id, <include refid="column"/> FROM rrs_purify_category
+        where id in
+        <foreach collection="array" item="categoryId"  open="(" separator="," close=")">
+        #{categoryId}
+        </foreach>
+    </select>
+
+    <!-- 通过传入的组件数组查询多个category信息 -->
+    <select id="findByAssemblyIds" resultMap="purifyCategoryMap">
+        SELECT rrs_purify_category.id, <include refid="column"/> FROM rrs_purify_category, rrs_purify_assembly
+        where rrs_purify_category.id = rrs_purify_assembly.category_id
+        and rrs_purify_assembly.id in
+        <foreach collection="array" item="assemblyId"  open="(" separator="," close=")">
+            #{assemblyId}
+        </foreach>
+    </select>
+</mapper>

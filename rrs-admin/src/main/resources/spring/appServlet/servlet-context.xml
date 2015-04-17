@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2012 杭州端点网络科技有限公司
+  -->
+
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:util="http://www.springframework.org/schema/util"
+             xmlns:aop="http://www.springframework.org/schema/aop"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <annotation-driven>
+        <message-converters>
+            <beans:bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <beans:property name="supportedMediaTypes">
+                    <util:list>
+                        <beans:value>text/plain;charset=UTF-8</beans:value>
+                    </util:list>
+                </beans:property>
+            </beans:bean>
+            <beans:bean class="com.aixforce.web.misc.JsonMessageConverter"/>
+        </message-converters>
+    </annotation-driven>
+
+    <beans:bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <beans:property name="basenames">
+            <beans:list>
+                <beans:value>classpath:messages</beans:value>
+                <beans:value>classpath:exceptions</beans:value>
+            </beans:list>
+        </beans:property>
+        <beans:property name="cacheSeconds" value="3600">
+        </beans:property>
+        <beans:property name="useCodeAsDefaultMessage" value="true"/>
+        <beans:property name="defaultEncoding" value="UTF-8"/>
+    </beans:bean>
+
+    <!-- Interceptor handlers -->
+    <interceptors>
+        <beans:bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+            <beans:property name="paramName" value="lang"/>
+        </beans:bean>
+        <beans:bean class="com.aixforce.admin.web.interceptors.LoginInterceptor"/>
+        <beans:bean class="com.aixforce.admin.web.interceptors.AuthInterceptor"/>
+    </interceptors>
+    <beans:bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <beans:property name="defaultLocale" value="cn"/>
+    </beans:bean>
+
+
+    <beans:bean class="com.aixforce.web.misc.AixForceExceptionResolver">
+        <beans:property name="order" value="0"/>
+        <!-- 定义默认的异常处理页面，当该异常类型的注册时使用 -->
+        <beans:property name="defaultErrorView" value="resource:error"/>
+    </beans:bean>
+
+    <beans:bean id="viewResolver" class="com.aixforce.site.handlebars.HandlebarsViewResolver">
+        <beans:constructor-arg ref="handlebarEngine"/>
+        <beans:property name="cache" value="#{app.mode != 'dev'}"/>
+    </beans:bean>
+
+    <beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <beans:property name="maxUploadSize" value="1048576"/>
+    </beans:bean>
+
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <context:component-scan base-package="com.aixforce.admin.web, com.aixforce.site.handlebars,
+    com.aixforce.web.controller.view, com.aixforce.web.misc, com.aixforce.restful, com.aixforce.open"/>
+
+    <beans:bean id="express100" class="com.aixforce.web.components.Express100" />
+
+    <beans:bean id="images" class="com.aixforce.web.controller.api.Images"/>
+    <beans:bean id="orders" class="com.aixforce.web.controller.api.Orders"/>
+    <beans:bean id="captchaGenerator" class="com.aixforce.web.controller.api.CaptchaGenerator"/>
+    <beans:bean id="userEventBus" class="com.aixforce.web.controller.api.userEvent.UserEventBus"/>
+    <beans:bean id="smsService" class="com.aixforce.sms.haier.HaierSmsServiceImpl"/>
+
+    <beans:bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <beans:property name="defaultHandler" ref="defaultView"/>
+    </beans:bean>
+
+</beans:beans>

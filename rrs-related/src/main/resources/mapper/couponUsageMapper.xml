@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2014 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CouponUsage">
+    <resultMap id="couponUsageMap" type="CouponUsage">
+        <id property="id" column="id"/>
+        <result property="couponId" column="coupon_id"/>
+        <result property="couponName" column="coupon_name"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="shopName" column="shop_name"/>
+        <result property="amount" column="amount"/>
+        <result property="unused" column="unused"/>
+        <result property="used" column="used"/>
+        <result property="endAt" column="end_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="column">
+        coupon_id, coupon_name, buyer_id, seller_id, shop_name,
+        amount, unused, used, end_at,
+        created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="CouponUsage" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO coupon_usages (<include refid="column"/>)
+        VALUES (#{couponId}, #{couponName}, #{buyerId}, #{sellerId}, #{shopName},
+        #{amount}, #{unused}, #{used}, #{endAt},
+        now(), now());
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM coupon_usages WHERE id = #{id}
+    </delete>
+
+    <update id="update" parameterType="CouponUsage">
+        UPDATE coupon_usages
+        <set>
+            updated_at=now(),
+            <if test="couponId != null">coupon_id = #{couponId},</if>
+            <if test="couponName != null">coupon_name = #{couponName},</if>
+            <if test="buyerId != null">buyer_id = #{buyerId},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="unused != null">unused = #{unused},</if>
+            <if test="used != null">used = #{used},</if>
+            <if test="endAt != null">end_at = #{endAt},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="findById" parameterType="long" resultMap="couponUsageMap">
+        SELECT id, <include refid="column"/> FROM coupon_usages
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByCouponIdAndBuyerId" parameterType="map" resultMap="couponUsageMap">
+        SELECT id, <include refid="column"/> FROM coupon_usages
+        <where>
+            coupon_id = #{couponId} AND buyer_id = #{buyerId}
+        </where>
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="couponUsageMap">
+        SELECT id, <include refid="column"/> FROM coupon_usages
+        <where>
+            <if test="criteria != null and criteria.couponId != null">
+                coupon_id = #{criteria.couponId}
+            </if>
+            <if test="criteria != null and criteria.buyerId != null">
+                AND buyer_id = #{criteria.buyerId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findByOrderBy" parameterType="map" resultMap="couponUsageMap">
+        SELECT id, <include refid="column"/> FROM coupon_usages
+        <where>
+            <if test="criteria != null and criteria.buyerId != null">
+                buyer_id = #{criteria.buyerId}
+            </if>
+            <if test="criteria != null and criteria.couponId != null">
+                AND coupon_id = #{criteria.couponId}
+            </if>
+            <if test="criteria != null and criteria.couponName != null">
+                AND coupon_name LIKE CONCAT ('%', #{criteria.couponName}, '%')
+            </if>
+        </where>
+        <if test="orderBy == 'amount'">ORDER BY amount DESC</if>
+        <if test="orderBy == 'endAt'">ORDER BY end_at DESC</if>
+        limit #{offset}, #{limit}
+    </select>
+
+    <select id="countOf" parameterType="CouponUsage" resultType="long">
+        SELECT COUNT(1) FROM coupon_usages
+        <where>
+            <if test="buyerId != null">buyer_id = #{buyerId}</if>
+            <if test="couponId != null">AND coupon_id = #{couponId}</if>
+            <if test="couponName != null">AND coupon_name LIKE CONCAT ('%', #{couponName}, '%')</if>
+        </where>
+    </select>
+</mapper>

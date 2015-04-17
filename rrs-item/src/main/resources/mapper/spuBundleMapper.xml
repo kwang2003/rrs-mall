@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SpuBundle">
+    <resultMap id="spuBundleMap" type="SpuBundle">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="idOne" column="id_one"/>
+        <result property="quantityOne" column="quantity_one"/>
+        <result property="idTwo" column="id_two"/>
+        <result property="quantityTwo" column="quantity_two"/>
+        <result property="idThree" column="id_three"/>
+        <result property="quantityThree" column="quantity_three"/>
+        <result property="idFour" column="id_four"/>
+        <result property="quantityFour" column="quantity_four"/>
+        <result property="nameOne" column="name_one"/>
+        <result property="nameTwo" column="name_two"/>
+        <result property="nameThree" column="name_three"/>
+        <result property="nameFour" column="name_four"/>
+        <result property="name" column="name"/>
+        <result property="status" column="status"/>
+        <result property="usedCount" column="used_count"/>
+        <result property="description" column="description"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="tb_name">
+        spu_bundles
+    </sql>
+
+    <sql id="cols_all">
+        id, <include refid="cols_execlue_id"/>
+    </sql>
+
+    <sql id="cols_execlue_id">
+        user_id, id_one, quantity_one, id_two, quantity_two, id_three, quantity_three,
+        id_four, quantity_four, name_one, name_two, name_three, name_four, name, status, used_count, description, created_at, updated_at
+    </sql>
+
+    <sql id="vals_all">
+        #{userId},#{idOne}, #{quantityOne}, #{idTwo}, #{quantityTwo},
+        #{idThree}, #{quantityThree}, #{idFour}, #{quantityFour},
+        #{nameOne}, #{nameTwo}, #{nameThree}, #{nameFour},
+        #{name}, #{status}, #{usedCount}, #{description}, now(), now()
+    </sql>
+
+    <!-- 根据单个id查找 -->
+    <select id="findById" resultMap="spuBundleMap">
+        SELECT
+        <include refid="cols_all"/>
+        FROM
+        <include refid="tb_name"/>
+        WHERE id = #{id}
+    </select>
+
+    <!-- 根据多个id查找 -->
+    <select id="findByIds" resultMap="spuBundleMap">
+        SELECT id,
+        <include refid="cols_all"/>
+        FROM
+        <include refid="tb_name"/>
+        WHERE id IN
+        <foreach collection="list" separator="," open="("
+                 close=")" item="id">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- 创建套餐模版 -->
+    <insert id="create" parameterType="SpuBundle" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO <include refid="tb_name"/>
+        (<include refid="cols_execlue_id"/>)
+        VALUES
+        (<include refid="vals_all"/>)
+    </insert>
+
+    <!-- 更新套餐模版 -->
+    <update id="update" parameterType="SpuBundle">
+        UPDATE <include refid="tb_name"/>
+        <set>
+            <if test="name!=null"> name = #{name},</if>
+            <if test="description!=null"> description = #{description},</if>
+            updated_at=now()
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <!-- 上下架套餐模版 -->
+    <update id="onOff" parameterType="map">
+        UPDATE <include refid="tb_name"/>
+        <set>
+            <if test="status!=null"> status = #{status} </if>
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <!-- 增加使用次数 -->
+    <update id="incrUsedCount">
+        UPDATE <include refid="tb_name"/> SET used_count=used_count+1 WHERE id=#{id}
+    </update>
+
+    <!-- 根据id删除套餐模版 -->
+    <delete id="delete" parameterType="map">
+        DELETE FROM <include refid="tb_name"/> WHERE id=#{id}
+    </delete>
+
+    <!-- 批量删除 -->
+    <delete id="deletes">
+        DELETE FROM
+        <include refid="tb_name"/>
+        WHERE id IN
+        <foreach collection="ids" separator="," open="("
+                 close=")" item="id">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 计数 -->
+    <select id="count" resultType="long" parameterType="map">
+        SELECT COUNT(1) FROM <include refid="tb_name"/>
+        WHERE 1=1
+        <if test="name!=null">
+            AND name LIKE concat('%', #{name},'%')
+        </if>
+        <if test="status!=null">
+            AND status = #{status}
+        </if>
+        <if test="userId!=null">
+            AND user_id = #{userId}
+        </if>
+    </select>
+
+    <!-- 分页查询 -->
+    <select id="pagination" resultMap="spuBundleMap" parameterType="map">
+        SELECT
+        <include refid="cols_all"/>
+        FROM <include refid="tb_name"/>
+        WHERE 1=1
+        <if test="name!=null">
+            AND name LIKE concat('%', #{name},'%')
+        </if>
+        <if test="status!=null">
+            AND status = #{status}
+        </if>
+        <if test="userId!=null">
+            AND user_id = #{userId}
+        </if>
+        LIMIT #{offset},#{limit}
+    </select>
+
+    <select id="countByUids" resultType="long">
+        SELECT count(1)
+        FROM <include refid="tb_name"/>
+        <where>
+            <foreach collection="list" item="id" separator=" or ">
+                user_id=#{id}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="findByUids" parameterType="map" resultMap="spuBundleMap">
+        SELECT
+        <include refid="cols_all"/>
+        FROM <include refid="tb_name"/>
+        <where>
+            <foreach collection="ids" item="id" separator=" or ">
+                user_id=#{id}
+            </foreach>
+        </where>
+        limit #{offset},#{limit}
+    </select>
+</mapper>

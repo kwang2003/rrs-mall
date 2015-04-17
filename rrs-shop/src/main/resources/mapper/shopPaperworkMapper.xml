@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ShopPaperwork">
+    <resultMap id="shopPaperworkMap" type="ShopPaperwork">
+        <id property="id" column="id"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="businessLicence" column="business_licence"/>
+        <result property="taxCertificate" column="tax_certificate"/>
+        <result property="accountPermit" column="account_permit"/>
+        <result property="organizationCode" column="organization_code"/>
+        <result property="corporateIdentity" column="corporate_identity"/>
+        <result property="corporateIdentityB" column="corporate_identityB"/>
+        <result property="contractImage1" column="contract_image1"/>
+        <result property="contractImage2" column="contract_image2"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        shop_id, business_licence, tax_certificate,account_permit, organization_code, corporate_identity, corporate_identityB, contract_image1, contract_image2, created_at, updated_at
+    </sql>
+
+    <select id="findById" parameterType="long" resultMap="shopPaperworkMap">
+        select id,
+        <include refid="columns"/>
+        from shop_paperworks where id=#{id}
+    </select>
+
+    <select id="findByShopId" resultMap="shopPaperworkMap">
+        select id,
+        <include refid="columns"/>
+        from shop_paperworks where shop_id=#{shopId}
+    </select>
+
+
+    <insert id="create" parameterType="shop" useGeneratedKeys="true" keyProperty="id">
+        insert into shop_paperworks (<include refid="columns"/>) values (#{shopId}, #{businessLicence}, #{taxCertificate},
+        #{accountPermit}, #{organizationCode}, #{corporateIdentity} , #{corporateIdentityB}, #{contractImage1}, #{contractImage2} ,now(), now())
+    </insert>
+
+    <update id="updateByShopId" parameterType="shopPaperwork">
+        update shop_paperworks
+        <set>
+            <if test="businessLicence!=null">business_licence=#{businessLicence},</if>
+            <if test="taxCertificate!=null">tax_certificate=#{taxCertificate},</if>
+            <if test="accountPermit!=null">account_permit=#{accountPermit},</if>
+            <if test="organizationCode!=null">organization_code=#{organizationCode},</if>
+            <if test="corporateIdentity!=null">corporate_identity=#{corporateIdentity},</if>
+            <if test="corporateIdentityB!=null">corporate_identityB=#{corporateIdentityB},</if>
+            <if test="contractImage1!=null">contract_image1=#{contractImage1},</if>
+            <if test="contractImage2!=null">contract_image2=#{contractImage2},</if>
+            updated_at = now()
+        </set>
+        where shop_id=#{shopId}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from shop_paperworks where id=#{id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2012 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <typeAliases>
+        <!--user related entity-->
+        <typeAlias alias="User" type="com.aixforce.user.model.User"/>
+        <typeAlias alias="UserProfile" type="com.aixforce.user.model.UserProfile"/>
+        <typeAlias alias="UserExtra" type="com.aixforce.user.model.UserExtra"/>
+        <typeAlias alias="Address" type="com.aixforce.user.model.Address"/>
+        <typeAlias alias="UserAccountSummary" type="com.aixforce.user.model.UserAccountSummary"/>
+
+        <!--item related entity-->
+        <typeAlias alias="Item" type="com.aixforce.item.model.Item"/>
+        <typeAlias alias="ItemDetail" type="com.aixforce.item.model.ItemDetail"/>
+        <typeAlias alias="Sku" type="com.aixforce.item.model.Sku"/>
+        <typeAlias alias="ItemBundle" type="com.aixforce.item.model.ItemBundle"/>
+        <typeAlias alias="SpuBundle" type="com.aixforce.item.model.SpuBundle"/>
+        <typeAlias alias="TitleKeyword" type="com.aixforce.item.model.TitleKeyword"/>
+
+        <!--trade related entity-->
+        <typeAlias alias="Order" type="com.aixforce.trade.model.Order"/>
+        <typeAlias alias="OrderExtra" type="com.aixforce.trade.model.OrderExtra"/>
+        <typeAlias alias="OrderItem" type="com.aixforce.trade.model.OrderItem"/>
+        <typeAlias alias="Delivery" type="com.aixforce.trade.model.Delivery"/>
+        <typeAlias alias="Comment" type="com.aixforce.trade.model.Comment"/>
+        <typeAlias alias="UserTradeInfo" type="com.aixforce.trade.model.UserTradeInfo"/>
+        <typeAlias alias="OrderComment" type="com.aixforce.trade.model.OrderComment"/>
+        <!-- freight entity -->
+        <typeAlias alias="FreightModel" type="com.aixforce.trade.model.FreightModel"/>
+        <typeAlias alias="LogisticsSpecial" type="com.aixforce.trade.model.LogisticsSpecial"/>
+        <typeAlias alias="LogisticsInfo" type="com.aixforce.trade.model.LogisticsInfo"/>
+        <typeAlias alias="LogisticsRevert" type="com.aixforce.trade.model.LogisticsRevert"/>
+
+        <!-- site related entity-->
+        <typeAlias alias="UserImage" type="com.aixforce.user.model.UserImage"/>
+        <typeAlias alias="UserQuota" type="com.aixforce.user.model.UserQuota"/>
+
+        <typeAlias alias="Shop" type="com.aixforce.shop.model.Shop"/>
+        <typeAlias alias="ShopExtra" type="com.aixforce.shop.model.ShopExtra"/>
+        <typeAlias alias="ShopCategory" type="com.aixforce.shop.model.ShopCategory"/>
+        <typeAlias alias="ShopInteriorCategory" type="com.aixforce.shop.model.ShopInteriorCategory"/>
+        <typeAlias alias="ShopPaperwork" type="com.aixforce.shop.model.ShopPaperwork"/>
+
+        <!--brand related entity-->
+        <typeAlias alias="Brand" type="com.aixforce.item.model.Brand"/>
+
+        <!--settlement related entity-->
+        <typeAlias alias="DepositFee" type="com.aixforce.rrs.settle.model.DepositFee"/>
+        <typeAlias alias="DepositAccount" type="com.aixforce.rrs.settle.model.DepositAccount"/>
+        <typeAlias alias="Settlement" type="com.aixforce.rrs.settle.model.Settlement"/>
+        <typeAlias alias="ItemSettlement" type="com.aixforce.rrs.settle.model.ItemSettlement"/>
+        <typeAlias alias="DailySettlement" type="com.aixforce.rrs.settle.model.DailySettlement"/>
+        <typeAlias alias="SellerSettlement" type="com.aixforce.rrs.settle.model.SellerSettlement"/>
+        <typeAlias alias="AlipayCash" type="com.aixforce.rrs.settle.model.AlipayCash"/>
+        <typeAlias alias="SellerAlipayCash" type="com.aixforce.rrs.settle.model.SellerAlipayCash"/>
+        <typeAlias alias="OrderAlipayCash" type="com.aixforce.rrs.settle.model.OrderAlipayCash"/>
+        <typeAlias alias="SettleJob" type="com.aixforce.rrs.settle.model.SettleJob"/>
+        <typeAlias alias="PreSale" type="com.aixforce.rrs.presale.model.PreSale"/>
+        <typeAlias alias="BusinessRate" type="com.aixforce.rrs.settle.model.BusinessRate"/>
+        <typeAlias alias="ShopAuthorizeInfo" type="com.aixforce.rrs.grid.model.ShopAuthorizeInfo"/>
+        <typeAlias alias="BrandsSellers" type="com.aixforce.rrs.grid.model.BrandsSellers"/>
+        <typeAlias alias="StorageStock" type="com.aixforce.rrs.presale.model.StorageStock"/>
+        <typeAlias alias="AddressStorage" type="com.aixforce.rrs.presale.model.AddressStorage"/>
+
+        <!--coupon related entity-->
+        <typeAlias alias="Coupon" type="com.aixforce.rrs.coupon.model.Coupon"/>
+        <typeAlias alias="CouponUsage" type="com.aixforce.rrs.coupon.model.CouponUsage"/>
+
+        <typeAlias alias="ActivityDefinition" type="com.aixforce.rrs.code.model.ActivityDefinition"/>
+        <typeAlias alias="ActivityCode" type="com.aixforce.rrs.code.model.ActivityCode"/>
+        <typeAlias alias="CodeUsage" type="com.aixforce.rrs.code.model.CodeUsage"/>
+        <typeAlias alias="ActivityBind" type="com.aixforce.rrs.code.model.ActivityBind"/>
+
+        <!-- 净水处理 -->
+        <typeAlias alias="PurifySeries" type="com.aixforce.rrs.purify.model.PurifySeries"/>
+        <typeAlias alias="PurifyCategory" type="com.aixforce.rrs.purify.model.PurifyCategory"/>
+        <typeAlias alias="PurifyAssembly" type="com.aixforce.rrs.purify.model.PurifyAssembly"/>
+        <typeAlias alias="PurifyRelation" type="com.aixforce.rrs.purify.model.PurifyRelation"/>
+
+
+        <typeAlias alias="AlipayTrans" type="com.aixforce.rrs.settle.model.AlipayTrans"/>
+        <typeAlias alias="AlipayTransLoad" type="com.aixforce.rrs.settle.model.AlipayTransLoad"/>
+        <typeAlias alias="AbnormalTrans" type="com.aixforce.rrs.settle.model.AbnormalTrans"/>
+        <typeAlias alias="DepositFeeCash" type="com.aixforce.rrs.settle.model.DepositFeeCash"/>
+        <typeAlias alias="BrandsSellers" type="com.aixforce.rrs.grid.model.BrandsSellers"/>
+        <typeAlias alias="ShopAuthorizeInfo" type="com.aixforce.rrs.grid.model.ShopAuthorizeInfo"/>
+        <typeAlias alias="UnitBrand" type="com.aixforce.rrs.grid.model.UnitBrand"/>
+        <typeAlias alias="UnitSeller" type="com.aixforce.rrs.grid.model.UnitSeller"/>
+        <typeAlias alias="UserVatInvoice" type="com.aixforce.trade.model.UserVatInvoice"/>
+        <typeAlias alias="DeliveryMethod" type="com.aixforce.trade.model.DeliveryMethod"/>
+        <!--晒单-->
+        <typeAlias alias="BaskOrder" type="com.aixforce.trade.model.BaskOrder"/>
+        <typeAlias alias="ThirdUser" type="com.rrs.third.model.ThirdUser"/>
+
+
+
+        <typeAlias alias="ThirdUser" type="com.rrs.third.model.ThirdUser"/>
+
+        <!-- 抢购活动 -->
+        <typeAlias alias="BuyingActivityDefinition" type="com.aixforce.rrs.buying.model.BuyingActivityDefinition"/>
+        <typeAlias alias="BuyingItem" type="com.aixforce.rrs.buying.model.BuyingItem"/>
+        <typeAlias alias="BuyingOrderRecord" type="com.aixforce.rrs.buying.model.BuyingOrderRecord"/>
+        <typeAlias alias="BuyingTempOrder" type="com.aixforce.rrs.buying.model.BuyingTempOrder"/>
+
+        <typeAlias alias="ThirdUser" type="com.rrs.third.model.ThirdUser"/>
+
+        <!-- 抢购活动 -->
+        <typeAlias alias="BuyingActivityDefinition" type="com.aixforce.rrs.buying.model.BuyingActivityDefinition"/>
+        <typeAlias alias="BuyingItem" type="com.aixforce.rrs.buying.model.BuyingItem"/>
+        <typeAlias alias="BuyingOrderRecord" type="com.aixforce.rrs.buying.model.BuyingOrderRecord"/>
+        <typeAlias alias="BuyingTempOrder" type="com.aixforce.rrs.buying.model.BuyingTempOrder"/>
+
+    </typeAliases>
+</configuration>

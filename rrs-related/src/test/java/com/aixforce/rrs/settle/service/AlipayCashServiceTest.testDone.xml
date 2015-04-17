@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+
+    <!-- 5笔订单数据，2010-10-10 有两笔, 2010-10-11一笔 -->
+    <rrs_settlements id="1" order_id="1" seller_id="1" seller_name="seller1" buyer_id="5" buyer_name="buyer2" business="1" trade_status="1" type="1" pay_type="1" fee="100000" third_party_commission="1000" settle_status="0" cashed="0" finished="0" settled="0" confirmed="0" synced="0" vouched="0" ordered_at="2010-10-10 15:30:00.0" paid_at="2010-10-10 15:40:00.0" created_at="2010-10-10 15:40:00.0" updated_at="2010-10-10 15:40:00"/>
+    <rrs_settlements id="2" order_id="2" seller_id="2" seller_name="seller2" buyer_id="5" buyer_name="buyer2" business="1" trade_status="1" type="1" pay_type="1" fee="100000" third_party_commission="1000" settle_status="0" cashed="0" finished="0" settled="0" confirmed="0" synced="0" vouched="0" ordered_at="2010-10-10 15:30:00.0" paid_at="2010-10-10 15:40:00.0" created_at="2010-10-10 15:40:00.0" updated_at="2010-10-10 15:40:00"/>
+    <rrs_settlements id="3" order_id="3" seller_id="3" seller_name="seller3" buyer_id="5" buyer_name="buyer2" business="1" trade_status="1" type="1" pay_type="1" fee="100000" third_party_commission="1000" settle_status="0" cashed="0" finished="0" settled="0" confirmed="0" synced="0" vouched="0" ordered_at="2010-10-10 15:30:00.0" paid_at="2010-10-10 15:40:00.0" created_at="2010-10-10 15:40:00.0" updated_at="2010-10-10 15:40:00"/>
+    <rrs_settlements id="4" order_id="4" seller_id="3" seller_name="seller3" buyer_id="5" buyer_name="buyer2" business="1" trade_status="1" type="1" pay_type="1" fee="100000" third_party_commission="1000" settle_status="0" cashed="0" finished="0" settled="0" confirmed="0" synced="0" vouched="0" ordered_at="2010-10-10 15:30:00.0" paid_at="2010-10-10 15:40:00.0" created_at="2010-10-10 15:40:00.0" updated_at="2010-10-10 15:40:00"/>
+    <rrs_settlements id="5" order_id="5" seller_id="3" seller_name="seller3" buyer_id="5" buyer_name="buyer2" business="1" trade_status="1" type="1" pay_type="2" fee="100000" third_party_commission="0" settle_status="0" cashed="0" finished="0" settled="0" confirmed="0" synced="0" vouched="0" ordered_at="2010-10-11 15:30:00.0" paid_at="2010-10-11 15:40:00.0" created_at="2010-10-11 15:40:00.0" updated_at="2010-10-11 15:40:00"/>
+
+    <!-- 汇总后的商户数据 -->
+    <rrs_seller_alipay_cash id="1" seller_id="1" seller_name="seller1" order_count="1" total_fee="100000" alipay_fee="1000" cash_fee="99000" status="0" synced="0" summed_at="2010-10-10 16:00:00.0" created_at="2010-10-10 16:00:00.0" updated_at="2010-10-10 16:00:00.0"/>
+    <rrs_seller_alipay_cash id="2" seller_id="2" seller_name="seller2" order_count="1" total_fee="100000" alipay_fee="1000" cash_fee="99000" status="0" synced="0" summed_at="2010-10-10 16:00:00.0" created_at="2010-10-10 16:00:00.0" updated_at="2010-10-10 16:00:00.0"/>
+    <rrs_seller_alipay_cash id="3" seller_id="3" seller_name="seller3" order_count="2" total_fee="200000" alipay_fee="2000" cash_fee="198000" status="0" synced="0" summed_at="2010-10-10 16:00:00.0" created_at="2010-10-10 16:00:00.0" updated_at="2010-10-10 16:00:00.0"/>
+    <rrs_seller_alipay_cash id="4" seller_id="3" seller_name="seller3" order_count="1" total_fee="100000" alipay_fee="1000" cash_fee="99000" status="0" synced="0" summed_at="2010-10-11 16:00:00.0" created_at="2010-10-11 16:00:00.0" updated_at="2010-10-11 16:00:00.0"/>
+
+    <!-- 汇总后的数据 -->
+    <rrs_alipay_cash id="1" order_count="4" total_fee="400000" alipay_fee="4000" cash_fee="396000" status="0" summed_at="2010-10-10 16:00:00.0" created_at="2010-10-10 16:00:00.0" updated_at="2010-10-10 16:00:00.0"/>
+    <rrs_alipay_cash id="2" order_count="1" total_fee="100000" alipay_fee="1000" cash_fee="99000" status="0" summed_at="2010-10-11 16:00:00.0" created_at="2010-10-11 16:00:00.0" updated_at="2010-10-11 16:00:00.0"/>
+
+
+</dataset>

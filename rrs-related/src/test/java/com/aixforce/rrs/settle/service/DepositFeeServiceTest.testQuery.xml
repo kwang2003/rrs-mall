@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+
+    <users id="1" name="seller1" mobile="12888888888" encrypted_password="fbd9@92f784700191f6891472" type="2" status="1" tags="1" created_at="2013-11-02 13:58:09.0" updated_at="2014-01-07 10:51:50.0"/>
+    <users id="2" name="seller2" mobile="13888888888" encrypted_password="2153@eb7820bab772a062a9a0" type="2" status="1" tags="1" created_at="2013-12-25 12:30:28.0" updated_at="2014-01-01 14:44:03.0"/>
+    <users id="3" name="seller3" mobile="14888888888" encrypted_password="2153@eb7820bab772a062a9a0" type="2" status="1" tags="1" created_at="2013-12-25 12:30:28.0" updated_at="2014-01-01 14:44:03.0"/>
+
+
+    <!-- 保证金 -->
+    <rrs_deposit_fees id="1" seller_id="1" seller_name="seller1" outer_code="8000000001" business="1" deposit="1000" type="1" ordered="0" synced="0" vouched="0" receipted="0" created_at="2014-10-10 00:00:00.0" updated_at="2014-10-10 00:00:00.0"/>
+    <rrs_deposit_fees id="2" seller_id="2" seller_name="seller2" outer_code="8000000001" business="2" deposit="1000" type="1" ordered="0" synced="0" vouched="0" receipted="0" created_at="2014-10-10 00:00:00.0" updated_at="2014-10-10 00:00:00.0"/>
+    <rrs_deposit_fees id="3" seller_id="3" seller_name="seller3" outer_code="8000000001" business="2" deposit="1000" type="2" ordered="0" synced="0" vouched="0" receipted="0" created_at="2014-10-10 00:00:00.0" updated_at="2014-10-10 00:00:00.0"/>
+    <rrs_deposit_fees id="4" seller_id="3" seller_name="seller3" outer_code="8000000001" business="2" deposit="1000" type="4" ordered="0" synced="0" vouched="0" receipted="0" created_at="2014-10-10 00:00:00.0" updated_at="2014-10-10 00:00:00.0"/>
+
+
+    <rrs_deposit_fees id="5" seller_id="1" seller_name="seller1" outer_code="8000000001" business="1" deposit="1000" type="3" ordered="0" synced="0" vouched="0" receipted="0" created_at="2014-10-10 00:00:00.0" updated_at="2014-10-10 00:00:00.0"/>
+    <rrs_deposit_fees id="6" seller_id="2" seller_name="seller2" outer_code="8000000001" business="2" deposit="1000" type="3" ordered="0" synced="0" vouched="0" receipted="0" created_at="2014-10-10 00:00:00.0" updated_at="2014-10-10 00:00:00.0"/>
+    <rrs_deposit_fees id="7" seller_id="3" seller_name="seller3" outer_code="8000000001" business="2" deposit="1000" type="3" ordered="0" synced="0" vouched="0" receipted="0" created_at="2014-10-10 00:00:00.0" updated_at="2014-10-10 00:00:00.0"/>
+    <rrs_deposit_fees id="8" seller_id="3" seller_name="seller3" outer_code="8000000001" business="2" deposit="1000" type="3" ordered="0" synced="0" vouched="0" receipted="0" created_at="2014-10-10 00:00:00.0" updated_at="2014-10-10 00:00:00.0"/>
+
+</dataset>
+
+

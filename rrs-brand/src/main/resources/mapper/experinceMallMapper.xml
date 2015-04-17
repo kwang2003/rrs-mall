@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ExperinceMall">
+    <resultMap id="ExperinceMallMap" type="ExperinceMall">
+        <id property="id" column="id"/>
+        <result property="mallName" column="experiencename"/>
+    </resultMap>
+
+
+    <select id="findMall" resultMap ="ExperinceMallMap" parameterType="map">
+      select id,experiencename from exper_ience where province=#{provinceId} and city=#{cityId} and experType =1 and experUserId is not null
+    </select>
+    <select id="findShop" resultType="long" parameterType="long">
+       select id from shops where user_id=#{userId}
+    </select>
+    <select id="findCount" parameterType="long" resultType="int" >
+  select count(*) from exper_shop where userId=#{userId} and status !=4
+
+    </select>
+    <select id="findStatus" parameterType="long" resultType="int" >
+        select status from exper_shop where userId=#{userId} and status!=4
+
+    </select>
+    <select id="findQcStatus" parameterType="long" resultType="int" >
+        select count(*) from exper_shop where userId=#{userId} and status=4 and (checkStatus=1 or checkStatus=2 or checkStatus=0)
+
+    </select>
+    <select id="findMallUser" parameterType="long" resultType="long" >
+        select experUserId from exper_ience where id=#{mallId}
+
+    </select>
+    <select id="findCode" parameterType="Map" resultType="String">
+        select outer_code from shop_extras where shop_id=#{shopId}
+
+    </select>
+
+    <insert id="create" parameterType="map" >
+      insert into exper_shop (userId,shopId,experId,experUserId,status,createAt) values(#{userId},#{shopId},#{mallId},#{experId},1,now())
+    </insert>
+    <update id="exitMall" parameterType="long">
+
+        update exper_shop set status = 3,checkStatus =2 where userId=#{userId} and status!=4
+    </update>
+    <update id="qianRu" parameterType="Map">
+       update shop_extras set outer_code=#{busId} where shop_id=#{shopId}
+    </update>
+    <update id="qianRuStatus" parameterType="Map">
+        update exper_shop set checkStatus=1,resourceCode=#{resourceCode} where shopId=#{shopId} and experId=#{experId} and status!=4
+    </update>
+    <update id="qianChuStatus" parameterType="Map">
+        update exper_shop set checkStatus=3 where shopId=#{shopId} and experId=#{experId}
+    </update>
+
+    <!-- 是否显示到店支付方式：审核通过的status=2-->
+    <select id="findStorepPay" parameterType="long" resultType="long" >
+        select count(shopId) from exper_shop where userId=#{userId} and status = 2
+
+    </select>
+</mapper>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserExtra">
+    <resultMap id="userExtraMap" type="UserExtra">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="tradeQuantity" column="trade_quantity"/>
+        <result property="tradeSum" column="trade_sum"/>
+        <result property="businessId" column="business_id"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        user_id, trade_quantity, trade_sum, business_id, created_at, updated_at
+    </sql>
+
+    <select id="findById" resultMap="userExtraMap">
+        select id,
+        <include refid="columns"/>
+        from user_extras where id = #{id}
+    </select>
+
+    <select id="findByUserId" resultMap="userExtraMap">
+        select id,
+        <include refid="columns"/>
+        from user_extras where user_id = #{userId}
+    </select>
+    
+    <insert id="create" parameterType="UserExtra" useGeneratedKeys="true" keyProperty="id">
+        insert into user_extras
+        (<include refid="columns"/>)
+        values (
+        #{userId}, #{tradeQuantity}, #{tradeSum}, #{businessId}, now(), now())
+    </insert>
+
+    <update id="update" parameterType="UserExtra">
+        update user_extras
+        <set>
+            updated_at = now(),
+            <if test="tradeQuantity!=null">trade_quantity=#{tradeQuantity},</if>
+            <if test="tradeSum!=null">trade_sum=#{tradeSum},</if>
+            <if test="businessId!=null">business_id=#{businessId},</if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <!-- on duplicate key update 实际上 replace 原纪录 -->
+    <insert id="insertOrReplace" parameterType="UserExtra">
+        insert into `user_extras`
+        (`user_id`,`trade_quantity`,`trade_sum`, `business_id`,created_at,updated_at)
+        values
+        (#{userId},#{tradeQuantity},#{tradeSum},#{businessId},now(),now())
+        on DUPLICATE key
+        update `trade_sum`=#{tradeSum},`trade_quantity`=#{tradeQuantity},
+        <if test="businessId!=null">business_id=#{businessId},</if>
+        updated_at=now();
+    </insert>
+
+    <insert id="insertOrUpdate" parameterType="UserExtra">
+        insert into `user_extras`
+        (<include refid="columns"/>)
+        values
+        (#{userId},#{tradeQuantity},#{tradeSum}, #{businessId},now(),now())
+        on DUPLICATE key
+        update
+        <if test="tradeSum!=null">`trade_sum`=trade_sum+#{tradeSum},</if>
+        <if test="tradeQuantity!=null">`trade_quantity`=trade_quantity+#{tradeQuantity},</if>
+        <if test="businessId!=null">business_id=#{businessId},</if>
+        updated_at=now();
+    </insert>
+</mapper>

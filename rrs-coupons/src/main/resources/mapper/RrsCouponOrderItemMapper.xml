@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+   -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        <!--table rrs_coupons_users-->
+<mapper namespace="RrsCouOrderItem">
+    <resultMap id="rrsCouOrderItemMap" type="RrsCouOrderItem">
+        <id property="id" column="id"/>
+        <result property="userId" column="userId"/>
+        <result property="orderId" column="orderId"/>
+        <result property="itemId" column="itemId"/>
+        <result property="freeAmount" column="freeAmount"/>
+        <result property="couponsId" column="couponsId"/>
+        <result property="skuId" column="skuId"/>
+    </resultMap>
+
+    <sql id="columns">
+        userId,orderId,itemId,freeAmount,couponsId,skuId
+    </sql>
+
+    <insert id="saveCouOrderItem" parameterType="RrsCouOrderItem">
+        insert into rrs_coupons_user_order_items
+        (userId,orderId,itemId,freeAmount,couponsId,skuId)
+        values
+        (#{userId},#{orderId},#{itemId},#{freeAmount},#{couponsId},#{skuId})
+    </insert>
+
+</mapper>

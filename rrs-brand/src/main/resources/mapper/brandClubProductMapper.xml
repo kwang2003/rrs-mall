@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+   -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BrandClubProduct">
+    <resultMap id="brandClubProductMap" type="brandClubProduct">
+        <id property="id" column="id"/>
+        <result property="productName" column="productName"/>
+        <result property="productImage" column="productImage"/>
+        <result property="price" column="price"/>
+        <result property="oriPrice" column="oriPrice"/>
+        <result property="brandClupId" column="brandClupId"/>
+        <result property="productType" column="productType"/>
+        <result property="productUrl" column="productUrl"/>
+        <result property="productId" column="productId"/>
+        <result property="brandTypeName" column="brandTypeName"/>
+    </resultMap>
+
+    <sql id="columns">
+        productName,productImage,price,oriPrice,brandClupId,productType,productUrl,productId
+    </sql>
+
+    <select id="findAllBy" resultMap="brandClubProductMap">
+        select brand_club_product.*,brand_club_product_type.productTypeName as brandTypeName
+        from brand_club_product inner join brand_club_product_type on brand_club_product.productType = brand_club_product_type.typeOrder
+        where 1=1
+        <if test='brandId != "" and brandId != null '>
+            and brandClupId = #{brandId}
+        </if>
+    </select>
+
+    <insert id="saveBrandClubProduct" parameterType="brandClubProduct">
+          insert into  brand_club_product (<include refid="columns"/>)
+          values
+          (#{productName},#{productImage},#{price},#{oriPrice},#{brandClupId},#{productType},#{productUrl},#{productId});
+    </insert>
+
+    <delete id="deleteBrandClubProduct" parameterType="brandClubProduct">
+          <!--delete from brand_club_product where id = #{id}-->
+          delete from brand_club_product where productId = #{productId} and brandClupId = #{brandClupId};
+    </delete>
+
+   <update id="updateBrandClubProduct" parameterType="brandClubProduct">
+        update brand_club_product set
+       <trim prefix="SET" suffixOverrides=",">
+           <if test='productName!=null and productName!=""'>
+               productName = #{productName},
+           </if>
+           <if test='productImage!=null and productImage!=""'>
+               productImage = #{productImage},
+           </if>
+           <if test='price!=null and price!=""'>
+               price = #{price},
+           </if>
+           <if test='oriPrice!=null and oriPrice!=""'>
+               oriPrice = #{oriPrice},
+           </if>
+           <if test='brandClupId!=null and brandClupId!=""'>
+               brandClupId = #{brandClupId},
+           </if>
+           <if test='productType!=null and productType!=""'>
+               productType = #{productType},
+           </if>
+           <if test='productUrl!=null and productUrl!=""'>
+               productUrl = #{productUrl},
+           </if>
+       </trim>
+        where id = #{id};
+   </update>
+
+
+</mapper>

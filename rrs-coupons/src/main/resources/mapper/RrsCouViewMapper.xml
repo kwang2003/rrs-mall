@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+   -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RrsCouponsViews">
+    <resultMap id="rrsCouponsViewsMap" type="RrsCouponsViews">
+        <id property="id" column="id"/>
+        <result property="cpName" column="cpName"/>
+        <result property="startTime" column="startTime"/>
+        <result property="endTime" column="endTime"/>
+        <result property="area" column="area"/>
+        <result property="amount" column="amount"/>
+        <result property="status" column="status"/>
+        <result property="areaName" column="areaName"/>
+        <result property="categoryName" column="categoryName"/>
+    </resultMap>
+
+    <select id="getList" resultType="rrsCouponsViews" parameterType="Long">
+        SELECT
+			rrs_coupons.id,
+			rrs_coupons.categoryName,
+			rrs_coupons.cpName,
+			rrs_coupons.startTime,
+			rrs_coupons.endTime,
+			rrs_coupons.area,
+			rrs_coupons.term,
+			rrs_coupons.couponsType,
+		  rrs_coupons.shopid,
+			rrs_coupons.amount / 100 AS amount,
+		CASE
+			WHEN rrs_coupons_users.STATUS = 1 THEN
+				'未使用'
+			WHEN rrs_coupons_users.STATUS = 2 THEN
+				'使用'
+			WHEN rrs_coupons_users.STATUS = 3 THEN
+				'过期'
+		END AS STATUS,
+		CASE
+			WHEN rrs_coupons.channelId = 1 THEN
+				'家电'
+			WHEN rrs_coupons.channelId = 2 THEN
+				'家具'
+			WHEN rrs_coupons.channelId = 3 THEN
+				'家装'
+			WHEN rrs_coupons.channelId = 4 THEN
+				'家饰'
+			WHEN rrs_coupons.channelId = 5 THEN
+				'净水'
+			ELSE 'RRS.COM'
+		END AS channel,
+			 addresses.NAME AS areaName,
+			 shops.`name` as shopname
+		FROM
+			rrs_coupons_users
+		INNER JOIN rrs_coupons ON rrs_coupons_users.couponId = rrs_coupons.id
+		LEFT JOIN addresses ON addresses.id = rrs_coupons.area
+		LEFT JOIN shops ON shops.id = rrs_coupons.shopid
+		WHERE userId=#{userId} AND rrs_coupons.status !=4 order by rrs_coupons_users.id desc;
+    </select>
+
+</mapper>

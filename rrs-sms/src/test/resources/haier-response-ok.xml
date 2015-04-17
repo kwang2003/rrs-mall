@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="GBK"?>
+<CoreSMS>
+    <OperID></OperID>
+    <OperPass></OperPass>
+    <Action></Action>
+    <Category></Category>
+    <Body>
+        <Code>0</Code>
+        <Message>
+            <DesMobile>12311111111</DesMobile>
+            <SMSID>W20090222163305220262</SMSID>
+        </Message>
+        <Message>
+            <DesMobile>12311111111</DesMobile>
+            <SMSID>W20090222163305220262</SMSID>
+        </Message>
+        <Message>
+            <DesMobile>12311111111</DesMobile>
+            <SMSID>W20090222163305220262</SMSID>
+        </Message>
+    </Body>
+</CoreSMS>

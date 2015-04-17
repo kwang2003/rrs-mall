@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2012 杭州端点网络科技有限公司
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/task
+       http://www.springframework.org/schema/task/spring-task.xsd">
+
+
+    <aop:aspectj-autoproxy/>
+    <context:component-scan base-package="com.aixforce.common, com.aixforce.web.misc"/>
+
+    <!-- AOP support -->
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+
+    <bean class="com.aixforce.alipay.request.Token">
+        <constructor-arg index="0" value="#{app.alipayPid}"/>
+        <constructor-arg index="1" value="#{app.alipayKey}"/>
+        <constructor-arg index="2" value="#{app.alipayAccount}"/>
+        <constructor-arg index="3" value="#{app.alipayGateway}"/>
+    </bean>
+
+    <import resource="classpath*:/spring/category-context.xml"/>
+    <import resource="classpath*:/spring/terminus-redis-context.xml"/>
+
+    <beans profile="dev">
+        <import resource="classpath*:/spring/terminus-mysql-context.xml"/>
+        <import resource="classpath*:/spring/user-service-context.xml"/>
+        <import resource="classpath*:/spring/item-service-context.xml"/>
+        <import resource="classpath*:/spring/trade-service-context.xml"/>
+        <import resource="classpath*:/spring/shop-service-context.xml"/>
+        <import resource="classpath*:/spring/rrs-service-context.xml"/>
+        <import resource="classpath*:/spring/brand-service-context.xml"/>
+        <import resource="classpath*:/spring/coupons-service-context.xml"/>
+        <import resource="classpath*:/spring/api-service-context.xml"/>
+        <!--<import resource="classpath*:/spring/terminus-cps-consumer.xml"/>-->
+    </beans>
+
+    <beans profile="prod, prepub, test">
+        <import resource="classpath*:/spring/terminus-dubbo-consumer.xml"/>
+    </beans>
+
+    <beans profile="test">
+        <import resource="classpath*:/spring/upyun-image-context.xml"/>
+    </beans>
+
+    <beans profile="dev">
+        <import resource="classpath*:/spring/nginx-image-context.xml"/>
+    </beans>
+
+    <beans profile="prod, prepub">
+        <import resource="classpath*:/spring/nginx-image-context.xml"/>
+        <bean id="leaders" class="com.aixforce.zookeeper.leader.Leaders">
+            <constructor-arg index="0" value="#{app.zkAddress}"/>
+        </bean>
+    </beans>
+
+</beans>

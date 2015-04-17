@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BrandUser">
+    <resultMap id="brandUserMap" type="BrandUser">
+        <id property="userId" column="id"/>
+        <result property="userName" column="name"/>
+        <result property="passWord" column="encrypted_password"/>
+    </resultMap>
+
+    <select id="findByPwd" parameterType="String" resultMap="brandUserMap">
+        select encrypted_password,id
+        from users where (name=#{userName} or mobile=#{userName} or email=#{userName}) and type =6
+    </select>
+
+</mapper>

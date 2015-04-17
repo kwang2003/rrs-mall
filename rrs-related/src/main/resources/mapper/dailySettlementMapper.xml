@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="DailySettlement">
+    <resultMap id="dailySettlementMap" type="DailySettlement">
+        <id property="id" column="id"/>
+
+        <result property="orderCount" column="order_count"/>
+        <result property="totalEarning" column="total_earning"/>
+        <result property="totalExpenditure" column="total_expenditure"/>
+        <result property="sellerEarning" column="seller_earning"/>
+
+        <result property="rrsCommission" column="rrs_commission"/>
+        <result property="scoreEarning" column="score_earning"/>
+        <result property="presellDeposit" column="presell_deposit"/>
+        <result property="presellCommission" column="presell_commission"/>
+        <result property="thirdPartyCommission" column="third_party_commission"/>
+
+        <result property="confirmedAt" column="confirmed_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="table">
+        rrs_daily_settlements
+    </sql>
+
+    <sql id="columns">
+        order_count, total_earning, total_expenditure, seller_earning,
+        rrs_commission, score_earning, presell_deposit, presell_commission, third_party_commission,
+        confirmed_at, created_at, updated_at
+    </sql>
+
+    <sql id="condition">
+        <where>
+            <if test="confirmedStartAt != null">
+                AND <![CDATA[ confirmed_at >= #{confirmedStartAt} ]]>
+            </if>
+            <if test="confirmedEndAt != null">
+                AND <![CDATA[ confirmed_at < #{confirmedEndAt} ]]>
+            </if>
+        </where>
+    </sql>
+
+
+    <insert id="create" parameterType="DailySettlement" useGeneratedKeys="true" keyProperty="id">
+        insert into <include refid="table"/> (<include refid="columns"/>)
+        values (
+        #{orderCount}, #{totalEarning}, #{totalExpenditure}, #{sellerEarning},
+        #{rrsCommission}, #{scoreEarning}, #{presellDeposit}, #{presellCommission}, #{thirdPartyCommission},
+        #{confirmedAt}, now(), now()
+        )
+    </insert>
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table"/>
+        <include refid="condition" />
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="dailySettlementMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <include refid="condition" />
+        ORDER BY id DESC LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="get" parameterType="long" resultMap="dailySettlementMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where id = #{id}
+    </select>
+
+
+</mapper>

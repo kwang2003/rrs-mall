@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+   -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BrandRlView">
+    <resultMap id="brandRlView" type="BrandRlView">
+        <result property="id" column="id"/>
+        <result property="brandName" column="brandname"/>
+        <result property="shopName" column="shopname"/>
+        <result property="shopId" column="shopid"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="address" column="address"/>
+        <result property="brandLogo" column="brand_logo"/>
+        <result property="domain" column="domain"/>
+        <result property="business" column="business"/>
+        <result property="createTime" column="create_time"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <select id="findYrl" resultMap="brandRlView" parameterType="int">
+        SELECT
+            bck.id,
+            b.`name` AS brandname,
+            s.`name` AS shopname,
+            s.id AS shopid,
+            s.phone,
+            s.email,
+            up.address,
+            bc.brand_logo,
+            '' AS domain,
+            CASE
+        WHEN s.business_id = 1 THEN
+            '家电'
+        WHEN s.business_id = 2 THEN
+            '家具'
+        WHEN s.business_id = 3 THEN
+            '家装'
+        WHEN s.business_id = 4 THEN
+            '家饰'
+        WHEN s.business_id = 5 THEN
+            '净水'
+        END AS business,
+         bck.create_time,
+         CASE
+        WHEN bck.`status` = 0 THEN
+            '已认领'
+        WHEN bck.`status` = 1 THEN
+            '已认领，等待店铺通过'
+        END AS `status`
+        FROM
+            brands b
+        INNER JOIN brand_club bc ON b.id = bc.brand_outer_id
+        INNER JOIN brands_club_key bck ON bc.brand_id = bck.brandClub_id
+        INNER JOIN shops s ON bck.shop_id = s.id
+        LEFT JOIN user_profiles up ON s.user_id = up.user_id where bc.brand_id=#{id}
+    </select>
+
+    <select id="findYrltj" resultMap="brandRlView" parameterType="map">
+        SELECT
+        bck.id,
+        b.`name` AS brandname,
+        s.`name` AS shopname,
+        s.id AS shopid,
+        s.phone,
+        s.email,
+        up.address,
+        bc.brand_logo,
+        '' AS domain,
+        CASE
+        WHEN s.business_id = 1 THEN
+        '家电'
+        WHEN s.business_id = 2 THEN
+        '家具'
+        WHEN s.business_id = 3 THEN
+        '家装'
+        WHEN s.business_id = 4 THEN
+        '家饰'
+        WHEN s.business_id = 5 THEN
+        '净水'
+        END AS business,
+        bck.create_time,
+        CASE
+        WHEN bck.`status` = 0 THEN
+        '已认领'
+        WHEN bck.`status` = 1 THEN
+        '已认领，等待店铺通过'
+        END AS `status`
+        FROM
+        brands b
+        INNER JOIN brand_club bc ON b.id = bc.brand_outer_id
+        INNER JOIN brands_club_key bck ON bc.brand_id = bck.brandClub_id
+        INNER JOIN shops s ON bck.shop_id = s.id
+        LEFT JOIN user_profiles up ON s.user_id = up.user_id where bc.brand_id=#{id} and s.`name` like CONCAT('%',#{shopname},'%')
+    </select>
+
+
+    <select id="findYrl2" resultMap="brandRlView" parameterType="int">
+        SELECT
+        bck.id,
+        b.`name` AS brandname,
+        s.`name` AS shopname,
+        s.id AS shopid,
+        s.phone,
+        s.email,
+        up.address,
+        bc.brand_logo,
+        '' AS domain,
+        CASE
+        WHEN s.business_id = 1 THEN
+        '家电'
+        WHEN s.business_id = 2 THEN
+        '家具'
+        WHEN s.business_id = 3 THEN
+        '家装'
+        WHEN s.business_id = 4 THEN
+        '家饰'
+        WHEN s.business_id = 5 THEN
+        '净水'
+        END AS business,
+        bck.create_time,
+        CASE
+        WHEN bck.`status` = 0 THEN
+        '已认领'
+        WHEN bck.`status` = 1 THEN
+        '已认领，等待店铺通过'
+        END AS `status`
+        FROM
+        brands b
+        INNER JOIN brand_club bc ON b.id = bc.brand_outer_id
+        INNER JOIN brands_club_key bck ON bc.brand_id = bck.brandClub_id
+        INNER JOIN shops s ON bck.shop_id = s.id
+        LEFT JOIN user_profiles up ON s.user_id = up.user_id where bc.brand_id=#{id} and  bck.`status`=0
+    </select>
+
+</mapper>

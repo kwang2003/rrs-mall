@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="LogisticsInfo">
+    <resultMap id="logisticsInfoMap" type="LogisticsInfo">
+        <id property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="senderId" column="sender_id"/>
+        <result property="senderName" column="sender_name"/>
+        <result property="sendFee" column="send_fee"/>
+        <result property="logisticsStatus" column="logistics_status"/>
+        <result property="companyName" column="company_name"/>
+        <result property="freightNote" column="freight_note"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        order_id, sender_id, sender_name,send_fee,logistics_status,company_name,freight_note,created_at, updated_at
+    </sql>
+
+    <select id="findById" parameterType="long" resultMap="logisticsInfoMap">
+        select id,
+        <include refid="columns"/>
+        from logistics_infos where id=#{id}
+    </select>
+
+    <select id="findByOrderId" parameterType="long" resultMap="logisticsInfoMap">
+        select id,
+        <include refid="columns"/>
+        from logistics_infos where order_id=#{orderId}
+    </select>
+
+    <insert id="create" parameterType="LogisticsInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into logistics_infos (<include refid="columns"/>) values (#{orderId},#{senderId},#{senderName},
+        #{sendFee},
+        #{logisticsStatus},#{companyName},#{freightNote},now(), now())
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        delete from logistics_infos  where id=#{id}
+    </delete>
+
+    <update id="updateByOrderId" parameterType="LogisticsInfo">
+        update logistics_infos
+        <set>
+            <if test="sendFee!=null">
+                send_fee=#{sendFee},
+            </if>
+            <if test="logisticsStatus!=null">
+                logistics_status= #{logisticsStatus},
+            </if>
+            <if test="companyName!=null">
+                company_name=#{companyName},
+            </if>
+            <if test="freightNote!=null">
+                freight_note=#{freightNote},
+            </if>
+            updated_at=now()
+        </set>
+        where order_id=#{orderId}
+    </update>
+
+
+</mapper>

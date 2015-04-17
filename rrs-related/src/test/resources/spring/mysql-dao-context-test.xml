@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2012 杭州端点网络科技有限公司
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+          http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+
+    <util:properties id="app" location="classpath:app.properties"/>
+
+    <context:component-scan base-package="com.aixforce.rrs.settle.dao"/>
+
+    <context:component-scan base-package="com.aixforce.rrs.presale.dao"/>
+
+    <!-- 优惠码查询测试dao-->
+    <context:component-scan base-package="com.aixforce.rrs.code.dao"/>
+
+    <!-- 抢购活动dao-->
+    <context:component-scan base-package="com.aixforce.rrs.buying.dao"/>
+    <!-- 提交净水测试dao -->
+    <context:component-scan base-package="com.aixforce.rrs.purify.dao"/>
+
+    <!-- MyBatis 配置 -->
+    <bean id="sqlSessionFactory" class="com.aixforce.mybatis.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocations" value="classpath*:/spring/mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath*:/mapper/*Mapper.xml"/>
+    </bean>
+
+    <!-- 事务管理器配置, 使用jdbc事务 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- 使用annotation定义事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+
+    <!-- JSR303 Validator -->
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+
+    <!-- 嵌入式内存中数据库 -->
+    <jdbc:embedded-database id="dataSource" type="H2">
+        <jdbc:script location="classpath:sql/h2/user.sql"/>
+        <jdbc:script location="classpath:sql/h2/item.sql"/>
+        <jdbc:script location="classpath:sql/h2/shop.sql"/>
+        <jdbc:script location="classpath:sql/h2/settlement.sql"/>
+        <jdbc:script location="classpath:sql/h2/presale.sql"/>
+        <jdbc:script location="classpath:sql/h2/coupon.sql"/>
+        <jdbc:script location="classpath:sql/h2/buying-activity.sql"/>
+        <!-- 净水测试数据配置 -->
+        <jdbc:script location="classpath:sql/h2/purify.sql"/>
+    </jdbc:embedded-database>
+</beans>

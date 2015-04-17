@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="MockedAlipayTrans">
+    <resultMap id="mockedAlipayTransMap" type="MockedAlipayTrans">
+        <id property="id" column="id"/>
+        <result property="balance" column="balance"/>
+        <result property="bankAccountName" column="bank_account_name"/>
+        <result property="bankAccountNo" column="bank_account_no"/>
+        <result property="bankName" column="bank_name"/>
+        <result property="buyerName" column="buyer_name"/>
+        <result property="buyerAccount" column="buyer_account"/>
+
+        <result property="currency" column="currency"/>
+        <result property="depositBankNo" column="deposit_bank_no"/>
+        <result property="income" column="income"/>
+        <result property="iwAccountLogId" column="iw_account_log_id"/>
+        <result property="memo" column="memo"/>
+        <result property="merchantOutOrderNo" column="merchant_out_order_no"/>
+
+        <result property="otherAccountEmail" column="other_account_email"/>
+        <result property="otherAccountFullname" column="other_account_fullname"/>
+        <result property="otherUserId" column="other_user_id"/>
+        <result property="outcome" column="outcome"/>
+
+        <result property="partnerId" column="partner_id"/>
+        <result property="sellerAccount" column="seller_account"/>
+        <result property="sellerFullname" column="seller_fullname"/>
+        <result property="serviceFee" column="service_fee"/>
+        <result property="serviceFeeRatio" column="service_fee_ratio"/>
+        <result property="totalFee" column="total_fee"/>
+        <result property="tradeNo" column="trade_no"/>
+
+        <result property="tradeRefundAmount" column="trade_refund_amount"/>
+        <result property="transAccount" column="trans_account"/>
+        <result property="transCodeMsg" column="trans_code_msg"/>
+        <result property="transDate" column="trans_date"/>
+        <result property="transOutOrderNo" column="trans_out_order_no"/>
+
+        <result property="subTransCodeMsg" column="sub_trans_code_msg"/>
+        <result property="signProductName" column="sign_product_name"/>
+        <result property="rate" column="rate"/>
+
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+
+    <sql id="table">
+        mocked_alipay_trans
+    </sql>
+
+
+    <sql id="columns">
+        balance, bank_account_name, bank_account_no, bank_name, buyer_name, buyer_account,
+        currency, deposit_bank_no, income, iw_account_log_id, memo, merchant_out_order_no,
+        other_account_email, other_account_fullname, other_user_id, outcome,
+        partner_id, seller_account, seller_fullname, service_fee,  service_fee_ratio,  total_fee, trade_no,
+        trade_refund_amount, trans_account, trans_code_msg, trans_date, trans_out_order_no,
+        sub_trans_code_msg, sign_product_name, rate,
+        created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="MockedAlipayTrans" useGeneratedKeys="true" keyProperty="id">
+        insert into <include refid="table"/> (<include refid="columns"/>)
+        values
+        (
+          #{balance}, #{bankAccountName}, #{bankAccountNo}, #{bankName}, #{buyerName}, #{buyerAccount},
+          #{currency}, #{depositBankNo}, #{income}, #{iwAccountLogId}, #{memo}, #{merchantOutOrderNo},
+          #{otherAccountEmail}, #{otherAccountFullname}, #{otherUserId}, #{outcome},
+          #{partnerId}, #{sellerAccount}, #{sellerFullname}, #{serviceFee}, #{serviceFeeRatio}, #{totalFee}, #{tradeNo},
+          #{tradeRefundAmount}, #{transAccount}, #{transCodeMsg}, #{transDate}, #{transOutOrderNo},
+          #{subTransCodeMsg}, #{signProductName}, #{rate},
+          now(), now()
+        )
+    </insert>
+
+    <select id="get" parameterType="long" resultMap="mockedAlipayTransMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where id = #{id}
+    </select>
+
+    <select id="findByTradeNo" parameterType="string" resultMap="mockedAlipayTransMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where trade_no = #{tradeNo}
+    </select>
+
+    <select id="findByMerchantNo" parameterType="string" resultMap="mockedAlipayTransMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where merchant_out_order_no = #{merchantOutOrderNo}
+    </select>
+
+    <select id="getBy" parameterType="MockedAlipayTrans" resultMap="mockedAlipayTransMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <where>
+            <if test="iwAccountLogId != null">
+                AND <![CDATA[ iw_account_log_id = #{iwAccountLogId} ]]>
+            </if>
+        </where>
+        limit 1
+    </select>
+
+
+    <sql id="condition">
+        <where>
+            <if test="criteria != null and criteria.iwAccountLogId != null">
+                AND <![CDATA[ iw_account_log_id = #{criteria.iwAccountLogId} ]]>
+            </if>
+            <if test="criteria != null and criteria.tradeNo != null">
+                AND <![CDATA[ trade_no = #{criteria.tradeNo} ]]>
+            </if>
+            <if test="criteria != null and criteria.merchantOutOrderNo != null">
+                AND <![CDATA[ merchant_out_order_no = #{criteria.merchantOutOrderNo} ]]>
+            </if>
+
+            <if test="createdStartAt != null">
+                AND <![CDATA[ created_at >= #{createdStartAt} ]]>
+            </if>
+            <if test="createdEndAt != null">
+                AND <![CDATA[ created_at < #{createdEndAt} ]]>
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table"/>
+        <include refid="condition"/>
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="mockedAlipayTransMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <include refid="condition"/>
+        order by id desc
+        <if test="offset != null and limit != null">
+            limit #{offset},#{limit}
+        </if>
+    </select>
+
+
+</mapper>

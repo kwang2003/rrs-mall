@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+   -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserProfile">
+    <resultMap id="userProfileMap" type="UserProfile">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="realName" column="real_name"/>
+        <result property="idCardNum" column="id_card_num"/>
+        <result property="birthday" column="birthday"/>
+        <result property="gender" column="gender"/>
+        <result property="provinceId" column="province_id"/>
+        <result property="cityId" column="city_id"/>
+        <result property="qq" column="qq"/>
+        <result property="buyerCredit" column="buyer_credit"/>
+        <result property="sellerCredit" column="seller_credit"/>
+        <result property="description" column="description"/>
+        <result property="extra" column="extra"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="phone" column="phone"/>
+        <result property="regionId" column="region_id"/>
+        <result property="address" column="address"/>
+    </resultMap>
+    <sql id="columns">
+        user_id,real_name, id_card_num,
+        birthday,gender,province_id,city_id,buyer_credit,seller_credit,description,extra,created_at,updated_at,phone,region_id,address
+    </sql>
+    <select id="findByUserId" parameterType="long" resultMap="userProfileMap">
+        select id,
+        <include refid="columns"/>
+        from user_profiles where user_id=#{userId}
+    </select>
+    <select id="findByUserIds" parameterType="list" resultMap="userProfileMap">
+        select id,
+        <include refid="columns"/>
+        from user_profiles where user_id in
+        <foreach collection="list" open="(" separator=","
+                 close=")" item="item">
+            #{item}
+        </foreach>
+    </select>
+    <!--  插入用户： 1.由数据库生成id并赋值到user对象   -->
+    <insert id="create" parameterType="UserProfile" useGeneratedKeys="true" keyProperty="id">
+        insert into user_profiles (
+        <include refid="columns"/>
+        ) values (#{userId},#{realName},#{idCardNum},#{birthday}, #{gender},#{provinceId},#{cityId},#{buyerCredit},
+        #{sellerCredit},#{description},#{extra},now(),now(),#{phone},#{regionId},#{address})
+    </insert>
+    <update id="updateByUserId" parameterType="UserProfile">
+        update user_profiles
+        <set>
+            updated_at=now(),
+            <if test="realName!= null">real_name=#{realName},</if>
+            <if test="idCardNum != null">id_card_num=#{idCardNum},</if>
+            <if test="birthday != null">birthday=#{birthday},</if>
+            <if test="gender != null">gender=#{gender},</if>
+            <if test="provinceId !=null">province_id=#{provinceId},</if>
+            <if test="cityId !=null">city_id=#{cityId},</if>
+            <if test="buyerCredit !=null">buyer_credit=#{buyerCredit},</if>
+            <if test="sellerCredit !=null">seller_credit=#{sellerCredit},</if>
+            <if test="description!=null">description=#{description},</if>
+            <if test="extra!=null">extra=#{extra},</if>
+            <if test="phone!=null">phone=#{phone},</if>
+            <if test="regionId!=null">region_id=#{regionId},</if>
+            <if test="address!=null">address=#{address},</if>
+        </set>
+        where user_id=#{userId}
+    </update>
+    <delete id="deleteByUserId" parameterType="long">delete from user_profiles where user_id=#{userId}</delete>
+</mapper>

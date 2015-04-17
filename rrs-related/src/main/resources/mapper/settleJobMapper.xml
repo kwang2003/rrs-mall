@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SettleJob">
+    <resultMap id="settleJobMap" type="SettleJob">
+        <id property="id" column="id"/>
+        <result property="dependencyId" column="dependency_id"/>
+        <result property="type" column="type"/>
+        <result property="status" column="status"/>
+        <result property="cost" column="cost"/>
+        <result property="doneAt" column="done_at"/>
+        <result property="tradedAt" column="traded_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        dependency_id, `type`, status, `cost`, done_at, traded_at, created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="SettleJob" useGeneratedKeys="true" keyProperty="id">
+        insert into rrs_settle_jobs (<include refid="columns"/>)
+        values
+        (
+        #{dependencyId},
+        #{type},
+        0,
+        -1,
+        #{doneAt},
+        #{tradedAt},
+        now(),
+        now());
+    </insert>
+
+    <select id="get" parameterType="long" resultMap="settleJobMap">
+        select id,
+        <include refid="columns" />
+        from rrs_settle_jobs
+        where id = #{id}
+    </select>
+
+    <select id="getByDoneAtAndJobType" parameterType="map" resultMap="settleJobMap">
+        select id,
+        <include refid="columns" />
+        from rrs_settle_jobs
+        where done_at = #{doneAt} and type = #{type}
+        order by done_at asc limit 0,1
+    </select>
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from rrs_settle_jobs
+        <where>
+            <if test="doneStartAt != null">
+                AND <![CDATA[ done_at >= #{doneStartAt} ]]>
+            </if>
+            <if test="doneEndAt != null">
+                AND <![CDATA[ done_at < #{doneEndAt}]]>
+            </if>
+            <if test="tradeStartAt != null">
+                AND <![CDATA[ trade_at >= #{tradeStartAt} ]]>
+            </if>
+            <if test="tradeEndAt != null">
+                AND <![CDATA[ trade_at < #{tradeEndAt}]]>
+            </if>
+        </where>
+    </select>
+
+
+
+
+    <select id="unfinished" parameterType="map" resultMap="settleJobMap" >
+        select id,
+        <include refid="columns" />
+        from rrs_settle_jobs
+        where status = 0
+    </select>
+
+    <update id="fail" parameterType="long">
+         UPDATE rrs_settle_jobs
+        <set>
+            status = -1,
+            updated_at = now(),
+        </set>
+        WHERE id=#{id}
+    </update>
+
+
+    <update id="ing" parameterType="long">
+        UPDATE rrs_settle_jobs
+        <set>
+            status = 1,
+            updated_at = now(),
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="done" parameterType="map">
+        UPDATE rrs_settle_jobs
+        <set>
+            `cost` = #{cost},
+            status = 2,
+            updated_at = now(),
+        </set>
+        WHERE id=#{id}
+    </update>
+</mapper>

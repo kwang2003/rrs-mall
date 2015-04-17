@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2012 杭州端点网络科技有限公司
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <context:component-scan base-package="com.aixforce.category"/>
+    <context:component-scan base-package="com.aixforce.rrs.purify"/>
+    <context:component-scan base-package="com.aixforce.rrs.presale"/>
+    <context:component-scan base-package="com.aixforce.rrs.code"/>
+    <context:component-scan base-package="com.aixforce.rrs.coupon"/>
+    <context:component-scan base-package="com.aixforce.rrs.grid"/>
+    <context:component-scan base-package="com.aixforce.rrs.settle"/>
+    <context:component-scan base-package="com.aixforce.rrs.buying"/>
+    <context:component-scan base-package="com.aixforce.rrs.predeposit"/>
+    <context:component-scan base-package="com.aixforce.rrs.popularizeurl"/>
+
+    <!-- 显示注册 JDE 客户端实现 -->
+    <bean id="jdeClient" class="com.aixforce.rrs.jde.JdeClientImpl" >
+        <constructor-arg index="0" value="#{app.jdeWriteUrl}"/>
+        <constructor-arg index="1" value="#{app.jdeVoteUrl}" />
+    </bean>
+
+</beans>

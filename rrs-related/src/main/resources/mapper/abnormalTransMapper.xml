@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AbnormalTrans">
+    <resultMap id="abnormalTransMap" type="AbnormalTrans">
+        <id property="id" column="id"/>
+        <result property="settlementId" column="settlement_id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="reason" column="reason"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="table">
+        rrs_abnormal_trans
+    </sql>
+
+    <sql id="columns">
+        settlement_id, order_id, reason, created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="AbnormalTrans" useGeneratedKeys="true" keyProperty="id">
+        insert into <include refid="table"/> (<include refid="columns"/>)
+        values
+        (
+        #{settlementId},
+        #{orderId},
+        #{reason},
+        now(),
+        now()
+        )
+    </insert>
+
+    <select id="get" parameterType="long" resultMap="abnormalTransMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where id = #{id}
+    </select>
+
+</mapper>

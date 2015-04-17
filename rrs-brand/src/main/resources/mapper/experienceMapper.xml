@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Experince">
+    <resultMap id="ExperinceMap" type="com.rrs.arrivegift.model.Experince">
+        <id property="id" column="id"/>
+        <result property="experiencename" column="experiencename"/>
+        <result property="brandId" column="brandId"/>
+        <result property="serviceTime" column="serviceTime"/>
+        <result property="serviceTel" column="serviceTel"/>
+        <result property="trafficLines" column="trafficLines"/>
+        <result property="description" column="description"/>
+        <result property="address" column="address"/>
+        <result property="thumImage" column="thumImage"/>
+        <result property="mainImage" column="mainImage"/>
+        <result property="province" column="province"/>
+        <result property="city" column="city"/>
+        <result property="region" column="region"/>
+        <result property="mapurl" column="mapurl"/>
+        <result property="createDate" column="createDate"/>
+        <result property="creater" column="creater"/>
+        <result property="locationx" column="locationx"/>
+        <result property="locationy" column="locationy"/>
+        <result property="provinceName" column="provinceName"/>
+        <result property="cityName" column="cityName"/>
+        <result property="regionName" column="regionName"/>
+        <result property="shopurl" column="shopurl"/>
+        <result property="experType" column="experType"/>
+        <result property="orderBy" column="orderBy"/>
+        <result property="experUserId" column="experUserId"/>
+        <result property="taxRegisterNo" column="taxRegisterNo"/>
+        <result property="licence" column="licence"/>
+        <result property="certificate" column="certificate"/>
+        <result property="openinglicenses" column="openinglicenses"/>
+        <result property="orgcertificate" column="orgcertificate"/>
+        <result property="frontlicense" column="frontlicense"/>
+        <result property="backlicense" column="backlicense"/>
+        <result property="contractOne" column="contractOne"/>
+        <result property="contractTwo" column="contractTwo"/>
+        <result property="experCode" column="experCode"/>
+        <result property="rate" column="rate"/>
+        <result property="rateone" column="rateone"/>
+        <result property="email" column="email"/>
+        <result property="tele" column="tele"/>
+        <result property="weekday" column="weekday"/>
+        <result property="amStart" column="amStart"/>
+        <result property="amEnd" column="amEnd"/>
+        <result property="pmStart" column="pmStart"/>
+        <result property="pmEnd" column="pmEnd"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <sql id="columns">
+        experiencename,brandId,serviceTime,serviceTel,trafficLines,description,address,thumImage,mainImage,province,city,region,mapurl,createDate,creater,locationx,locationy,provinceName,cityName,regionName,shopurl,experType,orderBy,experUserId,taxRegisterNo,licence,certificate,openinglicenses,orgcertificate,frontlicense,backlicense,contractOne,contractTwo,experCode,rate,rateone,email,tele,weekday,amStart,amEnd,pmStart,pmEnd,status
+    </sql>
+
+    <select id="queryExperinceByMap" resultMap="ExperinceMap" parameterType="map">
+      select id, <include refid="columns"/> from exper_ience
+      where id = #{id}
+    </select>
+
+</mapper>

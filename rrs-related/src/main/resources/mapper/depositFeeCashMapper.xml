@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="DepositFeeCash">
+    <resultMap id="depositFeeCashMap" type="DepositFeeCash">
+        <id property="id" column="id"/>
+        <result property="depositId" column="deposit_id"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="sellerName" column="seller_name"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="shopName" column="shop_name"/>
+        <result property="outerCode" column="outer_code"/>
+        <result property="business" column="business"/>
+
+        <result property="cashFee" column="cash_fee"/>
+        <result property="cashType" column="cash_type"/>
+        <result property="status" column="status"/>
+        <result property="voucher" column="voucher"/>
+        <result property="vouched" column="vouched"/>
+        <result property="synced" column="synced"/>
+        <result property="syncedAt" column="synced_at"/>
+        <result property="vouchedAt" column="vouched_at"/>
+
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="table">
+        rrs_deposit_fee_cash
+    </sql>
+
+
+    <sql id="columns">
+        deposit_id, seller_id, seller_name, shop_id, shop_name, outer_code, business,
+        cash_fee, cash_type, status, voucher, vouched, synced, synced_at, vouched_at,
+        created_at, updated_at
+    </sql>
+
+
+    <insert id="create" parameterType="DepositFeeCash" useGeneratedKeys="true" keyProperty="id">
+        insert into <include refid="table"/> (<include refid="columns"/>)
+        values
+        (
+          #{depositId}, #{sellerId}, #{sellerName}, #{shopId}, #{shopName}, #{outerCode}, #{business},
+          #{cashFee}, #{cashType}, #{status}, #{voucher}, #{vouched}, #{synced}, #{syncedAt}, #{vouchedAt},
+          now(), now()
+        )
+    </insert>
+
+    <sql id="condition" >
+        <where>
+            <if test="criteria != null and criteria.id != null">
+                AND id = #{criteria.id}
+            </if>
+            <if test="criteria != null and criteria.sellerId != null">
+                AND seller_id = #{criteria.sellerId}
+            </if>
+            <if test="criteria != null and criteria.shopId != null">
+                AND shop_id = #{criteria.shopId}
+            </if>
+            <if test="criteria != null and criteria.status != null">
+                AND status = #{criteria.status}
+            </if>
+            <if test="criteria != null and criteria.synced != null">
+                AND synced = #{criteria.synced}
+            </if>
+            <if test="criteria != null and criteria.vouched != null">
+                AND vouched = #{criteria.vouched}
+            </if>
+            <if test="createdStartAt != null">
+                AND <![CDATA[ created_at >= #{createdStartAt} ]]>
+            </if>
+            <if test="createdEndAt != null">
+                AND <![CDATA[ created_at < #{createdEndAt} ]]>
+            </if>
+        </where>
+    </sql>
+
+    <select id="get" parameterType="long" resultMap="depositFeeCashMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where id = #{id}
+    </select>
+
+    <select id="getByDepositId" parameterType="long" resultMap="depositFeeCashMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where deposit_id = #{id}
+    </select>
+
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table"/>
+        <include refid="condition" />
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="depositFeeCashMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <include refid="condition" />
+        ORDER BY id DESC LIMIT #{offset}, #{limit}
+    </select>
+
+    <update id="update" parameterType="DepositFeeCash">
+        update <include refid="table"/>
+        <set>
+            updated_at = now(),
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="synced != null">
+                synced = #{synced},
+            </if>
+            <if test="syncedAt != null">
+                synced_at = #{syncedAt},
+            </if>
+            <if test="cashFee != null">
+                cash_fee = #{cashFee},
+            </if>
+            <if test="voucher != null">
+                voucher = #{voucher},
+            </if>
+            <if test="vouched != null">
+                vouched = #{vouched},
+            </if>
+            <if test="vouchedAt != null">
+                vouched_at = #{vouchedAt},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="batchUpdateOuterCode" parameterType="map">
+        update <include refid="table"/>
+        set outer_code = #{outerCode}
+        where seller_id = #{sellerId}
+    </update>
+
+
+</mapper>

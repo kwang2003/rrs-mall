@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>rrs-mall</artifactId>
+        <groupId>com.aixforce</groupId>
+        <version>dev</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>rrs-kjtpay-api</artifactId>
+    <version>${rrs.version}</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>iTrusCertAPI_2.9.2_jdk15</groupId>
+            <artifactId>iTrusCertAPI_2.9.2_jdk15</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aixforce</groupId>
+            <artifactId>aixforce-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>bcprov-jdk15-1.45</groupId>
+            <artifactId>bcprov-jdk15-1.45</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>bcmail-jdk15-1.45</groupId>
+            <artifactId>bcmail-jdk15-1.45.jar</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>dubbo</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+        </dependency>
+    </dependencies>
+</project>

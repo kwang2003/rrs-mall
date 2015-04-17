@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="LogisticsRevert">
+    <resultMap id="logisticsRevertMap" type="LogisticsRevert">
+        <id property="id" column="id"/>
+        <result property="orderItemId" column="order_item_id"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="buyerName" column="buyer_name"/>
+        <result property="sendFee" column="send_fee"/>
+        <result property="logisticsStatus" column="logistics_status"/>
+        <result property="companyName" column="company_name"/>
+        <result property="freightNote" column="freight_note"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        order_item_id, buyer_id, buyer_name,send_fee,logistics_status,company_name,freight_note,created_at, updated_at
+    </sql>
+
+    <select id="findById" parameterType="long" resultMap="logisticsRevertMap">
+        select id,
+        <include refid="columns"/>
+        from logistics_reverts where id=#{id}
+    </select>
+
+    <select id="findByOrderItemId" parameterType="long" resultMap="logisticsRevertMap">
+        select id,
+        <include refid="columns"/>
+        from logistics_reverts where order_item_id=#{orderItemId}
+    </select>
+
+    <insert id="create" parameterType="LogisticsRevert" useGeneratedKeys="true" keyProperty="id">
+        insert into logistics_reverts (<include refid="columns"/>) values (#{orderItemId},#{buyerId},#{buyerName},
+        #{sendFee},
+        #{logisticsStatus}, #{companyName},#{freightNote},now(), now())
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        delete from logistics_reverts  where id=#{id}
+    </delete>
+
+    <update id="update" parameterType="LogisticsRevert">
+        update logistics_reverts
+        <set>
+            <if test="orderItemId!=null">
+                order_item_id=#{orderItemId},
+            </if>
+            <if test="buyerId!=null">
+                buyer_id=#{buyerId},
+            </if>
+            <if test="buyerName!=null">
+                buyer_name=#{buyerName},
+            </if>
+            <if test="sendFee!=null">
+                send_fee=#{sendFee},
+            </if>
+            <if test="logisticsStatus!=null">
+                logistics_status= #{logisticsStatus},
+            </if>
+            <if test="companyName!=null">
+                company_name=#{companyName},
+            </if>
+            <if test="freightNote!=null">
+                freight_note=#{freightNote},
+            </if>
+            updated_at=now()
+        </set>
+        where id=#{id}
+    </update>
+
+
+</mapper>

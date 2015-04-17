@@ -1,0 +1,77 @@
+#
+# typical syntax
+# auths:
+#   - url: /magic/url
+#     types:
+#       - BIG_BROTHER
+#       - BIG_SISTER
+#     roles:
+#       - BOSS
+#       - WTF
+#
+auths:
+  - url : /index
+    types:
+      - SITE_OWNER
+      - FINANCE
+      - WHOLESALER
+
+  - url : /common/.*
+    types:
+      - SITE_OWNER
+      - WHOLESALER
+
+  - url : /orders/.*
+    types:
+      - SITE_OWNER
+      - FINANCE
+      - WHOLESALER
+
+  - url : /trade/.*
+    types:
+      - FINANCE
+
+  - url : /operations/.*
+    types:
+      - SITE_OWNER
+      - WHOLESALER
+
+  - url : /api/orders/adminView
+    types:
+      - SITE_OWNER
+      - WHOLESALER
+
+  - url : /api/admin/preSales[\w\W]*
+    types:
+      - SITE_OWNER
+      - WHOLESALER
+
+  - url : /api/admin/\w*[cC]ategories.*
+    types:
+      - SITE_OWNER
+      - WHOLESALER
+
+  - url : /admins/.*
+    types:
+      - ADMIN
+
+  - url : /promotion/.*
+    types:
+      - ADMIN
+      - SITE_OWNER
+
+  - url : /images/user
+    types:
+      - ADMIN
+      - SITE_OWNER
+      - WHOLESALER
+
+  - url : /api/design/.*
+    types :
+      - ADMIN
+      - SITE_OWNER
+      - WHOLESALER
+
+  - url : /api/user/.*
+    types:
+      - ALL

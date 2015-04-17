@@ -1,0 +1,27 @@
+/login                    :post
+/api/user/login           :post
+/api/brandUser/login      :post
+/api/user/signup          :post
+/api/user/forgot-password :post
+/api/user/sms             :get
+/api/user/verify          :get
+/api/cart                 :post
+/api/auto/.*              :post,get
+/demo/.*                  :post,get
+/api/extend/.*            :post,get
+/api/eai/.*               :post,get
+
+/api/open/shop/.*              :post,get
+/api/open/item/.*              :post,get
+/api/open/trade/.*             :post,get
+/api/open/logistics/.*             :post,get
+/api/open/user/.*         :post,get
+/api/open/promo/.*        :post,get
+
+/api/open/popu/.*        :post,get
+
+/api/freezePayCallBack/createAndPayNotify  :post,get
+
+/api/freezePayCallBack/createAndPayNotify  :post,get
+
+/api/popUrl/createUrl :post,get

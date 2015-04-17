@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserQuota">
+    <resultMap id="userQuotaMap" type="UserQuota">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="maxImageCount" column="max_image_count"/>
+        <result property="usedImageCount" column="used_image_count"/>
+        <result property="maxImageSize" column="max_image_size"/>
+        <result property="usedImageSize" column="used_image_size"/>
+        <result property="maxWidgetCount" column="max_widget_count"/>
+        <result property="usedWidgetCount" column="used_widget_count"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        user_id,max_image_count,used_image_count,max_image_size,used_image_size,
+        max_widget_count,used_widget_count,created_at,updated_at
+    </sql>
+
+    <select id="findById" parameterType="long" resultMap="userQuotaMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM user_quotas WHERE id=#{id}
+    </select>
+
+    <select id="findByUserId" parameterType="long" resultMap="userQuotaMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM user_quotas WHERE user_id=#{userId}
+    </select>
+
+    <!-- 插入用户： 1.由数据库生成id并赋值到user对象  -->
+    <insert id="create" parameterType="UserQuota" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user_quotas (
+        <include refid="columns"/>
+        )
+        VALUES (#{userId},#{maxImageCount}, #{usedImageCount},#{maxImageSize}, #{usedImageSize},#{maxWidgetCount},
+        #{usedWidgetCount},now(), now())
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM user_quotas WHERE id=#{id}
+    </delete>
+
+    <delete id="deleteByUserId" parameterType="long">
+        DELETE FROM user_quotas WHERE user_id=#{userId}
+    </delete>
+
+    <update id="update" parameterType="UserImage">
+        update user_quotas
+        <set>
+            updated_at=now(),
+            <if test="maxImageCount!= null">max_image_count=#{maxImageCount},</if>
+            <if test="usedImageCount != null">used_image_count=#{usedImageCount},</if>
+            <if test="maxImageSize != null">max_image_size=#{maxImageSize},</if>
+            <if test="usedImageSize !=null">used_image_size=#{usedImageSize},</if>
+            <if test="maxWidgetCount !=null">max_widget_count=#{maxWidgetCount},</if>
+            <if test="usedWidgetCount !=null">used_widget_count=#{usedWidgetCount},</if>
+        </set>
+        where user_id=#{userId}
+    </update>
+
+    <update id="delta" parameterType="map">
+        update user_quotas
+        <set>
+            updated_at=now(),
+            <if test="usedImageCountDelta!= null">used_image_count=used_image_count+#{usedImageCountDelta},</if>
+            <if test="usedImageSizeDelta != null">used_image_size=used_image_size+#{usedImageSizeDelta},</if>
+            <if test="usedWidgetCountDelta !=null">used_widget_count=used_widget_count+#{usedWidgetCountDelta},</if>
+        </set>
+        where user_id=#{userId}
+    </update>
+
+</mapper>

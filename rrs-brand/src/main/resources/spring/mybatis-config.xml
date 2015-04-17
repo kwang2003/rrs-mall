@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2012 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <typeAliases>
+        <!--item related entity-->
+        <typeAlias alias="BrandClub"                type="com.rrs.brand.model.BrandClub"/>
+        <typeAlias alias="BrandsClubKey"            type="com.rrs.brand.model.BrandsClubKey"/>
+        <typeAlias alias="BrandClubProduct"         type="com.rrs.brand.model.BrandClubProduct"/>
+        <typeAlias alias="BrandClubProductType"     type="com.rrs.brand.model.BrandClubProductType"/>
+        <typeAlias alias="BrandClubSlide"           type="com.rrs.brand.model.BrandClubSd"/>
+        <typeAlias alias="BrandClubType"            type="com.rrs.brand.model.BrandClubType"/>
+        <typeAlias alias="BrandRlView"              type="com.rrs.brand.model.BrandRlView"/>
+        <typeAlias alias="BrandUserAnnouncement"    type="com.rrs.brand.model.BrandUserAnnouncement"/>
+        <typeAlias alias="BrandUser"                type="com.rrs.brand.model.BrandUser"/>
+        <typeAlias alias="BrandClubVo"              type="com.rrs.brand.model.BrandClubVo"/>
+        <typeAlias alias="BrandWRlView"             type="com.rrs.brand.model.BrandWRlView"/>
+        <typeAlias alias="RrsBrand"                 type="com.rrs.brand.model.RrsBrand"/>
+        <typeAlias alias="Addresses" type="com.rrs.brand.model.Addresses"/>
+        <typeAlias alias="ExperinceMall" type="com.rrs.brand.model.ExperinceMall"/>
+        <typeAlias alias="ExperMallView" type="com.rrs.brand.model.ExperMallView"/>
+    </typeAliases>
+</configuration>

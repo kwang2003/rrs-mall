@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BrandsSellers">
+
+    <resultMap id="brandsSellersMap" type="BrandsSellers">
+        <result property="brandId" column="brand_id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="sellerName" column="seller_name"/>
+        <result property="shopId" column="shop_id"/>
+    </resultMap>
+
+    <resultMap id="unitBrandMap" type="UnitBrand">
+        <result property="brandId" column="brand_id"/>
+        <result property="brandName" column="brand_name"/>
+    </resultMap>
+
+    <resultMap id="unitSellerMap" type="UnitSeller">
+        <result property="sellerId" column="seller_id"/>
+        <result property="sellerName" column="seller_name"/>
+    </resultMap>
+
+
+    <sql id="columns">
+        brand_id, brand_name, seller_id, seller_name, shop_id
+    </sql>
+
+
+
+    <insert id="create" parameterType="BrandsSellers">
+        INSERT INTO brands_sellers (<include refid="columns"/>) VALUES (#{brandId}, #{brandName}, #{sellerId}, #{sellerName}, #{shopId})
+    </insert>
+
+    <delete id="deleteByBrandIdAndSellerId" parameterType="map">
+        DELETE FROM brands_sellers
+        where brand_id=#{brandId} and seller_id=#{sellerId} limit 1
+    </delete>
+
+    <select id="findOneBy" parameterType="BrandsSellers" resultMap="brandsSellersMap">
+        select
+        <include refid="columns"/>
+        from brands_sellers
+        <where>
+            <if test="sellerId!=null">seller_id=#{sellerId}</if>
+            <if test="brandId!=null">and brand_id=#{brandId}</if>
+        </where>
+        limit 1
+    </select>
+
+    <select id="findBy" parameterType="BrandsSellers" resultMap="brandsSellersMap">
+        select
+        <include refid="columns"/>
+        from brands_sellers
+        <where>
+            <if test="sellerId!=null">seller_id=#{sellerId}</if>
+            <if test="brandId!=null">and brand_id=#{brandId}</if>
+        </where>
+    </select>
+
+    <select id="findSellersByBrand" resultMap="unitSellerMap">
+        select seller_id, seller_name from brands_sellers
+        where brand_id=#{brandId}
+    </select>
+
+    <select id="findBrandsBySeller" resultMap="unitBrandMap">
+        select brand_id, brand_name from brands_sellers
+        where seller_id=#{sellerId}
+    </select>
+
+    <select id="findSellersByBrands" resultMap="unitSellerMap">
+        select seller_id, seller_name from brands_sellers
+        <where>
+            <foreach collection="list" item="id" separator=" or ">
+                brand_id=#{id}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="findShopIdsByBrandId" parameterType="long" resultType="Long">
+        select distinct(shop_id) from  brands_sellers where brand_id=#{brandId}
+    </select>
+</mapper>

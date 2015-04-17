@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2014 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Coupon">
+    <resultMap id="couponMap" type="Coupon">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="shopName" column="shop_name"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="amount" column="amount"/>
+        <result property="useLimit" column="use_limit"/>
+        <result property="type" column="type"/>
+        <result property="status" column="status"/>
+        <result property="taken" column="taken"/>
+        <result property="used" column="used"/>
+        <result property="clicked" column="clicked"/>
+        <result property="startAt" column="start_at"/>
+        <result property="endAt" column="end_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="column">
+        `name`, shop_id, shop_name, seller_id, amount, use_limit, `type`, status,
+        taken, used, clicked,
+        start_at, end_at, created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="Coupon" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO coupons (<include refid="column"/>)
+        VALUES (#{name}, #{shopId}, #{shopName}, #{sellerId}, #{amount}, #{useLimit}, #{type}, #{status},
+        #{taken}, #{used}, #{clicked},
+        #{startAt}, #{endAt}, now(), now());
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        DELETE from coupons WHERE id = #{id}
+    </delete>
+
+    <update id="update" parameterType="Coupon">
+        UPDATE coupons
+        <set>
+            updated_at=now(),
+            <if test="name != null">`name` = #{name},</if>
+            <if test="shopId != null">shop_id = #{shopId},</if>
+            <if test="shopName != null">shop_name = #{shopName},</if>
+            <if test="sellerId != null">seller_id = #{sellerId},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="useLimit != null">use_limit = #{useLimit},</if>
+            <if test="type != null">`type` = #{type},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="taken != null">taken = #{taken},</if>
+            <if test="used != null">used = #{used},</if>
+            <if test="clicked != null">clicked = #{clicked},</if>
+            <if test="startAt != null">start_at = #{startAt},</if>
+            <if test="endAt != null">end_at = #{endAt},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="findById" parameterType="long" resultMap="couponMap">
+        SELECT id, <include refid="column"/> FROM coupons WHERE id = #{id}
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="couponMap">
+        SELECT id, <include refid="column"/> FROM coupons
+        <where>
+            <if test="criteria != null and criteria.sellerId != null">
+                seller_id = #{criteria.sellerId}
+            </if>
+            <if test="criteria != null and criteria.name != null">
+                AND `name` LIKE CONCAT ('%', #{criteria.name}, '%')
+            </if>
+            <if test="criteria != null and criteria.amount != null">
+                AND amount = #{criteria.amount}
+            </if>
+            <if test="criteria != null and criteria.status != null">
+                AND status = #{criteria.status}
+            </if>
+        </where>
+        ORDER BY id DESC limit #{offset}, #{limit}
+    </select>
+
+    <select id="findAllBy" parameterType="Coupon" resultMap="couponMap">
+        SELECT id, <include refid="column"/> FROM coupons
+        <where>
+            <if test="sellerId != null">seller_id = #{sellerId}</if>
+            <if test="name != null">AND `name` LIKE CONCAT ('%', #{name}, '%')</if>
+            <if test="amount != null">AND amount = #{amount}</if>
+            <if test="status != null">AND status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="countOf" parameterType="map" resultType="long">
+        SELECT COUNT(1) FROM coupons
+        <where>
+            <if test="sellerId != null">
+                seller_id = #{sellerId}
+            </if>
+            <if test="name != null">
+                AND name LIKE CONCAT ('%', #{name}, '%')
+            </if>
+            <if test="amount != null">
+                AND amount = #{amount}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+</mapper>

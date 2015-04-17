@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ItemService">
+
+    <sql id="relation_ins_columns">
+        tmp_id,
+        tmp_name,
+        item_id,
+        is_delete,
+        created_at,
+        updated_at
+    </sql>
+
+    <select id="itemServiceCountById" parameterType="long" resultType="int">
+        select count(1) from item_services_tmp_item
+        where item_id = #{itemId}
+        and is_delete = 0
+    </select>
+
+    <select id="findTemplateByItemId" parameterType="long" resultType="string">
+        select tmp_id
+        from item_services_tmp_item
+        where item_id = #{itemId}
+        and is_delete = 0
+    </select>
+
+    <insert id="saveRelation" parameterType="map" keyProperty="id">
+        insert into item_services_tmp_item (<include refid="relation_ins_columns"/>)
+        values (
+        #{tempId}, #{tempName}, #{itemId}, 0, now(), now()
+        )
+    </insert>
+
+    <select id="countItemTempBind" parameterType="map" resultType="long">
+        select count(1)
+        from item_services_tmp_item
+        where is_delete = 0
+        and tmp_id = #{tempId}
+        and item_id = #{itemId}
+    </select>
+
+    <update id="deleteRelation" parameterType="Long">
+        update item_services_tmp_item
+        set is_delete = '1'
+        where item_Id = #{itemId}
+    </update>
+
+</mapper>

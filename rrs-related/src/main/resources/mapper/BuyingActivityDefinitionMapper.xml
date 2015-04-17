@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2014 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BuyingActivityDefinition">
+    <resultMap id="BuyingActivityDefinitionMap" type="BuyingActivityDefinition">
+        <id property="id" column="id"/>
+        <result property="activityName" column="activity_name"/>
+        <result property="activityStartAt" column="activity_start_at"/>
+        <result property="activityEndAt" column="activity_end_at"/>
+        <result property="orderStartAt" column="order_start_at"/>
+        <result property="orderEndAt" column="order_end_at"/>
+        <result property="payLimit" column="pay_limit"/>
+        <result property="status" column="status"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="sellerName" column="sellerName"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="shopName" column="shopName"/>
+        <result property="businessId" column="business_id"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="column">
+        activity_name, activity_start_at, activity_end_at, order_start_at, order_end_at, pay_limit, status,seller_id,seller_name,
+        shop_id,shop_name,business_id,created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="BuyingActivityDefinition" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO buying_activity_defs (<include refid="column"/>)
+        VALUES (#{activityName}, #{activityStartAt}, #{activityEndAt}, #{orderStartAt}, #{orderEndAt}, #{payLimit}, #{status},
+        #{sellerId},#{sellerName},#{shopId},#{shopName},#{businessId},now(), now());
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        DELETE from buying_activity_defs WHERE id = #{id}
+    </delete>
+
+    <update id="update" parameterType="BuyingActivityDefinition">
+        UPDATE buying_activity_defs
+        <set>
+            updated_at=now(),
+            <if test="activityName != null">activity_name = #{activityName},</if>
+            <if test="activityStartAt != null">activity_start_at = #{activityStartAt},</if>
+            <if test="activityEndAt != null">activity_end_at = #{activityEndAt},</if>
+            <if test="orderStartAt != null">order_start_at = #{orderStartAt},</if>
+            <if test="orderEndAt != null">order_end_at = #{orderEndAt},</if>
+            <if test="payLimit != null">pay_limit = #{payLimit},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sellerId != null">seller_id = #{sellerId},</if>
+            <if test="sellerName != null">seller_name = #{sellerName},</if>
+            <if test="shopId != null">shop_id = #{shopId},</if>
+            <if test="shopName != null">shop_name = #{shopName},</if>
+            <if test="businessId != null">business_id = #{businessId},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="findById" parameterType="long" resultMap="BuyingActivityDefinitionMap">
+        SELECT id, <include refid="column"/> FROM buying_activity_defs WHERE id = #{id}
+    </select>
+
+    <select id="count" parameterType="map" resultType="long">
+        select count(1)
+        from buying_activity_defs
+        <where>
+            <if test="activityName!=null">activity_name like concat('%', #{activityName},'%')</if>
+            <if test="startAt!=null"> AND <![CDATA[ created_at >= #{startAt} ]]> </if>
+            <if test="endAt!=null"> AND <![CDATA[ created_at <= #{endAt} ]]> </if>
+            <if test="status!=null"> AND status =#{status}</if>
+            <if test="sellerId!=null"> AND seller_id =#{sellerId}</if>
+            <if test="businessId!=null"> AND business_id =#{businessId}</if>
+        </where>
+    </select>
+
+    <select id="paging" parameterType="map" resultMap="BuyingActivityDefinitionMap">
+        select id,
+        <include refid="column"/>
+        from buying_activity_defs
+        <where>
+            <if test="activityName!=null">activity_name like concat('%', #{activityName},'%')</if>
+            <if test="startAt!=null"> AND <![CDATA[ created_at >= #{startAt} ]]> </if>
+            <if test="endAt!=null"> AND <![CDATA[ created_at <= #{endAt} ]]> </if>
+            <if test="status!=null"> AND status =#{status}</if>
+            <if test="sellerId!=null"> AND seller_id =#{sellerId}</if>
+            <if test="businessId!=null"> AND business_id =#{businessId}</if>
+        </where>
+        ORDER BY id DESC
+        limit #{offset},#{limit}
+    </select>
+
+
+    <update id="updateToRuning">
+        UPDATE buying_activity_defs
+        <set>
+            updated_at=now(),
+            status = 3
+        </set>
+        WHERE status = 2 AND <![CDATA[ activity_start_at < #{now} ]]> AND <![CDATA[ #{now} < activity_end_at ]]>
+    </update>
+
+
+    <update id="updateToFinish">
+        UPDATE buying_activity_defs
+        <set>
+            updated_at=now(),
+            status = 4
+        </set>
+        WHERE status = 3 AND <![CDATA[ #{now} > activity_end_at ]]>
+    </update>
+
+    <update id="updateToStop">
+        UPDATE buying_activity_defs
+        <set>
+            updated_at=now(),
+            status = 5
+        </set>
+        WHERE (status = 4 OR status = 3) AND <![CDATA[ #{now} > order_end_at ]]>
+    </update>
+
+    <select id="findAboutToStop" resultMap="BuyingActivityDefinitionMap">
+        SELECT id,
+        <include refid="column"/>
+        from buying_activity_defs
+        WHERE (status = 4 OR status = 3) AND <![CDATA[ #{now} > order_end_at ]]>
+    </select>
+
+</mapper>

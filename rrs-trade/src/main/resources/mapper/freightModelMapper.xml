@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FreightModel">
+    <resultMap id="freightModelMap" type="FreightModel">
+        <id property="id" column="id"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="modelName" column="model_name"/>
+        <result property="countWay" column="count_way"/>
+        <result property="costWay" column="cost_way"/>
+        <result property="firstAmount" column="first_amount"/>
+        <result property="firstFee" column="first_fee"/>
+        <result property="addAmount" column="add_amount"/>
+        <result property="addFee" column="add_fee"/>
+        <result property="status" column="status"/>
+        <result property="specialExist" column="special_exist"/>
+        <result property="updatedAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        seller_id, model_name, count_way, cost_way, first_amount, first_fee, add_amount, add_fee, status, special_exist, created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="freightModel" useGeneratedKeys="true" keyProperty="id">
+        insert into freight_models (<include refid="columns"/>) values (#{sellerId},#{modelName},#{countWay}, #{costWay},
+        #{firstAmount}, #{firstFee}, #{addAmount}, #{addFee}, #{status}, #{specialExist}, now(), now())
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        delete from freight_models where id=#{id}
+    </delete>
+
+    <update id="update" parameterType="freightModel">
+        update freight_models
+        <set>
+            <if test="modelName!=null">model_name=#{modelName},</if>
+            <if test="costWay!=null">cost_way=#{costWay},</if>
+            <if test="firstAmount!=null">first_amount=#{firstAmount},</if>
+            <if test="firstFee!=null">first_fee=#{firstFee},</if>
+            <if test="addAmount!=null">add_amount=#{addAmount},</if>
+            <if test="addFee!=null">add_fee=#{addFee},</if>
+            <if test="status!=null">status=#{status},</if>
+            <if test="specialExist!=null">special_exist=#{specialExist},</if>
+            updated_at = now()
+        </set>
+        where id=#{id}
+    </update>
+
+    <select id="findById" parameterType="long" resultMap="freightModelMap">
+        select id, <include refid="columns"/>
+        from freight_models where id=#{id}
+    </select>
+
+    <!-- 通过参数获取商家下的快递模板 -->
+    <select id="findByParams" parameterType="map" resultMap="freightModelMap">
+        select id, <include refid="columns"/>
+        from freight_models
+        <where>
+            seller_id=#{sellerId}
+            and status=1
+            <if test="modelName!=null">
+                and model_name like CONCAT('%', #{modelName} ,'%')
+            </if>
+            <if test="countWay!=null"> and count_way=#{countWay} </if>
+            <if test="costWay!=null"> and cost_way=#{costWay} </if>
+        </where>
+        limit #{offset}, #{size};
+    </select>
+    
+    <select id="countByParams" parameterType="map" resultType="long">
+        select count(1) from freight_models
+        <where>
+            seller_id=#{sellerId}
+            and status=1
+            <if test="modelName!=null">
+                and model_name like CONCAT('%', #{modelName} ,'%')
+            </if>
+            <if test="countWay!=null"> and count_way=#{countWay} </if>
+            <if test="costWay!=null"> and cost_way=#{costWay} </if>
+        </where>
+    </select>
+
+    <!-- 通过商家编号查询所有的模板编号用于绑定 -->
+    <select id="findBySellerId" parameterType="long" resultMap="freightModelMap">
+        select id, <include refid="columns"/>
+        from freight_models
+        where seller_id=#{sellerId} and status=1
+    </select>
+
+    <!-- 判断是否存在同名的模板 -->
+    <select id="existModel" parameterType="map" resultMap="freightModelMap">
+        select id, <include refid="columns"/>
+        from freight_models
+        <where>
+            seller_id=#{sellerId} and model_name=#{modelName}
+            <if test="modelId!=null"> and id!=#{modelId} </if>
+            and status=1
+        </where>
+    </select>
+</mapper>

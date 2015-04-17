@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="DepositFee">
+    <resultMap id="depositFeeMap" type="DepositFee">
+        <id property="id" column="id"/>
+
+        <result property="sellerId" column="seller_id"/>
+        <result property="sellerName" column="seller_name"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="shopName" column="shop_name"/>
+        <result property="outerCode" column="outer_code"/>
+        <result property="business" column="business"/>
+        <result property="deposit" column="deposit"/>
+
+        <result property="type" column="deduct"/>
+        <result property="paymentType" column="payment_type"/>
+        <result property="voucher" column="voucher"/>
+        <result property="receipt" column="receipt"/>
+        <result property="description" column="description"/>
+
+        <result property="auto" column="auto"/>
+        <result property="ordered" column="ordered"/>
+        <result property="synced" column="synced"/>
+        <result property="vouched" column="vouched"/>
+        <result property="receipted" column="receipted"/>
+
+        <result property="orderedAt" column="ordered_at"/>
+        <result property="syncedAt" column="synced_at"/>
+        <result property="vouchedAt" column="vouched_at"/>
+        <result property="receiptedAt" column="receipted_at"/>
+
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        seller_id, seller_name, shop_id, shop_name, outer_code, business, deposit,
+        `type`, payment_type, voucher, receipt, description,
+        auto, ordered, synced, vouched, receipted,
+        ordered_at, synced_at, vouched_at, receipted_at,
+        created_at, updated_at
+    </sql>
+
+    <sql id="table">
+        rrs_deposit_fees
+    </sql>
+
+    <insert id="create" parameterType="DepositFee" useGeneratedKeys="true" keyProperty="id">
+        insert into <include refid="table"/> (<include refid="columns"/>)
+        values
+        (
+        #{sellerId}, #{sellerName}, #{shopId}, #{shopName}, #{outerCode}, #{business}, #{deposit},
+        #{type}, #{paymentType}, #{voucher}, #{receipt}, #{description},
+        #{auto}, 0, 0, 0, 0,
+        #{orderedAt}, #{syncedAt}, #{vouchedAt}, #{receiptedAt},
+        now(), now()
+        );
+    </insert>
+
+    <update id="update" parameterType="DepositFee">
+        update <include refid="table"/>
+        <set>
+            updated_at = now(),
+            <if test="deposit != null">
+                deposit = #{deposit},</if>
+            <if test="type != null">
+                type = #{type},</if>
+            <if test="paymentType != null">
+                payment_type = #{paymentType},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+
+            <if test="voucher != null">
+                voucher = #{voucher},
+            </if>
+            <if test="receipt != null">
+                receipt = #{receipt},
+            </if>
+            <if test="synced != null">
+                synced = #{synced},
+            </if>
+            <if test="vouched != null">
+                vouched = #{vouched},
+            </if>
+            <if test="receipted != null">
+                receipted = #{receipted},
+            </if>
+            <if test="syncedAt != null">
+                receipted_at = #{syncedAt},
+            </if>
+            <if test="vouchedAt != null">
+                vouched_at = #{vouchedAt},
+            </if>
+            <if test="receiptedAt != null">
+                receipted_at = #{receiptedAt},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <select id="get" parameterType="long" resultMap="depositFeeMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/> where id=#{id}
+    </select>
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table"/>
+        <include refid="condition"/>
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="depositFeeMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <include refid="condition"/>
+        order by id desc limit #{offset},#{limit}
+    </select>
+
+
+    <sql id="condition" >
+        <where>
+            <if test="criteria != null and criteria.sellerId != null">
+                and seller_id = #{criteria.sellerId}
+            </if>
+            <if test="criteria != null and criteria.shopId != null">
+                and shop_id = #{criteria.shopId}
+            </if>
+            <if test="criteria != null and criteria.business != null">
+                and business = #{criteria.business}
+            </if>
+            <if test="criteria != null and criteria.type != null">
+                and `type` = #{criteria.type}
+            </if>
+            <if test="criteria != null and criteria.synced != null">
+                and synced = #{criteria.synced}
+            </if>
+            <if test="criteria != null and criteria.vouched != null">
+                and vouched = #{criteria.vouched}
+            </if>
+            <if test="criteria != null and criteria.receipted != null">
+                and receipted = #{criteria.receipted}
+            </if>
+            <if test="gThan != null">
+                and deposit &gt;= #{gThan}
+            </if>
+            <if test="lThan != null">
+                and deposit &lt;= #{lThan}
+            </if>
+            <if test="types != null">
+                and type in
+                <foreach collection="types" separator="," open="("
+                         close=")" item="type">
+                    #{type}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+
+    <select id="countOfDeposits" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table"/>
+        <where>
+            <if test="sellerId != null">
+                seller_id = #{sellerId}
+            </if>
+            <if test="business != null">
+                and business = #{business}
+            </if>
+            and `type` != 3
+        </where>
+    </select>
+
+    <select id="findDepositsBy" parameterType="map" resultMap="depositFeeMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <where>
+            <if test="sellerId != null">
+                seller_id = #{sellerId}
+            </if>
+            <if test="business != null">
+                and business = #{business}
+            </if>
+            and `type` != 3
+        </where>
+        order by id desc limit #{offset},#{limit}
+    </select>
+
+
+    <select id="countOfTechFee" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table"/>
+        <where>
+            <if test="sellerId != null">
+                seller_id = #{sellerId}
+            </if>
+            <if test="business != null">
+                and business = #{business}
+            </if>
+            and `type` = 3
+        </where>
+    </select>
+
+    <select id="findTechFeeBy" parameterType="map" resultMap="depositFeeMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <where>
+            <if test="sellerId != null">
+                seller_id = #{sellerId}
+            </if>
+            <if test="business != null">
+                and business = #{business}
+            </if>
+            and `type` = 3
+        </where>
+        order by id desc limit #{offset},#{limit}
+    </select>
+
+    <select id="currentBalance" parameterType="long" resultType="int">
+        select balance from <include refid="table"/> where seller_id = #{sellerId} order by id desc limit 1
+    </select>
+
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table"/> where id=#{id} <!-- and user_id=#{user_id}-->
+    </delete>
+
+    <update id="vouch" parameterType="map">
+        update <include refid="table"/>
+        <set>
+            updated_at = now(),
+            voucher = #{voucher},
+            vouched = 1,
+            vouched_at = #{vouchedAt}
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="receipt" parameterType="map">
+        update <include refid="table"/>
+        <set>
+            updated_at = now(),
+            receipt = #{receipt},
+            receipted = 1,
+            receipted_at = #{receiptedAt}
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="synced" parameterType="map">
+        update <include refid="table"/>
+        <set>
+            updated_at = now(),
+            synced = 1,
+            synced_at = now(),
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="syncedFail" parameterType="map">
+        update <include refid="table"/>
+        <set>
+            updated_at = now(),
+            synced = -1,
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="summaryTechFeeOf" parameterType="long" resultType="long">
+        select sum(deposit) from
+        <include refid="table"/>
+        where seller_id = #{id} and `type` = 3
+    </select>
+
+    <update id="batchUpdateOuterCode" parameterType="map">
+        update <include refid="table"/>
+        set outer_code = #{outerCode}
+        where seller_id = #{sellerId}
+    </update>
+
+</mapper>

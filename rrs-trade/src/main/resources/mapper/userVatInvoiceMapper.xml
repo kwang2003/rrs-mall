@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserVatInvoice">
+    <resultMap id="userVatInvoiceMap" type="UserVatInvoice">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="taxRegisterNo" column="tax_register_no"/>
+        <result property="registerAddress" column="register_address"/>
+        <result property="registerPhone" column="register_phone"/>
+        <result property="registerBank" column="register_bank"/>
+        <result property="bankAccount" column="bank_account"/>
+        <result property="taxCertificate" column="tax_certificate"/>
+        <result property="taxpayerCertificate" column="taxpayer_certificate"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+
+
+
+    </resultMap>
+
+    <sql id="columns">
+        user_id, company_name, tax_register_no,
+        register_address, register_phone, register_bank,
+        bank_account, tax_certificate, taxpayer_certificate,
+        created_at, updated_at
+    </sql>
+
+
+    <sql id="table">
+        user_vat_invoices
+    </sql>
+
+
+    <insert id="create" parameterType="UserVatInvoice" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO <include refid="table"/>
+        (<include refid="columns"/>)
+        VALUES
+        (
+            #{userId}, #{companyName}, #{taxRegisterNo},
+            #{registerAddress}, #{registerPhone}, #{registerBank},
+            #{bankAccount}, #{taxCertificate}, #{taxpayerCertificate},
+            now(),now()
+        )
+    </insert>
+
+    <select id="get" parameterType="long" resultMap="userVatInvoiceMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/> where id = #{id}
+    </select>
+
+
+    <select id="getByUserId" parameterType="long" resultMap="userVatInvoiceMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/> where user_id = #{id}
+    </select>
+
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table"/> where id = #{id}
+    </delete>
+
+
+    <update id="update" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            updated_at = now(),
+
+            <if test="companyName != null">
+                company_name = #{companyName},
+            </if>
+
+            <if test="taxRegisterNo != null">
+                tax_register_no = #{taxRegisterNo},
+            </if>
+
+            <if test="registerAddress != null">
+                register_address = #{registerAddress},
+            </if>
+
+            <if test="registerPhone != null">
+                register_phone = #{registerPhone},
+            </if>
+
+            <if test="registerBank != null">
+                register_bank = #{registerBank},
+            </if>
+
+            <if test="bankAccount != null">
+                bank_account = #{bankAccount},
+            </if>
+
+            <if test="taxCertificate != null">
+                tax_certificate = #{taxCertificate},
+            </if>
+
+            <if test="taxpayerCertificate != null">
+                taxpayer_certificate = #{taxpayerCertificate},
+            </if>
+
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+</mapper>

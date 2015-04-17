@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Item">
+    <resultMap id="itemMap" type="Item">
+        <id property="id" column="id"/>
+        <result property="spuId" column="spu_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="name" column="name"/>
+        <result property="shopName" column="shop_name"/>
+        <result property="mainImage" column="main_image"/>
+        <result property="tradeType" column="trade_type"/>
+        <result property="price" column="price"/>
+        <result property="originPrice" column="origin_price"/>
+        <result property="quantity" column="quantity"/>
+        <result property="soldQuantity" column="sold_quantity"/>
+        <result property="status" column="status"/>
+        <result property="region" column="region"/>
+        <result property="brandId" column="brand_id"/>
+        <result property="onShelfAt" column="on_shelf_at"/>
+        <result property="offShelfAt" column="off_shelf_at"/>
+        <result property="brandId" column="brand_id"/>
+        <!-- 物流属性信息 -->
+        <result property="freightSize" column="freight_size"/>
+        <result property="freightWeight" column="freight_weight"/>
+        <result property="freightModelId" column="freight_modelId"/>
+        <result property="freightModelName" column="freight_modelName"/>
+        <result property="deliveryMethodId" column="delivery_method_id"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+
+    </resultMap>
+
+    <sql id="columns">
+        spu_id, user_id, shop_id, `name`, shop_name, main_image, trade_type, price, origin_price, quantity, sold_quantity, `status`,
+        region, brand_id, on_shelf_at, off_shelf_at, freight_size, freight_weight, freight_modelId,freight_modelName,delivery_method_id,
+        created_at, updated_at
+    </sql>
+
+    <select id="findById" parameterType="long" resultMap="itemMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM items WHERE id=#{id}
+    </select>
+
+    <select id="findByIds" parameterType="long" resultMap="itemMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM items WHERE id IN
+        <foreach item="id" collection="list"
+                 open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ORDER BY id DESC
+    </select>
+
+    <select id="findBySellerIdAndSpuId" resultMap="itemMap">
+        SELECT id,
+        <include refid="columns" />
+        FROM items WHERE user_id=#{sellerId} AND spu_id=#{spuId}
+    </select>
+
+    <select id="forDump" resultMap="itemMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM items WHERE  <![CDATA[id < #{lastId}]]> ORDER BY id DESC LIMIT #{limit}
+    </select>
+
+    <select id="findPagingByShopId" resultMap="itemMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM items WHERE id &lt; #{lastId}
+        AND shop_id = #{shopId}
+        ORDER BY id DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="maxIdByShopId" resultType="long">
+        SELECT max(id)
+        FROM items
+        WHERE shop_id = #{shopId}
+    </select>
+
+    <sql id="condition">
+        <where>
+            user_id=#{userId}
+
+            <if test="name!=null">
+                and name like concat(concat('%', #{name}),'%')
+            </if>
+            <if test="priceFrom!=null">
+                and <![CDATA[price >= #{priceFrom}]]>
+            </if>
+            <if test="priceTo!=null">
+                and <![CDATA[price <= #{priceTo}]]>
+            </if>
+            <if test="quantityFrom!=null">
+                and <![CDATA[quantity >= #{quantityFrom}]]>
+            </if>
+            <if test="quantityTo!=null">
+                and <![CDATA[quantity <= #{quantityTo}]]>
+            </if>
+            <if test="soldQuantityFrom!=null">
+                and <![CDATA[sold_quantity >= #{soldQuantityFrom}]]>
+            </if>
+            <if test="soldQuantityTo!=null">
+                and <![CDATA[sold_quantity <= #{soldQuantityTo}]]>
+            </if>
+            <if test="status!=null">and status in
+                <foreach item="item" index="index" collection="status"
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+
+    <select id="sellerItemCount" resultType="int">
+        select count(1) from items
+        <include refid="condition" />
+    </select>
+
+    <select id="sellerItems" resultMap="itemMap">
+        select id,
+        <include refid="columns"/>
+        from items
+        <include refid="condition" />
+        ORDER BY id DESC LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="ItemCountByStatus" resultType="int">
+        select count(1) from items where status in
+        <foreach item="item" index="index" collection="status"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="ItemCountBySpuId" resultType="int">
+        select count(1) from items where spu_id=#{spuId} and status=1
+    </select>
+
+
+    <select id="findBySellerId" resultMap="itemMap">
+        select id,
+        <include refid="columns"/>
+        from items where user_id=#{sellerId}
+        and status in
+        <foreach collection="status" item="item"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by id desc limit #{offset}, #{limit}
+    </select>
+
+    <select id="findBySpuId" resultMap="itemMap">
+        select id,
+        <include refid="columns"/>
+        from items where spu_id=#{spuId} and status=1
+    </select>
+    
+    <select id="findByShopId" resultMap="itemMap">
+        select id,
+        <include refid="columns"/>
+        from items where shop_id=#{shopId}
+    </select>
+
+    <select id="countOnShelfByShopId" resultType="long">
+        select count(1) from items
+        where shop_id=#{shopId} and status=1
+    </select>
+
+    <select id="forDeltaDump" resultMap="itemMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM items
+        WHERE  <![CDATA[id < #{lastId} AND updated_at >#{compared}]]>
+        ORDER BY id DESC LIMIT #{limit}
+    </select>
+
+    <select id="maxId" resultType="long">
+        SELECT
+        max(id)
+        FROM items;
+    </select>
+
+    <select id="findIdsBySellerId" resultType="long">
+        SELECT id FROM items
+        WHERE user_id=#{sellerId}
+    </select>
+
+    <select id="findBySellerIdNoPaging" resultMap="itemMap">
+        SELECT id, <include refid="columns"/>
+        FROM items
+        WHERE user_id=#{sellerId}
+    </select>
+
+    <select id="findAllItems" resultMap="itemMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM items
+        where status in
+        <foreach collection="status" item="item"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ORDER BY id DESC LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 通过运费模板编号查询绑定的商品信息 -->
+    <select id="findByModelId" parameterType="long" resultMap="itemMap">
+        select id,<include refid="columns"/> from items
+        where freight_modelId=#{freightModelId}
+    </select>
+
+    <select id="findOnShelfBySpuId" parameterType="long" resultMap="itemMap">
+        select id, <include refid="columns"/> from items
+        where spu_id=#{spuId} and status = 1
+    </select>
+
+    <insert id="create" parameterType="Item" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO items (<include refid="columns"/>) VALUES (#{spuId},#{userId},#{shopId},#{name},#{shopName}, #{mainImage},
+        #{tradeType},#{price},#{originPrice},#{quantity},#{soldQuantity},#{status},#{region},#{brandId},
+        #{onShelfAt},#{offShelfAt},#{freightSize},#{freightWeight},#{freightModelId},#{freightModelName},#{deliveryMethodId},
+        now(),now())
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM items WHERE id=#{id} <!-- and user_id=#{userId}-->
+    </delete>
+
+    <update id="update" parameterType="Item">
+        UPDATE items
+        <set>
+            updated_at = now(),
+            <if test="spuId!=null">spu_id=#{spuId},</if>
+            <if test="userId!=null">user_id=#{userId},</if>
+            <if test="shopId!=null">shop_id=#{shopId},</if>
+            <if test="name!=null">`name`=#{name},</if>
+            <if test="mainImage!=null">main_image=#{mainImage},</if>
+            <if test="tradeType!=null">trade_type=#{tradeType},</if>
+            <if test="price!=null">price=#{price},</if>
+            <if test="originPrice">origin_price=#{originPrice},</if>
+            <if test="quantity!=null">quantity=#{quantity},</if>
+            <if test="soldQuantity!=null">sold_quantity=#{soldQuantity},</if>
+            <if test="status!=null">`status`=#{status},</if>
+            <if test="region!=null">region=#{region},</if>
+            <if test="brandId!=null">brand_id=#{brandId},</if>
+            <if test="onShelfAt!=null">on_shelf_at=#{onShelfAt},</if>
+            <if test="offShelfAt!=null">off_shelf_at=#{offShelfAt},</if>
+            <if test="freightSize!=null">freight_size=#{freightSize},</if>
+            <if test="freightWeight!=null">freight_weight=#{freightWeight},</if>
+            <if test="freightModelId!=null">freight_modelId=#{freightModelId},</if>
+            <if test="freightModelName!=null">freight_modelName=#{freightModelName},</if>
+            <if test="deliveryMethodId!=null">delivery_method_id=#{deliveryMethodId},</if>
+        </set>
+        WHERE id=#{id} <!--and user_id=#{userId}-->
+    </update>
+
+    <update id="bulkUpdateStatus">
+        UPDATE items
+        <set>
+            updated_at = now(),`status`=#{status},
+            on_shelf_at = (CASE
+            WHEN #{status}=1 AND on_shelf_at IS NULL
+            THEN now()
+            ELSE on_shelf_at
+            END),
+            off_shelf_at = (CASE
+            WHEN #{status}=-1 OR #{status}=-2
+            THEN now()
+            ELSE off_shelf_at
+            END)
+
+        </set>
+        WHERE
+        <if test="userId!=null">user_id=#{userId} AND</if>
+        id IN
+        <foreach item="id" collection="ids"
+                 open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="changeStock">
+        UPDATE items SET quantity = quantity + #{delta},
+        `status`=(CASE
+        WHEN <![CDATA[quantity <= 0 ]]>
+        THEN -1 ELSE `status`
+        END )
+        WHERE id = #{id}
+    </update>
+
+    <update id="changeStockAndSoldQuantity">
+        UPDATE items SET quantity = quantity + #{stockDelta},sold_quantity = sold_quantity + #{soldQuantityDelta},
+        `status`=(CASE
+        WHEN <![CDATA[quantity <= 0 ]]>
+        THEN -1 ELSE `status`
+        END)
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE items set updated_at=now(), `status`=#{status}
+        WHERE id=#{id}
+    </update>
+
+    <update id="updateStatusBySellerId">
+        UPDATE items set updated_at=now(), `status`=#{status}
+        WHERE user_id=#{sellerId}
+    </update>
+
+    <update id="batchUpdateItemRegion">
+        UPDATE items set
+        updated_at=now(),
+        region=#{region}
+        WHERE id IN
+        <foreach collection="ids" open="(" separator="," close=")"
+                 item="id">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

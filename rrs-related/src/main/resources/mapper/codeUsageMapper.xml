@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2014 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CodeUsage">
+    <resultMap id="codeUsageMap" type="CodeUsage">
+        <id property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="activityId" column="activity_id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="businessId" column="business_id"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="buyerName" column="buyer_name"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="sellerName" column="seller_name"/>
+        <result property="activityName" column="activity_name"/>
+        <result property="activityType" column="activity_type"/>
+        <result property="discount" column="discount"/>
+        <result property="originPrice" column="origin_price"/>
+        <result property="price" column="price"/>
+        <result property="channelType" column="channel_type"/>
+        <result property="usedAt" column="used_at"/>
+        <result property="usedCount" column="used_count"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="column">
+        activity_id, code, order_id, business_id, buyer_id, buyer_name, seller_id, seller_name, activity_name, activity_type, discount
+        , origin_price, price, channel_type, used_at, used_count, created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="CodeUsage" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO code_usages (<include refid="column"/>)
+        VALUES (#{activityId}, #{code}, #{orderId}, #{businessId}, #{buyerId}, #{buyerName}, #{sellerId}, #{sellerName},
+        #{activityName}, #{activityType}, #{discount}, #{originPrice}, #{price}, #{channelType}, #{usedAt}, #{usedCount}, now(), now());
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        DELETE from code_usages WHERE id = #{id}
+    </delete>
+
+    <update id="update" parameterType="CodeUsage">
+        UPDATE code_usages
+        <set>
+            updated_at=now(),
+            <if test="code != null">code = #{code},</if>
+            <if test="activityId != null">activity_id = #{activityId},</if>
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="businessId != null">business_id = #{businessId},</if>
+            <if test="buyerId != null">buyer_id = #{buyerId},</if>
+            <if test="buyerName != null">buyer_name = #{buyerName},</if>
+            <if test="sellerId != null">seller_id = #{sellerId},</if>
+            <if test="sellerName != null">seller_name = #{sellerName},</if>
+            <if test="activityName != null">activity_name = #{activityName},</if>
+            <if test="activityType != null">activity_type = #{activityType},</if>
+            <if test="discount != null">discount = #{discount},</if>
+            <if test="originPrice != null">origin_price = #{originPrice},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="channelType != null">channel_type = #{channelType},</if>
+            <if test="usedAt != null">used_at = #{usedAt},</if>
+            <if test="usedCount != null">used_count = #{usedCount},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="findById" parameterType="long" resultMap="codeUsageMap">
+        SELECT id, <include refid="column"/> FROM code_usages WHERE id = #{id}
+    </select>
+
+    <select id="findByName" parameterType="java.lang.String" resultMap="codeUsageMap">
+        SELECT id, <include refid="column"/> FROM code_usages WHERE code = #{code}
+    </select>
+
+
+
+    <select id="countCodeUsageByActivityId" parameterType="long" resultType="long">
+        select count(1)
+        from code_usages
+        where activity_id =  #{activityId}
+    </select>
+
+    <select id="getCodeUsageByActivityId" parameterType="map" resultMap="codeUsageMap">
+        select id,
+        <include refid="column"/>
+        from code_usages
+            where activity_id = #{activityId}
+        limit #{pageNo},#{count}
+    </select>
+
+    <select id="getAllCodeUsageByActivityId" parameterType="long" resultMap="codeUsageMap">
+        select id,
+        <include refid="column"/>
+        from code_usages
+        where activity_id = #{activityId}
+    </select>
+
+    <select id="getCodeUsageByOrderId" parameterType="long" resultMap="codeUsageMap">
+        select id,
+        <include refid="column"/>
+        from code_usages
+        where order_id = #{orderId}
+    </select>
+
+    <update id="updateOrderId">
+        UPDATE code_usages
+        <set>
+            updated_at = now(),
+            order_id = #{newId},
+        </set>
+        WHERE order_id = #{oldId}
+    </update>
+
+</mapper>

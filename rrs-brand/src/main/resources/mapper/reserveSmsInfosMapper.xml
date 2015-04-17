@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ReserveSmsInfos">
+    <resultMap id="ReserveSmsInfosMap" type="com.rrs.arrivegift.model.ReserveSmsInfos">
+	        <id property="id" column="id"/>
+	        <result property="userId" column="userid"/>
+            <result property="shopId" column="shopid"/>
+            <result property="configId" column="config_Id"/>
+	        <result property="shopName" column="shopname"/>
+	        <result property="userName" column="userName"/>
+	        <result property="address" column="address"/>
+	        <result property="phoneNo" column="phoneno"/>
+	        <result property="reserveType" column="reserveType"/>
+	        <result property="reserveDate" column="reservedate"/>
+	        <result property="reserveTime" column="reservetime"/>
+	        <result property="configId" column="config_Id"/>
+	        <result property="smsInfo" column="smsinfo"/>
+	        <result property="type" column="type"/>
+	        <result property="userType" column="usertype"/>
+	        <result property="state" column="state"/>
+	        <result property="reserveStart" column="reserveStart"/>
+	        <result property="reserveEnd" column="reserveEnd"/>
+	        <result property="created_at" column="created_at"/>
+	        <result property="updated_at" column="updated_at"/>
+    </resultMap>		
+    <sql id="columns">
+        userid,shopId,shopname,userName,address,phoneno,reserveType,reservedate,reservetime,config_Id,smsinfo,type,usertype,state,reserveStart,reserveEnd,created_at,updated_at
+    </sql>
+
+    <insert id="create" parameterType="com.rrs.arrivegift.model.ReserveSmsInfos" useGeneratedKeys="true" keyProperty="id" >
+        insert into rrs_reservesms_infos (
+        <include refid="columns"/>
+        ) values (#{userId},#{shopId},#{shopName},#{userName},#{address},#{phoneNo},#{reserveType},#{reserveDate},#{reserveTime},#{configId},#{smsInfo},#{type},#{userType},#{state},#{reserveStart},#{reserveEnd},now(),now())
+    </insert>
+    
+    <select id="findBy" parameterType="map" resultType="com.rrs.arrivegift.model.ReserveSmsInfos">
+        select  id,
+        <include refid="columns"/>
+        from rrs_reservesms_infos  where 1=1 
+ 	   <if test="userId!=null">and userId = #{userId}</if>
+       <if test="shopId!=null">and shopId = #{shopId}</if>
+       <if test="type!=null">and type = #{type}</if>
+       <if test="state!=null">and state = #{state}</if>
+       <if test="shopName!=null">and shopName = #{shopName}</if>
+       <if test="userName!=null">and userName = #{userName}</if>
+       <if test="startTime!=null"> <![CDATA[ and created_at >= #{startTime}]]> </if>
+       <if test="endTime!=null"> <![CDATA[ and created_at <= #{endTime}]]> </if>
+       <if test="reserveStart!=null"> <![CDATA[ and reserveStart >= #{reserveStart}]]> </if>
+       <if test="reserveEnd!=null"> <![CDATA[ and reserveEnd <= #{reserveEnd}]]> </if>
+       order by id desc limit #{offset},#{limit}		
+    </select>		
+    
+    <select id="countOf" parameterType="map" resultType="long">
+       select count(1) from rrs_reservesms_infos  where 1=1 
+       <if test="userId!=null">and userId = #{userId}</if>
+       <if test="shopId!=null">and shopId = #{shopId}</if>
+       <if test="type!=null">and type = #{type}</if>
+       <if test="state!=null">and state = #{state}</if>		
+       <if test="shopName!=null">and shopName = #{shopName}</if>	
+       <if test="userName!=null">and userName = #{userName}</if>
+       <if test="startTime!=null"> <![CDATA[ and created_at >= #{startTime}]]> </if>
+       <if test="endTime!=null"> <![CDATA[ and created_at <= #{endTime}]]> </if>
+       <if test="reserveStart!=null"> <![CDATA[ and reserveStart >= #{reserveStart}]]> </if>
+       <if test="reserveEnd!=null"> <![CDATA[ and reserveEnd <= #{reserveEnd}]]> </if>
+    </select>
+    		
+    <!-- select id="findByParams" parameterType="map" resultType="com.rrs.arrivegift.model.ReserveSmsInfos">
+        select id,	
+        <include refid="columns"/>
+        from rrs_reservesms_infos  where 1=1
+        <if test="userId!=null">and userId = #{userId}</if>
+        <if test="shopId!=null">and shopId = #{shopId}</if>
+        <if test="type!=null">and type = #{type}</if>
+        <if test="userName!=null">and userName = #{userName}</if>
+        <if test="startTime!=null"> <![CDATA[ and created_at >= #{startTime}]]> </if>
+        <if test="endTime!=null"> <![CDATA[ and created_at >= #{endTime}]]> </if>
+        <if test="reserveStart!=null"> <![CDATA[ and reserveStart >= #{reserveStart}]]> </if>
+        <if test="reserveEnd!=null"> <![CDATA[ and reserveEnd <= #{reserveEnd}]]> </if>
+    
+        ORDER BY created_at DESC LIMIT #{offset}, #{limit}
+    </select -->
+    
+     <update id="updateSmsInfo" parameterType="long">
+        UPDATE rrs_reservesms_infos
+        <set>				
+            updated_at=now(),
+            state = 1	
+        </set>			
+        WHERE id = #{id}	
+    
+    </update>		
+     
+
+    <select id="checkSmsInfosBy" parameterType="map" resultType="com.rrs.arrivegift.model.ReserveSmsInfos">
+        select id,
+        <include refid="columns"/>
+        from rrs_reservesms_infos  where DATE_FORMAT(created_at,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d')
+        <if test="sendTele!=null">and phoneno = #{sendTele}</if>
+        <if test="userId!=null">and userId = #{userId}</if>
+        <if test="shopId!=null">and shopId = #{shopId}</if>
+        <if test="type!=null">and type = #{type}</if>
+    </select>
+
+</mapper>

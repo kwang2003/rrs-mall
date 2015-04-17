@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AddressStorage">
+    <resultMap id="addressStorageMap" type="AddressStorage">
+        <id property="id" column="id"/>
+        <result property="itemId" column="item_id"/>
+        <result property="addressId" column="address_id"/>
+        <result property="storageId" column="storage_id"/>
+        <result property="createdAt" column="create_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="column">
+        item_id, address_id, storage_id, created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="AddressStorage" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO address_storages (<include refid="column"/>)
+        VALUES
+        (#{itemId}, #{addressId},#{storageId}, now(), now());
+    </insert>
+
+    <update id="update" parameterType="map">
+        UPDATE address_storages
+        set
+        updated_at=now(),
+        storage_id=#{storageId}
+        WHERE item_id = #{itemId} and address_id=#{addressId}
+    </update>
+
+    <select id="findByItemIdAndAddressId" parameterType="map" resultMap="addressStorageMap">
+        SELECT id,
+        <include refid="column"/>
+        FROM address_storages WHERE item_id = #{itemId} and address_id=#{addressId}
+    </select>
+
+    <select id="findById" parameterType="long" resultMap="addressStorageMap">
+        SELECT id,
+        <include refid="column"/>
+        FROM address_storages WHERE id = #{id}
+    </select>
+</mapper>

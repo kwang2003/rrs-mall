@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="OrderJobOverDay">
+    <resultMap id="orderJobOverDayMap" type="OrderJobOverDay">
+        <id property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="skuId" column="sku_id"/>
+        <result property="overDay" column="over_day"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        order_id, sku_id, over_day, status, created_at, updated_at
+    </sql>
+
+    <select id="findBySkuId" parameterType="long" resultMap="orderJobOverDayMap">
+        select id,
+        <include refid="columns"/>
+        from order_job_day where sku_id=#{skuId}
+    </select>
+
+    <sql id="updatedCondition">
+        <where>
+            <![CDATA[ updated_at >= #{startAt} and updated_at <= #{endAt} ]]>
+            <if test="orderIds != null">
+                and order_id in
+                <foreach collection="orderIds" separator="," open="("
+                         close=")" item="orderId">
+                    #{orderId}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+
+    <select id="countOfUpdated" parameterType="map" resultType="long">
+        select count(1)
+        from order_job_day
+        <include refid="updatedCondition" />
+    </select>
+
+    <select id="findUpdated" parameterType="map" resultMap="orderJobOverDayMap">
+        select id,
+        <include refid="columns"/>
+        from order_job_day
+        <include refid="updatedCondition" />
+        order by id desc limit #{offset},#{limit}
+    </select>
+
+    <select id="findNotConfirmDeliver" resultMap="orderJobOverDayMap" parameterType="map">
+        select id,
+        <include refid="columns"/>
+        from order_job_day where status = 2
+        <![CDATA[ AND id < #{lastId}
+        AND delivered_at <= #{endAt} AND delivered_at >= #{startAt}]]>
+        ORDER BY id DESC LIMIT #{limit}
+    </select>
+
+    <insert id="create" parameterType="OrderJobOverDay" useGeneratedKeys="true" keyProperty="id">
+        insert into order_job_day (<include refid="columns"/>) values (#{orderId},#{skuId},#{overDay},
+        #{status}, now(), now()
+        )
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        delete from order_job_day where id=#{id} <!-- and user_id=#{user_id}-->
+    </delete>
+
+    <update id="update" parameterType="OrderJobOverDay">
+        update order_job_day
+        <set>
+            updated_at = now(),
+            <if test="status!=null">status=#{status},</if>
+            <if test="overDay!=null">over_day=#{overDay},</if>
+            <if test="skuId!=null">sku_id=#{skuId},</if>
+        </set>
+        where order_Id=#{orderId} <!--and user_id=#{user_id}-->
+    </update>
+
+
+    <update id="updateByOrderIds" parameterType="OrderJobOverDay">
+        update order_job_day
+        <set>
+            status=1
+        </set>
+        where 1 = 1
+        and order_id IN
+        <foreach collection="list" separator="," open="("
+                 close=")" item="orderId">
+            #{orderId}
+        </foreach>
+    </update>
+
+
+    <sql id="condition">
+        <where>
+            <if test="criteria != null and criteria.skuId != null">
+                sku_id = #{criteria.skuId}
+            </if>
+            <if test="criteria != null and criteria.orderId != null">
+                order_id = #{criteria.orderId}
+            </if>
+            <if test="criteria != null and criteria.status != null">
+                AND status = #{criteria.status}
+            </if>
+            <if test="createdStartAt != null">
+                AND <![CDATA[ created_at >= #{createdStartAt} ]]>
+            </if>
+            <if test="createdEndAt != null">
+                AND <![CDATA[ created_at < #{createdEndAt} ]]>
+            </if>
+            <if test="criteria != null and criteria.overDayStart != null">
+                AND <![CDATA[ over_day > #{criteria.overDayStart} ]]>
+            </if>
+            <if test="criteria != null and criteria.overDayEnd != null">
+                AND <![CDATA[ over_day <= #{criteria.overDayEnd} ]]>
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from order_job_day
+        <include refid="condition"/>
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="orderJobOverDayMap">
+        select id,
+        <include refid="columns"/>
+        from order_job_day
+        <include refid="condition"/>
+    </select>
+
+</mapper>

@@ -1,0 +1,47 @@
+/api/user/login           :post
+/api/user/signup          :post
+/api/user/forgot-password :post
+/api/user/sms             :get
+/api/user/verify          :get
+/api/cart                 :post
+
+/api/demo                 :post
+/api/demo                 :get
+
+/api/alipay/notify               :get
+/api/alipay/notify               :post
+/api/alipay/refund/notify        :get
+/api/alipay/refund/notify        :post
+
+/api/open/popu/.*        :post,get
+
+/api/arriveSms :post
+/api/captcha :get
+/api/checkMall :get
+/api/checkAriveTime :get
+/api/seller/order/collection/confirm : post,get
+
+
+/api/filter/createAgreementsUser     : post,get
+
+/api/alipay/mpiNotify               :get
+/api/alipay/mpiNotify               :post
+
+/api/freezePayCallBack/freezeNotify               :get
+/api/freezePayCallBack/freezeNotify               :post
+
+/api/seller/order/collection/confirm : post,get
+
+/api/kjtpay/recieveSyncNotice    :get
+/api/kjtpay/recieveBatchTransferToAccountAsyncNotice   :post
+/api/freezePayCallBack/createAndPayNotify  :post,get
+
+/seller/seller-coupon-list : post,get
+/seller/seller-coupon-detail : post,get
+/seller/seller-coupon-success : post,get
+/buyer/new_coupons : post,get
+/api/chaoshuo/findAll : post,get
+/api/chaoshuo/dianzan : post,get
+/api/chaoshuo/initSignStatus : post,get
+/api/chaoshuo/addSignInfo : post,get
+/api/alipay/wxPayNotify : post,get

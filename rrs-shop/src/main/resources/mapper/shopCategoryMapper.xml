@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ShopCategory">
+    <resultMap id="ShopCategoryMap" type="ShopCategory">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        name,parent_id,created_at,updated_at
+    </sql>
+
+    <select id="findById" parameterType="long" resultMap="ShopCategoryMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM shop_categories WHERE id=#{id}
+    </select>
+
+    <select id="findByParentId" parameterType="long" resultMap="ShopCategoryMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM shop_categories WHERE parent_id=#{parentId}
+    </select>
+
+
+    <!-- 插入用户： 1.由数据库生成id并赋值到user对象  -->
+    <insert id="create" parameterType="ShopCategory" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO shop_categories (
+        <include refid="columns"/>
+        )
+        VALUES (#{name},#{parentId},now(), now())
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM shop_categories WHERE id=#{id}
+    </delete>
+
+    <update id="updateName" parameterType="ShopCategory">
+        update shop_categories set updated_at=now(),name=#{name}
+        where id=#{id}
+    </update>
+
+</mapper>

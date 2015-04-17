@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RrsCouponsItemList">
+    <resultMap id="rrsCouponsItemListMap" type="RrsCouponsItemList">
+        <id property="id" column="id"/>
+        <result property="couponsId" column="couponsId"/>
+        <result property="itemId" column="itemId"/>
+        <result property="shopId" column="shopId"/>
+        <result property="sellerId" column="sellerId"/>
+        <result property="couponsCode" column="couponsCode"/>
+        <result property="couponsName" column="couponsName"/>
+        <result property="shopName" column="shopname"/>
+    </resultMap>
+
+      <sql id="columns">
+          couponsId,itemId,shopId,sellerId,couponsCode,couponsName,shopname
+      </sql>
+
+     <select id="queryCouponsItemListBy" resultMap="rrsCouponsItemListMap" parameterType="map">
+       select id,<include refid="columns"/>
+         from rrs_coupons_item_list where 1=1
+         <if test='couponsId!=null and couponsId!=""'>and couponsId = #{couponsId}</if>
+         <if test='itemId!=null and itemId!=""'>and itemId = #{itemId}</if>
+         <if test='shopId!=null and shopId!=""'>and shopId = #{shopId}</if>
+         <if test='couponsCode!=null and couponsCode!=""'>and couponsCode = #{couponsCode}</if>
+         <if test='couponsName!=null and couponsName!=""'>and couponsName = #{couponsName}</if>
+     </select>
+    
+    <select id="queryCouponsByShopId" resultMap="rrsCouponsItemListMap" parameterType="long">
+    	SELECT DISTINCT
+			id AS couponsId,
+			shopId,
+			cpName as couponsName,
+			date_format(startTime,'%Y/%m/%d') as startTime,
+			date_format(endTime,'%Y/%m/%d') as endTime,
+			useLimit,
+			amount
+		FROM
+			rrs_coupons
+		WHERE		
+			shopId = #{shopId}
+			and status=2
+			and couponsType=2
+			and now() BETWEEN startTime AND endTime
+    </select>	
+    
+     <select id="queryUserShopCou" parameterType="map" resultType="int">
+	    SELECT
+			count(*)
+		FROM
+			rrs_coupons_users t1,
+			rrs_coupons t2
+		WHERE 
+		    t1.couponId = t2.id
+		AND t1.userId=#{userId}
+		AND t2.shopId=#{shopId}
+		AND t2.couponsType=2
+    </select>	
+    
+     <select id="querySumUserCou" parameterType="map" resultType="int">
+	    SELECT
+			count(*)
+		FROM
+			rrs_coupons_users
+		WHERE
+			userId = #{userId}
+		AND couponId = #{couponId}
+    </select>	
+
+</mapper>

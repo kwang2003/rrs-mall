@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2012 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <typeAliases>
+        <!--item related entity-->
+      <!--  <typeAlias alias="Item"         type="com.aixforce.item.model.Item"/>
+        <typeAlias alias="ItemDetail"   type="com.aixforce.item.model.ItemDetail"/>
+        <typeAlias alias="Sku"          type="com.aixforce.item.model.Sku"/>
+        <typeAlias alias="Brand"        type="com.aixforce.item.model.Brand"/>
+        <typeAlias alias="SpuBundle"    type="com.aixforce.item.model.SpuBundle"/>
+        <typeAlias alias="ItemBundle"   type="com.aixforce.item.model.ItemBundle"/>
+        <typeAlias alias="TitleKeyword" type="com.aixforce.item.model.TitleKeyword"/>-->
+        <typeAlias alias="Kjtpay" type="com.rrs.kjtpay.model.KjtpayAccount"/>
+    </typeAliases>
+</configuration>

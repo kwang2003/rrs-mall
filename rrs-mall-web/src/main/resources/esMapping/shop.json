@@ -1,0 +1,66 @@
+{
+    "shop": {
+        "_all": {
+            "enabled": false
+        },
+        "index.query.default_field": "name",
+        "properties": {
+            "id": {
+                "type": "long"
+            },
+            "userId": {
+                "type": "long"
+            },
+            "userName": {
+                "type": "string",
+                "index_analyzer": "jieba_index",
+                "search_analyzer": "jieba_search"
+            },
+            "imageUrl": {
+                "type": "string",
+                "index": "no"
+            },
+            "name": {
+                "type": "string",
+                "index_analyzer": "jieba_index",
+                "search_analyzer": "jieba_search"
+            },
+            "status": {
+                "type": "integer"
+            },
+            "businessId": {
+                "type": "integer"
+            },
+            "province": {
+                "type": "integer"
+            },
+            "city": {
+                "type": "integer"
+            },
+            "region": {
+                "type": "integer"
+            },
+            "provinceName": {
+                "type": "string",
+                "index": "no"
+            },
+            "cityName": {
+                "type": "string",
+                "index": "no"
+            },
+            "regionName": {
+                "type": "string",
+                "index": "no"
+            },
+            "itemCount": {
+                "type": "integer"
+            },
+            "soldQuantity": {
+                "type": "integer"
+            },
+            "sale": {
+                "type": "long"
+            }
+        }
+    }
+}

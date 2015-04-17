@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserTradeInfo">
+    <resultMap id="userTradeInfoMap" type="UserTradeInfo">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="name" column="name"/>
+        <result property="phone" column="phone"/>
+        <result property="province" column="province"/>
+        <result property="city" column="city"/>
+        <result property="district" column="district"/>
+        <result property="provinceCode" column="province_code"/>
+        <result property="cityCode" column="city_code"/>
+        <result property="districtCode" column="district_code"/>
+        <result property="street" column="street"/>
+        <result property="isDefault" column="is_default"/>
+        <result property="zip" column="zip"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        user_id,`name`,phone,province,city,district,province_code,city_code,district_code,street,is_default,zip,`status`,created_at,updated_at
+    </sql>
+
+    <select id="findById" parameterType="long" resultMap="userTradeInfoMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM user_trade_infos WHERE id=#{id}
+    </select>
+
+    <select id="findInIds" resultMap="userTradeInfoMap">
+        select id,
+        <include refid="columns"/>
+        from user_trade_infos where id in
+        <foreach item="tradeInfoId" index="index" collection="ids" open="(" separator="," close=")">
+            #{tradeInfoId}
+        </foreach>
+    </select>
+
+    <select id="countOf" parameterType="long" resultType="int">
+        SELECT count(1) FROM user_trade_infos WHERE user_id = #{userId}
+    </select>
+
+    <select id="findValidByUserId" parameterType="long" resultMap="userTradeInfoMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM user_trade_infos WHERE user_id = #{userId} and status=1
+    </select>
+
+    <select id="findAllByUserId" parameterType="long" resultMap="userTradeInfoMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM user_trade_infos WHERE user_id = #{userId}
+    </select>
+
+
+    <insert id="create" parameterType="UserTradeInfo" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user_trade_infos
+        (<include refid="columns"/>)
+        VALUES
+        (
+        #{userId},
+        #{name},
+        #{phone},
+        #{province},
+        #{city},
+        #{district},
+        #{provinceCode},
+        #{cityCode},
+        #{districtCode},
+        #{street},
+        #{isDefault},
+        #{zip},
+        #{status},
+        now(),
+        now()
+        )
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM user_trade_infos WHERE id=#{id}
+    </delete>
+
+    <update id="invalidate" parameterType="long">
+        update user_trade_infos set status=-1, updated_at=now() where id =#{id}
+    </update>
+
+    <update id="update" parameterType="UserTradeInfo">
+        update user_trade_infos
+        <set>
+            updated_at = now(),
+            <if test="name!=null">name=#{name},</if>
+            <if test="isDefault!=null">is_default=#{isDefault},</if>
+            <if test="phone!=null">phone=#{phone},</if>
+            <if test="province!=null">province=#{province},</if>
+            <if test="city!=null">city=#{city},</if>
+            <if test="district!=null">district=#{district},</if>
+            <if test="street!=null">street=#{street},</if>
+            <if test="zip!=null">zip=#{zip},</if>
+            <if test="status!=null">status=#{status},</if>
+        </set>
+        where id=#{id}
+    </update>
+
+
+    <select id="findDefault" parameterType="long" resultMap="userTradeInfoMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM user_trade_infos WHERE user_id = #{userId} and is_default=1 and status=1
+    </select>
+
+
+
+    <select id="findTradeInfoByUserAndDistrict" parameterType="map" resultMap="userTradeInfoMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM user_trade_infos WHERE user_id = #{userId} and district_code= #{districtId} and status=1
+    </select>
+</mapper>

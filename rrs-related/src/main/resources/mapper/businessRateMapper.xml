@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BusinessRate">
+    <resultMap id="businessRateMap" type="BusinessRate">
+        <id property="id" column="id"/>
+        <result property="business" column="business"/>
+        <result property="rate" column="rate"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+
+    <sql id="table">
+        rrs_business_rates
+    </sql>
+
+    <sql id="columns">
+        business, rate, created_at, updated_at
+    </sql>
+
+
+    <insert id="create" parameterType="BusinessRate" useGeneratedKeys="true" keyProperty="id">
+        insert into <include refid="table"/> 
+        (<include refid="columns"/>)
+        values
+        (
+        #{business},
+        #{rate},
+        now(),
+        now()
+        )
+    </insert>
+
+    <select id="findByBusiness" parameterType="long" resultMap="businessRateMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where business = #{business}
+    </select>
+
+    <select id="get" parameterType="long" resultMap="businessRateMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where id = #{id}
+    </select>
+</mapper>

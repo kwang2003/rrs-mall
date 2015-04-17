@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- Application name -->
+    <dubbo:application name="#{app.dubboApp}"/>
+
+    <!-- registry address, used for service to register itself -->
+    <dubbo:registry address="#{app.dubboRegistry}"/>
+
+    <!--user service-->
+    <dubbo:reference interface="com.aixforce.user.service.AccountService" id="accountService" timeout="3000"/>
+    <dubbo:reference interface="com.aixforce.user.service.AddressService" id="addressService"/>
+    <dubbo:reference interface="com.aixforce.user.service.UserProfileService" id="userProfileService"/>
+    <dubbo:reference interface="com.aixforce.user.service.UserExtraService" id="userExtraService"/>
+    <dubbo:reference interface="com.aixforce.user.service.UserAccountSummaryService" id="userAccountSummaryService"/>
+    <dubbo:reference interface="com.aixforce.user.service.ImageService" id="imageService"/>
+
+    <!--item service-->
+    <dubbo:reference interface="com.aixforce.item.service.ItemIndexService" id="itemIndexService"/>
+    <dubbo:reference interface="com.aixforce.item.service.ItemSearchService" id="itemSearchService"/>
+    <dubbo:reference interface="com.aixforce.item.service.ItemService" id="itemService"/>
+    <dubbo:reference interface="com.aixforce.item.service.DefaultItemService" id="defaultItemService"/>
+    <dubbo:reference interface="com.aixforce.item.service.BrandService" id="brandService"/>
+    <dubbo:reference interface="com.aixforce.item.service.ItemBundleService" id="itemBundleService"/>
+    <dubbo:reference interface="com.aixforce.item.service.TitleKeywordService" id="titleKeywordService"/>
+
+    <!--shop service-->
+    <dubbo:reference interface="com.aixforce.shop.service.ShopService" id="shopService"/>
+    <dubbo:reference interface="com.aixforce.shop.service.ItemTagService" id="itemTagService"/>
+    <dubbo:reference interface="com.aixforce.shop.service.ShopCategoryService" id="shopCategoryService"/>
+    <dubbo:reference interface="com.aixforce.shop.service.ShopExtraService" id="shopExtraService" timeout="5000" retries="0"/>
+    <dubbo:reference interface="com.aixforce.shop.service.ShopGiftSmsInfoService" id="shopGiftSmsInfoService"/>
+
+    <!--trade service-->
+    <dubbo:reference interface="com.aixforce.trade.service.CartService" id="cartService"/>
+    <dubbo:reference interface="com.aixforce.trade.service.OrderQueryService" id="orderQueryService" timeout="5000"/>
+    <dubbo:reference interface="com.aixforce.trade.service.OrderWriteService" id="orderWriteService" timeout="10000"/>
+    <dubbo:reference interface="com.aixforce.trade.service.UserTradeInfoService" id="userTradeInfoService"/>
+    <dubbo:reference interface="com.aixforce.trade.service.OrderCommentService" id="orderCommentService" timeout="5000"/>
+    <dubbo:reference interface="com.aixforce.trade.service.FreightModelService" id="freightModelService"/>
+    <dubbo:reference interface="com.aixforce.trade.service.FreightCountService" id="freightCountService"/>
+    <dubbo:reference interface="com.aixforce.trade.service.LogisticsRevertService" id="logisticsRevertService"/>
+    <dubbo:reference interface="com.aixforce.trade.service.UserVatInvoiceService" id="userVatInvoiceService"/>
+    <dubbo:reference interface="com.aixforce.trade.service.DeliveryMethodService" id="deliveryMethodService"/>
+    <dubbo:reference interface="com.aixforce.trade.service.ExpressInfoService" id="expressInfoService"/>
+    <dubbo:reference interface="com.aixforce.trade.service.InstallInfoService" id="installInfoService"/>
+    <dubbo:reference interface="com.aixforce.trade.service.OrderLogisticsInfoService" id="orderLogisticsInfoService"/>
+    <dubbo:reference interface="com.aixforce.trade.service.OrderInstallInfoService" id="orderInstallInfoService"/>
+    <dubbo:reference interface="com.aixforce.trade.service.OrderJobOverDayService" id="orderJobOverDayService"/>
+    <dubbo:reference interface="com.aixforce.trade.service.OrderJobOverDayConfigService" id="orderJobOverDayConfigService"/>
+
+    <!-- rrs service -->
+    <dubbo:reference interface="com.aixforce.rrs.settle.service.AlipayCashService" id="alipayCashService"/>
+    <dubbo:reference interface="com.aixforce.rrs.settle.service.OrderAlipayCashService" id="orderAlipayCashService"/>
+    <dubbo:reference interface="com.aixforce.rrs.settle.service.DailySettlementService" id="dailySettlementService"/>
+    <dubbo:reference interface="com.aixforce.rrs.settle.service.DepositAccountService" id="depositAccountService"/>
+    <dubbo:reference interface="com.aixforce.rrs.settle.service.DepositFeeService" id="depositFeeService"/>
+    <dubbo:reference interface="com.aixforce.rrs.settle.service.SellerSettlementService" id="sellerSettlementService"/>
+    <dubbo:reference interface="com.aixforce.rrs.settle.service.SettlementService" id="settlementService" timeout="5000"/>
+    <dubbo:reference interface="com.aixforce.rrs.settle.service.SettlementJobService" id="settlementJobService"/>
+    <dubbo:reference interface="com.aixforce.rrs.presale.service.PreSaleService" id="preSaleService"/>
+    <dubbo:reference interface="com.aixforce.rrs.grid.service.GridService" id="gridService"/>
+    <dubbo:reference interface="com.aixforce.rrs.settle.service.DepositFeeCashService" id="depositFeeCashService"/>
+
+    <dubbo:reference interface="com.aixforce.rrs.grid.service.BrandsSellersService" id="brandsSellersService"/>
+    <dubbo:reference interface="com.aixforce.rrs.grid.service.ShopAuthorizeInfoService" id="shopAuthorizeInfoService" />
+    <dubbo:reference interface="com.rrs.kjtpay.service.KjtpayService" id="kjtpayService"/>
+
+    <!-- purify service -->
+    <dubbo:reference interface="com.aixforce.rrs.purify.service.PurifySeriesService" id="purifySeriesService"/>
+    <dubbo:reference interface="com.aixforce.rrs.purify.service.PurifyCategoryService" id="purifyCategoryService"/>
+    <dubbo:reference interface="com.aixforce.rrs.purify.service.PurifyAssemblyService" id="purifyAssemblyService"/>
+    <dubbo:reference interface="com.aixforce.rrs.purify.service.PurifyRelationService" id="purifyRelationService"/>
+    <dubbo:reference interface="com.aixforce.rrs.purify.service.PurifyPageService" id="purifyPageService"/>
+
+    <!-- coupon related service -->
+    <dubbo:reference interface="com.aixforce.rrs.coupon.service.CouponService" id="couponService"/>
+    <dubbo:reference interface="com.aixforce.rrs.coupon.service.CouponUsageService" id="couponUsageService"/>
+
+    <dubbo:reference interface="com.aixforce.rrs.code.service.ActivityBindService" id="activityBindService" timeout="10000"/>
+    <dubbo:reference interface="com.aixforce.rrs.code.service.CodeUsageService" id="codeUsageService" timeout="10000"/>
+    <dubbo:reference interface="com.aixforce.rrs.code.service.ActivityDefinitionService" id="activityDefinitionService" timeout="10000"/>
+    <dubbo:reference interface="com.aixforce.rrs.code.service.ActivityCodeService" id="activityCodeService" timeout="10000"/>
+
+    <!-- spu bundle-->
+    <dubbo:reference interface="com.aixforce.item.service.SpuBundleService" id="spuBundleService"/>
+
+    <!-- channel shop -->
+    <dubbo:reference interface="com.aixforce.shop.service.ChannelShopsService" id="channelShopsService"/>
+
+
+    <!-- brand related service -->
+    <dubbo:reference interface="com.rrs.brand.service.BrandClubService" id="brandClubService"/>
+    <dubbo:reference interface="com.rrs.brand.service.BrandClubSlideService" id="brandClubSlideService"/>
+    <dubbo:reference interface="com.rrs.brand.service.BrandRegisterService" id="brandRegisterService"/>
+    <dubbo:reference interface="com.rrs.brand.service.BrandRlService" id="brandRlService"/>
+    <dubbo:reference interface="com.rrs.brand.service.BrandUserAnnouncementService" id="brandUserAnnouncementService"/>
+    <dubbo:reference interface="com.rrs.brand.service.BrandClubTypeService" id="brandClubTypeService"/>
+    <dubbo:reference interface="com.rrs.brand.service.BrandClubProductService" id="brandClubProductService"/>
+    <dubbo:reference interface="com.rrs.brand.service.BrandClubProductTypeService" id="brandClubProductTypeService"/>
+    <dubbo:reference interface="com.aixforce.trade.service.LogisticsInfoService" id="logisticsInfoService"/>
+
+    <!-- coupons related service -->
+    <dubbo:reference interface="com.rrs.coupons.service.CouponsRrsService" id="couponsRrsService"/>
+    <dubbo:reference interface="com.rrs.coupons.service.LqCouponService" id="lqCouponService"/>
+    <dubbo:reference interface="com.rrs.coupons.service.RrsCouOrderItemService" id="rrsCouOrderItemService"/>
+    <dubbo:reference interface="com.rrs.coupons.service.RrsCouUserService" id="rrsCouUserService"/>
+    <dubbo:reference interface="com.rrs.coupons.service.CouponsItemListService" id="couponsItemListService" />
+    <dubbo:reference interface="com.rrs.coupons.service.CouponsManageService" id="couponsManageService" />
+
+    <!-- api related service -->
+    <dubbo:reference interface="com.aixforce.trade.service.OrdersPopularizeService" id="ordersPopularizeService"/>
+    <dubbo:reference interface="com.rrs.third.service.ThirdPartLoginService" id="thirdPartLoginService"/>
+    <dubbo:reference interface="com.aixforce.api.service.CpsService" id="cpsService" check="false"/>
+
+	<!-- brand shopgift service -->
+    <dubbo:reference interface="com.rrs.arrivegift.service.ReserveSmsConfigService" id="reserveSmsConfigService"/>
+    <dubbo:reference interface="com.rrs.arrivegift.service.ReserveSmsInfosService" id="reserveSmsInfosService"/>
+    <dubbo:reference interface="com.rrs.arrivegift.service.ShopGiftConfigService" id="shopGiftConfigService"/>
+    <dubbo:reference interface="com.rrs.arrivegift.service.ExperinceService" id="experinceService"/>
+
+    <!-- 晒单-->
+    <dubbo:reference interface="com.aixforce.trade.service.BaskOrderService" id="baskOrderService"/>
+
+    <!-- collected related -->
+    <dubbo:reference interface="com.aixforce.collect.service.CollectedItemService" id="collectedItemService"/>
+    <dubbo:reference interface="com.aixforce.collect.service.CollectedShopService" id="collectedShopService"/>
+
+
+    <!-- SMS config service -->
+    <dubbo:reference interface="com.rrs.brand.service.SmsConfigService" id="smsConfigService"/>
+
+    <!-- buying activity -->
+    <dubbo:reference interface="com.aixforce.rrs.buying.service.BuyingActivityDefinitionService" id="buyingActivityDefinitionService" timeout="10000"/>
+    <dubbo:reference interface="com.aixforce.rrs.buying.service.BuyingTempOrderService" id="buyingTempOrderService"/>
+    <dubbo:reference interface="com.aixforce.rrs.buying.service.BuyingOrderRecordService" id="buyingOrderRecordService"/>
+    <dubbo:reference interface="com.aixforce.rrs.buying.service.BuyingItemService" id="buyingItemService"/>
+
+    <!-- 网签 -->
+    <dubbo:reference interface="com.aixforce.agreements.service.PreAuthorizationDepositOrderService" id="preAuthorizationDepositOrderService" check="false"/>
+
+    <dubbo:reference interface="com.aixforce.rrs.predeposit.service.PreDepositService" id="preDepositService"/>
+    <!-- 短链接-->
+    <dubbo:reference interface="com.aixforce.rrs.popularizeurl.service.PopularizeUrlService" id="popularizeUrlService" />
+
+</beans>

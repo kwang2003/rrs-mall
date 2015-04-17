@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+
+    <!-- 卖家买家 -->
+    <users id="1" name="seller" mobile="12888888888" encrypted_password="fbd9@92f784700191f6891472" type="2" status="1" tags="1" created_at="2013-11-02 13:58:09.0" updated_at="2014-01-07 10:51:50.0"/>
+    <users id="2" name="buyer" mobile="13888888888" encrypted_password="fbd9@92f784700191f6891472" type="1" status="1" tags="1" created_at="2013-11-02 13:58:09.0" updated_at="2014-01-07 10:51:50.0"/>
+
+    <!-- 店铺 -->
+    <shops id="1" name="测试店铺" user_id="1" user_name="seller" status="1" business_id="1"/>
+
+    <shop_extras id="1" shop_id="1" outer_code="88888888" />
+
+    <rrs_deposit_account seller_id="1" seller_name="seller" balance="200000"/>
+
+    <!--  未确认的结算记录  -->
+    <rrs_settlements id="1" order_id="1" seller_id="1" seller_name="seller" buyer_id="2" buyer_name="buyer" business="1" trade_status="3" type="1" pay_type="1" fee="200000" total_earning="200000" total_expenditure="0" seller_earning="198000" rrs_commission="1000" score_earning="0" presell_deposit="0" third_party_commission="1000" settle_status="2" cashed="0" finished="1" settled="1" confirmed="0" synced="0" vouched="0" ordered_at="2010-10-10 15:30:00.0" paid_at="2010-10-10 15:40:00.0" finished_at="2010-10-11 15:40:00.0" settled_at="2010-10-11 15:40:00.0" created_at="2010-10-10 15:40:00.0" updated_at="2010-10-11 15:40:00.0"/>
+
+    <!-- 已经创建结算记录，并已结算，待确认的订单 -->
+    <orders id="1" buyer_id="2" seller_id="1" business="4" status="3" type="1" trade_info_id="1" deliver_fee="0" payment_type="1" payment_code="123312837102378192311" paid_at="2014-03-18 18:48:08.0" delivered_at="2014-03-18 18:45:34.0" done_at="2014-03-18 18:48:08.0" finished_at="2014-03-18 18:48:08.0" created_at="2014-03-18 17:37:10.0" updated_at="2014-03-18 18:48:02.0" fee="1700000"/>
+    <!-- 普通订单在线支付, 卖家已发货状态, 不会进结算 -->
+    <orders id="2" buyer_id="2" seller_id="1" business="4" status="2" type="1" trade_info_id="1" deliver_fee="0" payment_type="1" payment_code="123312837102378192311" paid_at="2014-03-18 18:48:08.0" delivered_at="2014-03-18 18:45:34.0" done_at="2014-03-18 18:48:08.0" finished_at="2014-03-18 18:48:08.0" created_at="2014-03-18 17:37:10.0" updated_at="2014-03-18 18:48:02.0" fee="1700000"/>
+    <!-- 预售订单货到付款, 卖家已发货状态, 不会进结算 -->
+    <orders id="3" buyer_id="2" seller_id="1" business="4" status="2" type="2" trade_info_id="1" deliver_fee="0" payment_type="2" payment_code="123312837102378192311" paid_at="2014-03-18 18:48:08.0" delivered_at="2014-03-18 18:45:34.0" done_at="2014-03-18 18:48:08.0" finished_at="2014-03-18 18:48:08.0" created_at="2014-03-18 17:37:10.0" updated_at="2014-03-18 18:48:02.0" fee="1700000"/>
+    <!-- 预售订单在线支付, 卖家正在确认退货状态, 不会进结算 -->
+    <orders id="4" buyer_id="2" seller_id="1" business="4" status="6" type="2" trade_info_id="1" deliver_fee="0" payment_type="1" payment_code="123312837102378192311" paid_at="2014-03-18 18:48:08.0" delivered_at="2014-03-18 18:45:34.0" done_at="2014-03-18 18:48:08.0" finished_at="2014-03-18 18:48:08.0" created_at="2014-03-18 17:37:10.0" updated_at="2014-03-18 18:48:02.0" fee="1700000"/>
+    <!-- 成功的场景 -->
+    <orders id="5" buyer_id="2" seller_id="1" business="4" status="1" type="1" trade_info_id="1" deliver_fee="0" payment_type="1" payment_code="123312837102378192311" paid_at="2014-03-18 18:48:08.0" delivered_at="2014-03-18 18:45:34.0" done_at="2014-03-18 18:48:08.0" finished_at="2014-03-18 18:48:08.0" created_at="2014-03-18 17:37:10.0" updated_at="2014-03-18 18:48:02.0" fee="1700000"/>
+
+
+
+
+    <order_items id="1" order_id="1" sku_id="1" item_id="1" item_name="海尔全自动电视机" buyer_id="8" fee="500000" quantity="1" type="1" pay_type="1" payment_code="123312837102378192311" status="-4" reason="发票问题" refund_amount="500000" created_at="2014-03-18 17:37:10.0" updated_at="2014-03-18 18:47:27.0" request_refund_at="2014-03-18 18:46:12.0"/>
+    <order_items id="2" order_id="1" sku_id="1" item_id="2" item_name="海尔全自动电视机" buyer_id="8" fee="600000" quantity="1" type="1" pay_type="1" payment_code="123312837102378192311" status="-3" reason="协商一致退货" refund_amount="600000" created_at="2014-03-18 17:37:10.0" updated_at="2014-03-18 18:45:15.0" request_refund_at="2014-03-18 18:42:58.0"/>
+    <order_items id="3" order_id="1" sku_id="1" item_id="3" item_name="海尔高清互联网电视 55寸 大品牌品质有保障" buyer_id="8" fee="600000" quantity="1" type="1" pay_type="1" payment_code="123312837102378192311" status="3" created_at="2014-03-18 17:37:10.0" updated_at="2014-03-18 18:48:02.0"/>
+</dataset>
+
+

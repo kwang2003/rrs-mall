@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2012 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <typeAliases>
+        <!--trade related entity-->
+        <typeAlias alias="Order" type="com.aixforce.trade.model.Order"/>
+        <typeAlias alias="OrderExtra" type="com.aixforce.trade.model.OrderExtra"/>
+        <typeAlias alias="OrderItem" type="com.aixforce.trade.model.OrderItem"/>
+        <typeAlias alias="Delivery" type="com.aixforce.trade.model.Delivery"/>
+        <typeAlias alias="Comment" type="com.aixforce.trade.model.Comment"/>
+        <typeAlias alias="UserTradeInfo" type="com.aixforce.trade.model.UserTradeInfo"/>
+        <typeAlias alias="OrderComment" type="com.aixforce.trade.model.OrderComment"/>
+        <typeAlias alias="LogisticsInfo" type="com.aixforce.trade.model.LogisticsInfo"/>
+        <typeAlias alias="LogisticsRevert" type="com.aixforce.trade.model.LogisticsRevert"/>
+        <!-- freight entity -->
+        <typeAlias alias="FreightModel" type="com.aixforce.trade.model.FreightModel"/>
+        <typeAlias alias="LogisticsSpecial" type="com.aixforce.trade.model.LogisticsSpecial"/>
+        
+        <!-- vat invoice entity -->
+        <typeAlias alias="UserVatInvoice" type="com.aixforce.trade.model.UserVatInvoice" />
+        
+        <!--Delivery method-->
+        <typeAlias alias="DeliveryMethod" type="com.aixforce.trade.model.DeliveryMethod"/>
+
+        <!-- bask order entity -->
+        <typeAlias alias="BaskOrder" type="com.aixforce.trade.model.BaskOrder"/>
+
+        <!-- user collected related -->
+        <typeAlias alias="CollectedItem" type="com.aixforce.collect.model.CollectedItem"/>
+        <typeAlias alias="CollectedShop" type="com.aixforce.collect.model.CollectedShop"/>
+
+        <!-- Express -->
+        <typeAlias alias="ExpressInfo" type="com.aixforce.trade.model.ExpressInfo" />
+        <typeAlias alias="InstallInfo" type="com.aixforce.trade.model.InstallInfo" />
+        <typeAlias alias="OrderLogisticsInfo" type="com.aixforce.trade.model.OrderLogisticsInfo" />
+        <typeAlias alias="OrderInstallInfo" type="com.aixforce.trade.model.OrderInstallInfo" />
+
+        <typeAlias alias="OrderJobDayConfig" type="com.aixforce.trade.model.OrderJobDayConfig" />
+        <typeAlias alias="OrderJobOverDay" type="com.aixforce.trade.model.OrderJobOverDay" />
+
+        <typeAlias alias="PreAuthorizationDepositOrder" type="com.aixforce.agreements.model.PreAuthorizationDepositOrder" />
+
+    </typeAliases>
+</configuration>

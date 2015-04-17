@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="OrderItem">
+    <resultMap id="orderItemMap" type="OrderItem">
+        <id property="id" column="id"/>
+        <result property="originId" column="origin_id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="deliverFee" column="deliver_fee"/>
+        <result property="fee" column="fee"/>
+        <result property="channel" column="channel"/>
+
+        <result property="skuId" column="sku_id"/>
+        <result property="itemId" column="item_id"/>
+        <result property="itemName" column="item_name"/>
+        <result property="brandId" column="brand_id"/>
+        <result property="businessId" column="business_id"/>
+        <result property="quantity" column="quantity"/>
+        <result property="discount" column="discount"/>
+        <result property="type" column="type"/>
+        <result property="payType" column="pay_type"/>
+        <result property="paymentCode" column="payment_code"/>
+        <result property="status" column="status"/>
+        <result property="hasComment" column="has_comment"/>
+
+        <result property="reason" column="reason"/>
+        <result property="refundAmount" column="refund_amount"/>
+        <result property="deliveryPromise" column="delivery_promise"/>
+
+        <result property="paidAt" column="paid_at"/>
+        <result property="requestRefundAt" column="request_refund_at"/>
+        <result property="refundAt" column="refund_at"/>
+        <result property="returnGoodsAt" column="return_goods_at"/>
+        <result property="isBaskOrder" column="is_bask_order"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+
+        <result property="paymentPlatform" column="payment_platform"></result>
+    </resultMap>
+
+    <sql id="columns">
+        origin_id, order_id, buyer_id, seller_id, deliver_fee, fee, channel,
+        sku_id, item_id, item_name, brand_id, business_id, quantity, discount, `type`, pay_type, payment_code, status, has_comment,
+        reason, refund_amount, delivery_promise,
+        paid_at, request_refund_at, refund_at, return_goods_at,is_bask_order, created_at, updated_at
+    </sql>
+
+    <sql id="table">
+        order_items
+    </sql>
+
+
+    <select id="findById" parameterType="long" resultMap="orderItemMap">
+        select id,
+        <include refid="columns"/>
+        ,payment_platform
+        from <include refid="table" /> where id=#{id}
+    </select>
+
+    <select id="findByOriginId" parameterType="long" resultMap="orderItemMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table" /> where origin_id=#{id}
+    </select>
+
+    <select id="findByMap" parameterType="map" resultMap="orderItemMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table" /> where order_id=#{orderId} and type=#{type}
+    </select>
+
+
+    <select id="findByOrderId" resultMap="orderItemMap">
+        select id,
+        <include refid="columns"/>
+        ,payment_platform
+        from <include refid="table" /> where order_id=#{orderId}
+    </select>
+
+    <select id="findInOrderIds"  resultMap="orderItemMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table" /> where order_id in
+        <foreach item="orderId" index="index" collection="ids" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </select>
+
+
+    <select id="findItemNameOfOrders"  resultType="string">
+        select item_name
+        from <include refid="table" /> where order_id in
+        <foreach item="orderId" index="index" collection="ids" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </select>
+
+    <select id="findBySellerId" parameterType="long" resultMap="orderItemMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table" /> where seller_id=#{sellerId} order by created_at desc
+    </select>
+
+
+    <insert id="create" parameterType="OrderItem" useGeneratedKeys="true" keyProperty="id">
+        insert into order_items (<include refid="columns"/>) values
+        (
+        #{originId}, #{orderId}, #{buyerId}, #{sellerId}, #{deliverFee}, #{fee}, #{channel},
+        #{skuId}, #{itemId}, #{itemName}, #{brandId}, #{businessId}, #{quantity}, #{discount}, #{type}, #{payType}, #{paymentCode}, #{status}, #{hasComment},
+        #{reason}, #{refundAmount}, #{deliveryPromise},
+        #{paidAt}, #{requestRefundAt}, #{refundAt}, #{returnGoodsAt}, #{isBaskOrder}, now(), now()
+        )
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table" /> where id=#{id} <!-- and user_id=#{user_id}-->
+    </delete>
+
+    <update id="update" parameterType="OrderItem">
+        update <include refid="table" />
+        <set>
+            updated_at = now(),
+            <if test="deliverFee!=null">deliver_fee=#{deliverFee},</if>
+            <if test="fee!=null">fee=#{fee},</if>
+            <if test="discount!=null">discount=#{discount},</if>
+            <if test="status!=null">status=#{status},</if>
+            <if test="hasComment!=null">has_comment=#{hasComment},</if>
+            <if test="reason!=null">reason=#{reason},</if>
+            <if test="paymentCode!=null">payment_code=#{paymentCode},</if>
+            <if test="refundAmount!=null">refund_amount=#{refundAmount},</if>
+            <if test="requestRefundAt!=null">request_refund_at=#{requestRefundAt},</if>
+            <if test="refundAt!=null">refund_at=#{refundAt},</if>
+            <if test="returnGoodsAt!=null">return_goods_at=#{returnGoodsAt},</if>
+            <if test="channel!=null">channel=#{channel},</if>
+            <if test="paymentPlatform!=null">payment_platform=#{paymentPlatform},</if>
+            <if test="isBaskOrder!=null">is_bask_order=#{isBaskOrder},</if>
+            <if test="paidAt!=null">paid_at=#{paidAt},</if>
+        </set>
+        where id=#{id} <!--and user_id=#{user_id}-->
+    </update>
+
+    <update id="batchUpdateStatus">
+        UPDATE <include refid="table" />
+        <set>
+            updated_at = now(),
+            status = #{status},
+            <if test="requestRefundAt!=null">request_refund_at=#{requestRefundAt},</if>
+        </set>
+        WHERE id IN
+        <foreach collection="ids" open="(" separator="," close=")"
+                 item="id">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="updateOrderId">
+        UPDATE <include refid="table" />
+        <set>
+            updated_at = now(),
+            order_id = #{newId},
+        </set>
+        WHERE order_id = #{oldId}
+    </update>
+
+    <!-- all order item with status 3 and created 15 days ago, will remove commented item in job service -->
+    <select id="findOutOfCommentDeadLine" parameterType="long" resultMap="orderItemMap">
+        select id,
+        <include refid="columns"/>
+        from `<include refid="table" />`
+        where `status` = 3
+        <if test="expireDays!=null">
+            and `updated_at` &lt; date_add(now(), INTERVAL -#{expireDays} day)
+        </if>
+        group by `order_id`
+    </select>
+
+    <update id="batchUpdatePaymentCode">
+        update <include refid="table" />
+        set payment_code=#{paymentCode}
+        where id in
+        <foreach collection="ids" open="(" separator=","
+                 close=")" item="id">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="findOrderIdsBy" parameterType="map" resultType="long">
+        select distinct(order_id)
+        from <include refid="table" />
+        <where>
+            <if test="sellerId!=null">seller_id = #{sellerId}</if>
+            <if test="buyerId!=null">and buyer_id = #{buyerId}</if>
+            <if test="status!=null">and status = #{status}</if>
+            <if test="type!=null">and type = #{type}</if>
+            <if test="businessId!=null">and business_id = #{businessId}</if>
+            <if test="itemId!=null">and item_id = #{itemId}</if>
+        </where>
+        ORDER BY order_id DESC LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countOrderIds" parameterType="map" resultType="long">
+        select count(distinct(order_id))
+        from <include refid="table" />
+        <where>
+            <if test="sellerId!=null">seller_id = #{sellerId}</if>
+            <if test="buyerId!=null">and buyer_id = #{buyerId}</if>
+            <if test="status!=null">and status = #{status}</if>
+            <if test="type!=null">and type = #{type}</if>
+            <if test="businessId!=null">and business_id = #{businessId}</if>
+            <if test="itemId!=null">and item_id = #{itemId}</if>
+        </where>
+    </select>
+
+    <select id="sumRefundAmountOfSellerInDate" parameterType="map" resultType="long">
+       select sum(refund_amount)
+       from <include refid="table" />
+       where seller_id = #{sellerId}
+       AND <![CDATA[ refund_at >= #{refundStartAt} ]]>
+       AND <![CDATA[ refund_at < #{refundEndAt} ]]>
+    </select>
+
+    <select id="maxId" resultType="long">
+        select max(id)
+        from <include refid="table" />
+    </select>
+
+    <select id="findNotConfirmRefund" parameterType="map" resultMap="orderItemMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table" /> where status = 4
+        <![CDATA[ AND id < #{lastId}
+        AND request_refund_at <= #{endAt} AND request_refund_at >= #{startAt}]]>
+        ORDER BY id DESC LIMIT #{limit}
+    </select>
+
+
+    <sql id="condition">
+        <where>
+            <if test="criteria != null and criteria.orderId != null">
+                order_id = #{orderId}
+            </if>
+            <if test="criteria != null and criteria.sellerId != null">
+                AND seller_id = #{sellerId}
+            </if>
+            <if test="criteria != null and criteria.buyerId != null">
+                AND buyer_id = #{buyerId}
+            </if>
+            <if test="refundStartAt != null">
+                AND <![CDATA[ refund_at >= #{refundStartAt} ]]>
+            </if>
+            <if test="refundEndAt != null">
+                AND <![CDATA[ refund_at < #{refundEndAt} ]]>
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table" />
+        <include refid="condition" />
+        order by id
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="orderItemMap">
+        select id,
+        <include refid="columns" />
+        from <include refid="table" />
+        <include refid="condition" />
+        order by id
+    </select>
+
+<select id="smsUserStatus" parameterType="map" resultType="String">
+SELECT `enable` FROM rrs_sms_config WHERE userId=#{userId} AND userType=#{userType}
+</select>
+<select id="itmeIdList" resultType="Long">
+SELECT item_id as itemId FROM pre_sales WHERE (`status`=3 OR `status`=-1) AND smsFloag='0' 
+</select>
+<select id="buyerIdList" parameterType="map" resultType="map">
+SELECT buyer_id,item_name,DATE_FORMAT(created_at,'%Y-%m-%d') as orderDate,item_id,order_id FROM order_items WHERE type='3' and status='0' and item_id IN
+<foreach collection="itemIdList" open="(" separator="," close=")" item="itemId"> #{itemId} </foreach>
+ </select>
+ <update id="updateSmsFloag" parameterType="map">
+ UPDATE pre_sales SET smsFloag=1  WHERE (`status`=3 OR `status`=-1) AND item_id IN
+ <foreach collection="itemIdList" open="(" separator="," close=")" item="itemId"> #{itemId} </foreach>
+
+ </update>
+
+    <update id="updateOrderIdType" parameterType="OrderItem">
+        update <include refid="table" />
+        <set>
+            <if test="deliverFee!=null">deliver_fee=#{deliverFee},</if>
+            <if test="fee!=null">fee=#{fee},</if>
+            <if test="discount!=null">discount=#{discount},</if>
+            <if test="status!=null">status=#{status},</if>
+            <if test="hasComment!=null">has_comment=#{hasComment},</if>
+            <if test="reason!=null">reason=#{reason},</if>
+            <if test="paymentCode!=null">payment_code=#{paymentCode},</if>
+            <if test="refundAmount!=null">refund_amount=#{refundAmount},</if>
+            <if test="requestRefundAt!=null">request_refund_at=#{requestRefundAt},</if>
+            <if test="refundAt!=null">refund_at=#{refundAt},</if>
+            <if test="returnGoodsAt!=null">return_goods_at=#{returnGoodsAt},</if>
+            <if test="channel!=null">channel=#{channel},</if>
+            <if test="isBaskOrder!=null">is_bask_order=#{isBaskOrder},</if>
+            <if test="paidAt!=null">paid_at=#{paidAt},</if>
+            updated_at = now()
+        </set>
+        where order_id=#{orderId} and type=#{type}
+    </update>
+
+    <!--根据couponsid 查询对应的订单信息-->
+    <select id="queryOrderCouponsByCouponsId" parameterType="map" resultType="long">
+        SELECT distinct(order_id) FROM <include refid="table" /> WHERE order_id IN (
+        SELECT orderId FROM rrs_coupons_user_order_items WHERE couponsId = #{couponsId}
+        )
+        AND seller_id = #{sellerId}
+        ORDER BY order_id DESC LIMIT #{offset}, #{limit};
+
+        <!--select distinct(order_id)-->
+        <!--from <include refid="table" />-->
+        <!--<where>-->
+        <!--<if test="sellerId!=null">seller_id = #{sellerId}</if>-->
+        <!--<if test="buyerId!=null">and buyer_id = #{buyerId}</if>-->
+        <!--<if test="status!=null">and status = #{status}</if>-->
+        <!--<if test="type!=null">and type = #{type}</if>-->
+        <!--<if test="businessId!=null">and business_id = #{businessId}</if>-->
+        <!--<if test="itemId!=null">and item_id = #{itemId}</if>-->
+        <!--</where>-->
+        <!--ORDER BY order_id DESC LIMIT #{offset}, #{limit}-->
+
+    </select>
+    <select id="countQueryOrderCouponsByCouponsId" parameterType="map" resultType="long">
+        select count(distinct(order_id))
+        from <include refid="table" />
+        WHERE order_id IN (
+        SELECT orderId FROM rrs_coupons_user_order_items WHERE couponsId = #{couponsId}
+        )
+        AND seller_id = #{sellerId}
+    </select>
+
+    <select id="findByPaymentCode" resultMap="orderItemMap">
+        select id,
+        <include refid="columns"/>
+        ,payment_platform
+        from <include refid="table" /> where payment_code=#{paymentCode}
+    </select>
+
+</mapper>

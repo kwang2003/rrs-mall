@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <users id="1" name="manWithAll" mobile="12888888888" encrypted_password="fbd9@92f784700191f6891472" type="2" status="1" tags="1" created_at="2013-11-02 13:58:09.0" updated_at="2014-01-07 10:51:50.0"/>
+    <users id="2" name="manWithNoAccount" mobile="13888888888" encrypted_password="2153@eb7820bab772a062a9a0" type="2" status="1" tags="1" created_at="2013-12-25 12:30:28.0" updated_at="2014-01-01 14:44:03.0"/>
+    <users id="3" name="manWithNoShop" mobile="14888888888" encrypted_password="2153@eb7820bab772a062a9a0" type="2" status="1" tags="1" created_at="2013-12-25 12:30:28.0" updated_at="2014-01-01 14:44:03.0"/>
+
+    <shops id="1" name="小小熊的家" user_id="1" user_name="seller1" status="1" phone="1288888888" email="" business_id="4" image_url="http://img.aixforce.com/2013/12/25/111b38d2bc36263b2f6d5a8bc1752903.jpg" province="330000" city="330100" region="330108" street="六和路" created_at="2013-12-25 12:37:35.0" updated_at="2014-01-22 15:36:23.0" />
+    <shops id="2" name="Samsung官方旗舰店" user_id="2" user_name="manWithNoAccount" status="1" phone="1388888888" email="" business_id="1" image_url="http://img.aixforce.com/2013/12/25/9bb49c2be04fc4cf3e53e21fcb46a56d.jpg" province="110000" city="110100" region="110101" street="朝阳门内大街222号" created_at="2013-12-25 15:42:32.0" updated_at="2013-12-28 13:07:50.0" />
+
+    <shop_extras id="1" shop_id="1" outer_code="8000000001" ntalker_id="100001" created_at="2014-10-10 00:00:00.0" updated_at="2014-10-10 00:00:00.0"/>
+    <shop_extras id="2" shop_id="2" outer_code="8000000002" ntalker_id="100001" created_at="2014-10-10 00:00:00.0" updated_at="2014-10-10 00:00:00.0"/>
+
+
+    <rrs_deposit_account id="1" seller_id="1" seller_name="manWithAll" business="1" outer_code="8000000001" balance="0" created_at="2014-10-10 00:00:00.0" updated_at="2014-10-10 00:00:00.0"/>
+</dataset>
+
+

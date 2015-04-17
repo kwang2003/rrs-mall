@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ItemSettlement">
+    <resultMap id="itemSettlementMap" type="ItemSettlement">
+        <id property="id" column="id"/>
+
+        <result property="orderId" column="order_id"/>
+        <result property="orderItemId" column="order_item_id"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="sellerName" column="seller_name"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="buyerName" column="buyer_name"/>
+
+        <result property="business" column="business"/>
+        <result property="tradeStatus" column="trade_status"/>
+        <result property="itemName" column="item_name"/>
+        <result property="itemQuantity" column="item_quantity"/>
+        <result property="type" column="type"/>
+        <result property="payType" column="pay_type"/>
+        <result property="paymentCode" column="payment_code"/>
+        <result property="fee" column="fee"/>
+        <result property="reason" column="reason"/>
+        <result property="refundAmount" column="refund_amount"/>
+
+        <result property="totalEarning" column="total_earning"/>
+        <result property="totalExpenditure" column="total_expenditure"/>
+        <result property="sellerEarning" column="seller_earning"/>
+        <result property="rrsCommission" column="rrs_commission"/>
+        <result property="scoreEarning" column="score_earning"/>
+        <result property="presellDeposit" column="presell_deposit"/>
+        <result property="presellCommission" column="presell_commission"/>
+        <result property="thirdPartyCommission" column="third_party_commission"/>
+        <result property="commissionRate" column="commission_rate"/>
+
+        <result property="settleStatus" column="settle_status"/>
+        <result property="fixed" column="fixed"/>
+        <result property="voucher" column="voucher"/>
+        <result property="thirdPartyReceipt" column="third_party_receipt"/>
+        <result property="paidAt" column="paid_at"/>
+        <result property="settledAt" column="settled_at"/>
+        <result property="confirmedAt" column="confirmed_at"/>
+
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="table">
+        rrs_item_settlements
+    </sql>
+
+    <sql id="columns">
+        order_id, order_item_id, seller_id, seller_name, buyer_id, buyer_name,
+        business, trade_status, item_name, item_quantity, `type`, pay_type, payment_code, fee, reason, refund_amount,
+        total_earning, total_expenditure, seller_earning, rrs_commission, score_earning, presell_deposit, presell_commission,  third_party_commission, commission_rate,
+        settle_status, fixed, voucher, third_party_receipt, paid_at, settled_at, confirmed_at,
+        created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="ItemSettlement" useGeneratedKeys="true" keyProperty="id">
+        insert into <include refid="table"/> (<include refid="columns"/>)
+        values
+        (
+        #{orderId}, #{orderItemId}, #{sellerId}, #{sellerName}, #{buyerId}, #{buyerName},
+        #{business}, #{tradeStatus}, #{itemName}, #{itemQuantity}, #{type}, #{payType}, #{paymentCode}, #{fee}, #{reason}, #{refundAmount},
+        #{totalEarning}, #{totalExpenditure}, #{sellerEarning}, #{rrsCommission}, #{scoreEarning}, #{presellDeposit}, #{presellCommission}, #{thirdPartyCommission}, #{commissionRate},
+        #{settleStatus}, #{fixed}, #{voucher}, #{thirdPartyReceipt}, #{paidAt}, #{settledAt}, #{confirmedAt},
+        now(), now()
+        )
+    </insert>
+
+    <sql id="condition">
+        <where>
+            <if test="criteria != null and criteria.sellerId != null">
+                AND seller_id = #{criteria.sellerId}
+            </if>
+            <if test="criteria != null and criteria.orderId != null">
+                AND order_id = #{criteria.orderId}
+            </if>
+            <if test="criteria != null and criteria.orderItemId != null">
+                AND order_item_id = #{criteria.orderItemId}
+            </if>
+            <if test="criteria != null and criteria.type != null">
+                AND `type` = #{criteria.type}
+            </if>
+            <if test="confirmedStartAt != null">
+                AND <![CDATA[ settled_at >= #{confirmedStartAt} ]]>
+            </if>
+            <if test="confirmedEndAt != null">
+                AND <![CDATA[ settled_at < #{confirmedEndAt} ]]>
+            </if>
+            <if test="paidStartAt != null">
+                AND <![CDATA[ paid_at >= #{paidStartAt} ]]>
+            </if>
+            <if test="paidEndAt != null">
+                AND <![CDATA[ paid_at < #{paidEndAt} ]]>
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table"/>
+        <include refid="condition" />
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="itemSettlementMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <include refid="condition" />
+        order by id desc limit #{offset}, #{limit}
+    </select>
+
+    <select id="findByOrderId" parameterType="map" resultMap="itemSettlementMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where order_id = #{orderId}
+    </select>
+
+    <select id="findByOrderItemId" parameterType="map" resultMap="itemSettlementMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where order_item_id = #{orderItemId}
+    </select>
+
+
+    <select id="get" parameterType="long" resultMap="itemSettlementMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/> where id=#{id}
+    </select>
+
+
+    <select id="getBy" parameterType="long" resultMap="itemSettlementMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <include refid="condition" />
+    </select>
+
+    <select id="list" parameterType="map" resultMap="itemSettlementMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where order_id = #{orderId}
+        order by id desc
+    </select>
+
+
+    <update id="update" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            <if test="fee != null">
+                fee = #{fee},
+            </if>
+            <if test="totalEarning != null">
+                total_earning = #{totalEarning},
+            </if>
+            <if test="totalExpenditure != null">
+                total_expenditure = #{totalExpenditure},
+            </if>
+            <if test="sellerEarning != null">
+                seller_earning = #{sellerEarning},
+            </if>
+            <if test="rrsCommission != null">
+                rrs_commission = #{rrsCommission},
+            </if>
+            <if test="scoreEarning != null">
+                score_earning = #{scoreEarning},
+            </if>
+            <if test="presellDeposit != null">
+                presell_deposit = #{presellDeposit},
+            </if>
+            <if test="presellCommission != null">
+                presell_commission = #{presellCommission},
+            </if>
+            <if test="thirdPartyCommission != null">
+                third_party_commission = #{thirdPartyCommission},
+            </if>
+            <if test="commissionRate != null">
+                commission_rate = #{commissionRate},
+            </if>
+
+            <if test="settleStatus != null">
+                settle_status = #{settleStatus},
+            </if>
+            <if test="paymentCode != null">
+                payment_code = #{paymentCode},
+            </if>
+            <if test="paidAt != null">
+                paid_at = #{paidAt},
+            </if>
+            <if test="orderItemId != null">
+                order_item_id = #{orderItemId},
+            </if>
+            <if test="fixed != null">
+                fixed = #{fixed},
+            </if>
+            <if test="tradeStatus != null">
+                trade_status = #{tradeStatus},
+            </if>
+            <if test="settledAt != null">
+                settled_at = #{settledAt},
+            </if>
+            <if test="refundAmount != null">
+                refund_amount = #{refundAmount},
+            </if>
+            <if test="reason != null">
+                reason = #{reason},
+            </if>
+            updated_at = now(),
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <update id="finished" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            trade_status = #{settlement.tradeStatus},
+            <if test="settlement.refundAmount != null">refund_amount = #{settlement.refundAmount},</if>
+            <if test="settlement.reason != null">reason = #{settlement.reason},</if>
+            updated_at = now(),
+        </set>
+        WHERE id=#{settlement.id}
+    </update>
+
+
+    <update id="batchVouched" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            updated_at = now(),
+            voucher = #{voucher},
+            <if test="thirdPartyReceipt != null">third_party_receipt = #{thirdPartyReceipt},</if>
+        </set>
+        WHERE seller_id = #{sellerId}
+        AND <![CDATA[ confirmed_at >= #{confirmedStartAt}
+        AND confirmed_at < #{confirmedEndAt}]]>
+        AND settle_status = 4
+    </update>
+
+
+    <update id="batchSynced" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            updated_at = now(),
+            settle_status = 4,
+        </set>
+        WHERE <![CDATA[ confirmed_at >= #{confirmedStartAt}
+        AND confirmed_at < #{confirmedEndAt}]]>
+    </update>
+
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM <include refid="table"/> WHERE id=#{id}
+    </delete>
+
+
+
+    <select id="findByOrderIdAndType" parameterType="map" resultMap="itemSettlementMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where order_id = #{orderId} and type = #{type}
+    </select>
+
+</mapper>

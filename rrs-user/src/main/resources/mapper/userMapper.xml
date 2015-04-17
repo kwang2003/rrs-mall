@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="User">
+    <resultMap id="userMap" type="User">
+        <id property="id" column="id"/>
+        <result property="email" column="email"/>
+        <result property="name" column="name"/>
+        <result property="mobile" column="mobile"/>
+        <result property="encryptedPassword" column="encrypted_password"/>
+        <result property="type" column="type"/>
+        <result property="avatar" column="avatar"/>
+        <result property="status" column="status"/>
+        <result property="parent" column="parent"/>
+        <result property="tags" column="tags"/>
+        <result property="thirdPartId" column="third_part_id"/>
+        <result property="thirdPartType" column="third_part_type"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        email,name,mobile,encrypted_password,
+        type,avatar,status,parent,tags,third_part_id,third_part_type,created_at,updated_at
+    </sql>
+
+    <select id="findById" parameterType="long" resultMap="userMap">
+        select id,
+        <include refid="columns"/>
+        from users where id=#{id}
+    </select>
+
+    <select id="findByEmail" parameterType="string" resultMap="userMap">
+        select id,
+        <include refid="columns"/>
+        from users where email=#{email}
+    </select>
+
+    <select id="findByName" parameterType="string" resultMap="userMap">
+        select id,
+        <include refid="columns"/>
+        from users where name=#{name}
+    </select>
+
+    <select id="findByMobile" parameterType="string" resultMap="userMap">
+        select id,
+        <include refid="columns"/>
+        from users where mobile=#{mobile}
+    </select>
+
+    <select id="findByThirdPartTypeAndId" resultMap="userMap">
+        select id,
+        <include refid="columns"/>
+        from users where third_part_id=#{thirdPartId} and third_part_type=#{thirdPartType}
+    </select>
+
+    <select id="findByTypes" resultMap="userMap">
+        select id,
+        <include refid="columns"/>
+        from users
+        <if test="type.size()!=0">
+            where type in
+            <foreach collection="type" item="item"
+                     open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by id asc limit #{offset},#{limit}
+    </select>
+
+    <select id="findByType" resultMap="userMap">
+        select id,
+        <include refid="columns"/>
+        from users
+        <if test="type!=null">
+            where type=#{type}
+        </if>
+        order by id desc limit #{offset},#{limit}
+    </select>
+
+    <!-- 插入用户： 1.由数据库生成id并赋值到user对象  -->
+    <insert id="create" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+        insert into users (
+        <include refid="columns"/>
+        )
+        values (#{email},#{name},#{mobile}, #{encryptedPassword}, #{type},
+        #{avatar},#{status},#{parent},#{tags},#{thirdPartId},#{thirdPartType},now(),now())
+    </insert>
+
+    <update id="update" parameterType="User">
+        update users
+        <set>
+            updated_at=now(),
+            <if test="email!=null">email = #{email},</if>
+            <if test="encryptedPassword!= null">encrypted_password=#{encryptedPassword},</if>
+            <if test="type != null">type=#{type},</if>
+            <if test="name != null">name=#{name},</if>
+            <if test="mobile != null">mobile=#{mobile},</if>
+            <if test="avatar != null">avatar=#{avatar},</if>
+            <if test="status !=null">status=#{status},</if>
+            <if test="parent !=null">parent=#{parent},</if>
+            <if test="tags !=null">tags=#{tags},</if>
+            <if test="thirdPartId!=null">third_part_id=#{thirdPartId},</if>
+            <if test="thirdPartType!=null">third_part_type=#{thirdPartType}</if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="batchUpdateStatus">
+        update users set
+        updated_at=now(),
+        status = #{status}
+        where id in
+        <foreach collection="ids" item="id"
+                 open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from users where id=#{id}
+    </delete>
+
+    <!--pagination-->
+    <select id="count" resultType="long">
+        select count(1) from users where status = #{status}
+    </select>
+
+    <select id="pagination" resultMap="userMap">
+        select id,
+        <include refid="columns"/>
+        from users where status=#{status} order by id desc limit #{offset},#{limit}
+    </select>
+
+    <select id="countByTypes" resultType="long">
+        select count(1) from users
+        <if test="list.size()!=0">
+            where type in
+            <foreach collection="list" open="(" separator=","
+                     close=")" item="type">
+                #{type}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="countByType" resultType="long">
+        select count(1) from users
+        <if test="type!=null">
+          where type=#{type}
+        </if>
+    </select>
+
+    <select id="findByIds" resultMap="userMap">
+        select id,
+        <include refid="columns"/>
+        from users
+        where id in
+        <foreach collection="list" open="(" separator=","
+                 close=")" item="id">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="countAll" resultType="long">
+        select count(1) from users
+    </select>
+
+    <select id="findAll" resultMap="userMap">
+        select id, <include refid="columns"/>
+        from users
+        order by id desc
+        limit #{offset},#{limit}
+    </select>
+</mapper>

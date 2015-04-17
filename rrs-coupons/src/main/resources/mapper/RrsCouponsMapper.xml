@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+   -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        <!--table rrs_coupons-->
+<mapper namespace="RrsCou">
+    <resultMap id="RrsCouMap" type="RrsCou">
+        <id property="id" column="id"/>
+        <result property="cpName" column="cpName"/>
+        <result property="channelId" column="channelId"/>
+        <result property="startTime" column="startTime"/>
+        <result property="endTime" column="endTime"/>
+        <result property="area" column="area"/>
+        <result property="term" column="term"/>
+        <result property="amount" column="amount"/>
+        <result property="userType" column="userType"/>
+        <result property="useLimit" column="useLimit"/>
+        <result property="status" column="status"/>
+        <result property="sendNum" column="sendNum"/>
+        <result property="sendType" column="sendType"/>
+        <result property="sendStartTime" column="sendStartTime"/>
+        <result property="sendEndTime" column="sendEndTime"/>
+        <result property="sendOrigin" column="sendOrigin"/>
+        <result property="created_at" column="created_at"/>
+        <result property="updated_at" column="updated_at"/>
+        <result property="memo" column="memo"/>
+        <result property="costsBear" column="costsBear"/>
+        <result property="couponUse" column="couponUse"/>
+        <result property="couponReceive" column="couponReceive"/>
+        <result property="categoryId" column="categoryId"/>
+        <result property="mainImages" column="mainImages"/>
+        <result property="categoryName" column="categoryName"/>
+        <result property="couponsType" column="couponsType"/>
+        <result property="couponsCode" column="couponsCode"/>
+        <result property="sellerId" column="sellerId"/>
+        <result property="shopName" column="shop_name"/>
+        <result property="shopId" column="shopid"/>
+        <result property="sellerName" column="seller_name"/>
+
+    </resultMap>
+
+    <sql id="columns">
+        cpName,channelId,startTime,endTime,area,term,amount,userType,useLimit,status,sendNum,sendType,sendStartTime,sendEndTime,sendOrigin,created_at,updated_at,memo,costsBear,couponUse,couponReceive,categoryId,mainImages,categoryName,couponsType,couponsCode,
+        sellerId,shop_name,shopid,seller_name
+    </sql>
+    <select id="findByOrderIds" resultType="com.rrs.coupons.model.RrsCouOrder">
+        SELECT
+        t2.id,
+        t2.cpName,
+        t2.channelId,
+        t2.area,
+        t2.term,
+        t2.amount,
+        t2.userType,
+        t2.useLimit,
+        t2.STATUS,
+        t2.sendNum,
+        t2.sendType,
+        t2.sendOrigin,
+        t2.created_at,
+        t2.updated_at,
+        t2.memo,
+        t2.costsBear,
+        t2.couponsType,
+        t2.couponsCode,
+        t1.orderId,
+        t1.userId
+        FROM
+        rrs_coupons_user_order t1,
+        rrs_coupons t2
+        WHERE
+        t1.couponId = t2.id
+        AND t1.orderId IN
+        <foreach collection="list" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+    </select>
+    <select id="findOrderItemsByOrderIds" resultType="com.rrs.coupons.model.RrsCouOrderItem">
+        SELECT
+        t2.id,
+        t2.cpName,
+        t2.channelId,
+        t2.area,
+        t2.term,
+        t2.amount,
+        t2.userType,
+        t2.useLimit,
+        t2.STATUS,
+        t2.sendNum,
+        t2.sendType,
+        t2.sendOrigin,
+        t2.created_at,
+        t2.updated_at,
+        t2.memo,
+        t2.costsBear,
+        t2.couponsType,
+        t2.couponsCode,
+        t1.orderId,
+        t1.couponsId,
+        t1.userId,
+        t1.itemId,
+        t1.skuId,
+        t1.freeAmount
+        FROM
+        rrs_coupons_user_order_items t1,
+        rrs_coupons t2
+        WHERE
+        t1.couponsId = t2.id
+        AND t1.orderId IN
+        <foreach collection="list" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="queryRrsCouponsBy" resultMap="RrsCouMap">
+        select id,<include refid="columns"/>
+        from rrs_coupons where
+        <![CDATA[  startTime <= #{startTime} and endTime >= #{endTime}   ]]>
+        and status = #{status}
+    </select>
+
+    <select id="queryCouponsById" resultMap="RrsCouMap">
+        select id,<include refid="columns"/> from rrs_coupons where id = #{couponsId};
+    </select>
+
+    <update id="updateRrsCou" parameterType="RrsCou">
+        update rrs_coupons set couponUse =  #{couponUse}
+        where id = #{id}
+    </update>
+    
+    <select id="findCouponsAll" parameterType="map" resultMap="RrsCouMap">
+    SELECT * FROM rrs_coupons WHERE couponsType =1 and channelId LIKE concat(concat('%',#{businessId}),'%') AND `status` LIKE concat(concat('%',#{status}),'%') order by id desc
+    </select>
+    
+     <select id="findCategory" parameterType="Integer" resultType="map">
+       SELECT category_id,`name` FROM migrate_category_view WHERE parent_id=#{categoryId}
+     </select>
+    
+    <insert id="addCoupon" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+	INSERT INTO `rrs`.`rrs_coupons` (
+	`cpName`,
+	`channelId`,
+	`startTime`,
+	`endTime`,
+	`area`,
+	`term`,
+	`amount`,
+	`userType`,
+	`useLimit`,
+	`status`,
+	`sendNum`,
+	`sendType`,
+	`sendStartTime`,
+	`sendEndTime`,
+	`sendOrigin`,
+	`created_at`,
+	`updated_at`,
+	`memo`,
+	`costsBear`,
+	`categoryId`,
+	`categoryName`,
+	 couponsType,
+	 couponsCode,
+	 sellerId,
+	 shopid,
+	 shop_name,
+	 seller_name
+	)
+	VALUES
+	(
+	#{cpName},
+	#{channelId},
+	#{startTime},
+	#{endTime},
+	#{area},
+	#{term},
+	#{amount},
+	#{userType},
+	#{useLimit},
+	#{status},
+	#{sendNum},
+	#{sendType},
+	#{sendStartTime},
+	#{sendEndTime},
+	#{sendOrigin},
+	now(),
+	now(),
+	#{memo},
+	#{costsBear},
+	#{IdStr},
+	#{nameStr},
+	#{couponsType},
+	#{couponsCode},
+	#{sellerId},
+	#{shopid},
+	#{shopName},
+	#{sellerName}
+	)
+    </insert>
+    
+    <update id="updateCoupon" parameterType="map">
+	UPDATE `rrs`.`rrs_coupons`
+	SET
+	`cpName` = #{cpName},
+	`channelId` = #{channelId},
+	`startTime` = #{startTime},
+	`endTime` = #{endTime},
+	`area` = #{area},
+	`term` = #{term},
+	`amount` = #{amount},
+	`userType` = #{userType},
+	`useLimit` = #{useLimit},
+	`status` = #{status},
+	`sendNum` = #{sendNum},
+	`sendType` = #{sendType},
+	`sendStartTime` = #{sendStartTime},
+	`sendEndTime` = #{sendEndTime},
+	`sendOrigin` = #{sendOrigin},
+	`memo` = #{memo},
+	`costsBear` = #{costsBear},
+	`categoryId` = #{IdStr},
+	`categoryName` = #{nameStr}
+	WHERE `id` = #{id}  
+    </update>
+    
+    <update id="updateCouponStatus" parameterType="map">
+	UPDATE `rrs`.`rrs_coupons`
+	SET `status` = #{status}
+	WHERE `id` = #{id}
+    </update>
+
+
+    <select id="findUserLimit" resultMap="RrsCouMap" parameterType="int">
+        select useLimit from rrs_coupons where id=#{id}
+    </select>
+
+    <select id="findSendNum" resultMap="RrsCouMap" parameterType="int">
+        select sendNum from rrs_coupons where id=#{id}
+    </select>
+
+    <update id="updateCouponReceive" parameterType="int">
+        update rrs_coupons set couponReceive=couponReceive+1  where id=#{id}
+    </update>
+
+    <sql id="queryCondition">
+        <where>
+            <if test="businessId!=null">and channelId = #{businessId}</if>
+            <if test="beginCreatedAt!=null">and <![CDATA[  created_at >= #{beginCreatedAt} ]]></if>
+            <if test="endCreatedAt!=null">and <![CDATA[  created_at <= #{endCreatedAt}   ]]></if>
+            <if test="status!=null">and status = #{status}</if>
+        </where>
+    </sql>
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1) from rrs_coupons where 1=1
+        <if test='businessId!=null and businessId!=""'>and channelId = #{businessId}</if>
+        <if test='cpName!=null and cpName!=""'>and cpName like concat(concat('%',#{cpName}),'%')</if>
+        <if test='beginCreatedAt!=null and beginCreatedAt!=""'>and  DATE_FORMAT(created_at,'%Y-%m-%d')&gt;=DATE_FORMAT(#{beginCreatedAt},'%Y-%m-%d')</if>
+        <if test='endCreatedAt!=null and endCreatedAt!=""'>and DATE_FORMAT(created_at,'%Y-%m-%d')&lt;=DATE_FORMAT(#{endCreatedAt},'%Y-%m-%d')</if>
+        <if test='status!=null and status!=""'>and status = #{status}</if>
+        <if test='couponsType!=null and couponsType!=""'>and couponsType = #{couponsType}</if>
+        <if test='sellerId!=null and sellerId!=""'>and sellerId = #{sellerId}</if>
+        <if test='sellerName!=null and sellerName!=""'>and seller_Name like concat(concat('%',#{sellerName}),'%')</if>
+        <if test='shopName!=null and shopName!=""'>and shop_Name like concat(concat('%',#{shopName}),'%')</if>
+    </select>
+
+    <select id="pagination" parameterType="map" resultMap="RrsCouMap">
+        select id,
+        <include refid="columns"/>
+        from rrs_coupons
+        where 1=1
+        <if test='businessId!=null and businessId!=""'>and channelId = #{businessId}</if>
+        <if test='cpName!=null and cpName!=""'>and cpName like concat(concat('%',#{cpName}),'%')</if>
+        <if test='beginCreatedAt!=null and beginCreatedAt!=""'>and DATE_FORMAT(created_at,'%Y-%m-%d')&gt;=DATE_FORMAT(#{beginCreatedAt},'%Y-%m-%d')  </if>
+        <if test='endCreatedAt!=null and endCreatedAt!=""'>and DATE_FORMAT(created_at,'%Y-%m-%d')&lt;=DATE_FORMAT(#{endCreatedAt},'%Y-%m-%d')</if>
+        <if test='status!=null and status!=""'>and status = #{status}</if>
+        <if test='couponsType!=null and couponsType!=""'>and couponsType = #{couponsType}</if>
+        <if test='sellerId!=null and sellerId!=""'>and sellerId = #{sellerId}</if>
+        <if test='sellerName!=null and sellerName!=""'>and seller_Name like concat(concat('%',#{sellerName}),'%')</if>
+        <if test='shopName!=null and shopName!=""'>and shop_Name like concat(concat('%',#{shopName}),'%')</if>
+        ORDER BY created_at DESC LIMIT #{offset}, #{limit}
+    </select>
+    <select id="findSellCoupons" parameterType="Long" resultMap="RrsCouMap">
+
+        select * from rrs_coupons where sellerId=#{userId} and couponsType = 2 order by rrs_coupons.created_at desc
+        <if test='page== 0'>  limit 0,25 </if>
+        <if test='page!= 0'>  limit #{page},25</if>
+    </select>
+    <select id="findBySearch" parameterType="RrsCou" resultMap="RrsCouMap">
+              select * from rrs_coupons where sellerId=#{sellerId} and couponsType = 2
+              <if test='status =="0"'> and status =0</if>
+              <if test='startTime!=null and startTime!=""'> and DATE_FORMAT(created_at,'%Y-%m-%d')&gt;=DATE_FORMAT(#{startTime},'%Y-%m-%d')</if>
+              <if test='endTime!=null and endTime!=""'> and DATE_FORMAT(created_at,'%Y-%m-%d')&lt;=DATE_FORMAT(#{endTime},'%Y-%m-%d')</if>
+              <if test='cpName!=null and cpName!=""'> and cpName=#{cpName}</if>
+              <if test='status!=null and status!="" and status!="99"'> and status=#{status}</if>
+               order by rrs_coupons.created_at desc
+          <if test='page== 0'>  limit 0,25 </if>
+        <if test='page!= 0'>  limit #{page},25</if>
+
+    </select>
+    <select id="countCou" parameterType="Long" resultType="Integer">
+        select count(*) from rrs_coupons where sellerId=#{userId} and couponsType = 2
+    </select>
+    <select id="countBySearch" parameterType="RrsCou" resultType="Integer">
+        select count(*) from rrs_coupons where sellerId=#{sellerId} and couponsType = 2
+        <if test='status =="0"'> and status =0</if>
+        <if test='startTime!=null and startTime!=""'> and created_at&gt;=#{startTime}</if>
+        <if test='endTime!=null and endTime!=""'> and created_at&lt;=#{endTime}</if>
+        <if test='cpName!=null and cpName!=""'> and cpName=#{cpName}</if>
+        <if test='status!=null and status!="" and status!="99"'> and status=#{status}</if>
+        order by rrs_coupons.created_at desc
+
+    </select>
+    <select id="findAdminCoupons" resultType="Map" parameterType="Integer">
+select rrs_coupons.channelId,rrs_coupons.id,
+			 shop.name,
+			 shop.user_name,
+			 rrs_coupons.cpName,
+			 rrs_coupons.term,
+			 rrs_coupons.amount,
+			 rrs_coupons.created_at,
+			 rrs_coupons.sendNum,
+			 rrs_coupons.couponReceive,
+			 rrs_coupons.couponUse,
+			 rrs_coupons.status
+ from rrs_coupons rrs_coupons inner join shops shop on rrs_coupons.sellerId = shop.user_id where rrs_coupons.couponsType = 2 order by rrs_coupons.created_at
+        <if test='page== 0'>  limit 0,25 </if>
+        <if test='page!= 0'>  limit #{page},25</if>
+    </select>
+    <select id="adminCount" resultType="Integer">
+
+        select count(*) from rrs_coupons rrs_coupons inner join shops shop on rrs_coupons.sellerId = shop.user_id where rrs_coupons.couponsType = 2
+    </select>
+    <select id="searchAll"  resultType="Map" parameterType="Map">
+select rrs_coupons.channelId,rrs_coupons.id,
+			 shop.name,
+			 shop.user_name,
+			 rrs_coupons.cpName,
+			 rrs_coupons.term,
+			 rrs_coupons.amount,
+			 rrs_coupons.created_at,
+			 rrs_coupons.sendNum,
+			 rrs_coupons.couponReceive,
+			 rrs_coupons.couponUse,
+			 rrs_coupons.status
+ from rrs_coupons rrs_coupons inner join shops shop on rrs_coupons.sellerId = shop.user_id where rrs_coupons.couponsType = 2
+        <if test='shopAcc!="nulls"'> and shop.user_name=#{shopAcc}</if>
+        <if test='shopName!="nulls"'> and  shop.name=#{shopName} </if>
+        <if test='channelCou!="99"'> and rrs_coupons.channelId=#{channelCou}</if>
+        <if test='statusCou!="99"'> and rrs_coupons.status=#{statusCou}</if>
+        <if test='page== 0'>  limit 0,25 </if>
+        <if test='page!= 0'>  limit #{page},25</if>
+
+    </select>
+
+
+    <select id="querySellerCouponsByParam"  resultMap="RrsCouMap" parameterType="map">
+      SELECT * FROM rrs_coupons rc WHERE  (rc.status = 1 or rc.status = 2) and rc.couponsType = 2 and rc.id IN (SELECT DISTINCT rcil.couponsId FROM rrs_coupons_item_list  rcil WHERE rcil.couponsId IN (SELECT DISTINCT couponId FROM rrs_coupons_users WHERE userId = #{userId} AND STATUS = #{userStatus} )
+        <if test='itemIds!=null and itemIds!=""'>
+          AND rcil.itemId IN (#{itemIds})
+        </if>
+      )
+       and <![CDATA[  rc.startTime <= #{startTime} and rc.endTime >= #{endTime}   ]]>
+    </select>
+
+	<select id="queryCouponsByShopId" resultMap="RrsCouMap">
+		SELECT
+			a.name shopName, t.id,t.cpName,t.channelId,t.startTime,t.endTime,t.area,t.term,t.amount,t.userType,t.useLimit,t.status,t.sendNum,t.sendType,t.sendStartTime,t.sendEndTime,t.sendOrigin,t.created_at,t.updated_at,t.memo,t.costsBear,t.couponUse,t.couponReceive,t.categoryId,t.mainImages,t.categoryName,t.couponsType,t.couponsCode
+		FROM
+			rrs_coupons t
+		INNER JOIN shops a ON t.sellerId = a.user_id
+		AND t.sellerId = #{shopId}
+		AND t.`status` = 2
+		AND t.couponsType = 2
+		AND now() BETWEEN t.startTime AND t.endTime
+		LIMIT #{offset}, #{limit}
+    </select>
+
+	<select id="queryCouponsCountByShopId" resultType="java.lang.Long">
+		SELECT
+			count(*)
+		FROM
+			rrs_coupons t
+		INNER JOIN shops a ON t.sellerId = a.user_id
+		AND t.sellerId = #{shopId}
+		AND t.`status` = 2
+		AND t.couponsType = 2
+		AND now() BETWEEN t.startTime AND t.endTime
+    </select>
+
+    <select id="queryShopCouponsById" resultMap="RrsCouMap">
+		SELECT
+			a.id shopId, a.name shopName, t.id,t.cpName,t.channelId,t.startTime,t.endTime,t.area,t.term,t.amount,t.userType,t.useLimit,t.status,t.sendNum,t.sendType,t.sendStartTime,t.sendEndTime,t.sendOrigin,t.created_at,t.updated_at,t.memo,t.costsBear,t.couponUse,t.couponReceive,t.categoryId,t.mainImages,t.categoryName,t.couponsType,t.couponsCode,t.sellerId
+		FROM
+			rrs_coupons t INNER JOIN shops a
+		ON t.sellerId = a.user_id and t.id = #{couponsId}
+    </select>
+    <select id="editById" parameterType="long" resultMap="RrsCouMap">
+
+        select * from rrs_coupons where id=#{couponsId}
+    </select>
+
+       <select id="queryCouName"  resultType="Map" parameterType="long">
+			SELECT
+				t1.itemId,
+				t2.NAME
+			FROM
+				rrs_coupons_item_list t1,
+				items t2
+			WHERE
+				t1.itemId = t2.id
+			AND t1.couponsId=#{couponsId}
+    </select>
+
+    <select id="countShopOf" parameterType="map" resultType="long">
+		 SELECT
+			count(*)
+		FROM
+			rrs_coupons AS t1,
+			users AS t2,
+			shops AS t3
+		WHERE
+			t1.couponsType = 2
+			AND t1.sellerid = t2.id
+			AND t1.shopId = t3.shopId
+
+	        <if test='name!=null and name!=""'>and t2.NAME = #{name}</if>
+	        <if test='shopname!=null and shopname!=""'>and t3.NAME = #{shopname}</if>
+	        <if test='status!=null and status!=""'>and t1.STATUS = #{status}</if>
+	        <if test='channel!=null and channel!=""'>and t3.business_id = #{channel}</if>
+	    </select>
+    <update id="chexiaoCoupons" parameterType="Long">
+
+        update rrs_coupons set status =4 where id =#{couponsId}
+
+     </update>
+    <update id="stopCoupons" parameterType="map">
+
+        update rrs_coupons set status = #{status} where id=#{couponsId}
+    </update>
+
+	    <!--<select id="pageShopCou" parameterType="map" resultMap="com.rrs.coupons.model.ShopCoupons">-->
+		     <!--SELECT-->
+				<!--t1.id,-->
+				<!--t3.business_id,-->
+				<!--t2.NAME sellername,-->
+				<!--t3.NAME shopname,-->
+				<!--t1.cpname,-->
+				<!--t1.categoryname,-->
+				<!--t1.created_at,-->
+				<!--t1.sendnum,-->
+				<!--t1.couponReceive,-->
+				<!--t1.couponUse,-->
+				<!--t1.STATUS-->
+			<!--FROM-->
+				<!--rrs_coupons AS t1,-->
+				<!--users AS t2,-->
+				<!--shops AS t3-->
+			<!--WHERE-->
+				<!--t1.couponsType = 2-->
+				<!--AND t1.sellerid = t2.id-->
+				<!--AND t1.sellerid = t3.user_id-->
+			    <!--<if test='name!=null and name!=""'>and t2.NAME = #{name}</if>-->
+		        <!--<if test='shopname!=null and shopname!=""'>and t3.NAME = #{shopname}</if>-->
+		        <!--<if test='status!=null and status!=""'>and t1.STATUS = #{status}</if>-->
+		        <!--<if test='channel!=null and channel!=""'>and t3.business_id = #{channel}</if>-->
+		        <!--ORDER BY id DESC LIMIT #{offset}, #{limit}-->
+	    <!--</select>-->
+
+    <insert id="insertItemIds">
+       INSERT INTO rrs_coupons_item_list (couponsId,itemId,shopId,sellerId,couponsCode,couponsName,shopname,item_tag) VALUES
+        <foreach item="item" index="index" collection="list" open="" separator="," close="">
+            (#{item.couponsId},#{item.itemId},#{item.shopId},#{item.sellerId},#{item.couponsCode},#{item.couponsName},#{item.shopname},#{item.itemtag})
+        </foreach>
+    </insert>
+
+    <select id="findEditItems" resultType="map">
+        SELECT itemId,item_tag FROM rrs_coupons_item_list WHERE couponsId=#{couponsId}
+    </select>
+    <delete id="deleteCouponsId">
+        DELETE FROM rrs_coupons_item_list WHERE couponsId=#{couponsId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- Shop Service here -->
+    <dubbo:reference interface="com.aixforce.shop.service.ShopService" id="shopService" timeout="3000" retries="0"/>
+    <!-- Item Service here -->
+    <dubbo:reference interface="com.aixforce.item.service.ItemService" id="itemService"/>
+    <dubbo:reference interface="com.aixforce.item.service.DefaultItemService" id="defaultItemService" />
+    <!-- User Service here -->
+    <dubbo:reference interface="com.aixforce.user.service.AccountService" id="accountService" timeout="10000" retries="0"/>
+    <dubbo:reference interface="com.aixforce.user.service.AddressService" id="addressService" />
+
+    <!-- Trade Service here -->
+    <dubbo:reference interface="com.aixforce.trade.service.OrderQueryService" id="orderQueryService" timeout="3000" retries="0"/>
+    <dubbo:reference interface="com.aixforce.trade.service.OrderWriteService" id="orderWriteService" />
+    <dubbo:reference interface="com.aixforce.trade.service.OrderCommentService" id="orderCommentService" timeout="3000" retries="0"/>
+    <dubbo:reference interface="com.aixforce.trade.service.UserVatInvoiceService" id="userVatInvoiceService" />
+    <dubbo:reference interface="com.aixforce.trade.service.DeliveryMethodService" id="deliveryMethodService"/>
+    <dubbo:reference interface="com.aixforce.trade.service.UserTradeInfoService" id="userTradeInfoService"/>
+    <dubbo:reference interface="com.aixforce.trade.service.FreightCountService" id="freightCountService"/>
+
+    <dubbo:reference interface="com.aixforce.rrs.popularizeurl.service.PopularizeUrlService" id="popularizeUrlService" />
+    <!--<dubbo:reference interface="com.aixforce.rrs.grid.service.GridService" id="gridService"/>-->
+
+</beans>

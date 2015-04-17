@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ExperMallView">
+    <resultMap id="ExperMallViewMap" type="ExperMallView">
+        <result property="shopId" column="shopId"/>
+        <result property="shopUserName" column="shopUserName"/>
+        <result property="shopTax" column="shopTax"/>
+        <result property="shopRateOne" column="shopRateOne"/>
+        <result property="shopRate" column="shopRate"/>
+        <result property="shopDeposit" column="shopDeposit"/>
+        <result property="shopTechFee" column="shopTechFee"/>
+        <result property="shopBalance" column="shopBalance"/>
+        <result property="loginName" column="loginName"/>
+        <result property="experiencename" column="experiencename"/>
+        <result property="taxRegisterNo" column="taxRegisterNo"/>
+        <result property="experCode" column="experCode"/>
+        <result property="licence" column="licence"/>
+        <result property="certificate" column="certificate"/>
+        <result property="openinglicenses" column="openinglicenses"/>
+        <result property="orgcertificate" column="orgcertificate"/>
+        <result property="frontlicense" column="frontlicense"/>
+        <result property="backlicense" column="backlicense"/>
+        <result property="contractOne" column="contractOne"/>
+        <result property="contractTwo" column="contractTwo"/>
+        <result property="status" column="status"/>
+        <result property="checkstatus" column="checkstatus"/>
+        <result property="experid" column="experid"/>
+        <result property="resocode" column="resocode"/>
+        <result property="shopName" column="shopName"/>
+    </resultMap>
+
+
+    <select id="showAll" resultMap ="ExperMallViewMap" parameterType="Map">
+select
+shops.id as shopId,
+shops.name as shopName,
+users.name as shopUserName,
+shops.tax_register_no as shopTax,
+shop_extras.outer_code as shopCode,
+shop_extras.rate as shopRate,
+shop_extras.rate_updating as shopRateOne,
+shop_extras.deposit_need/100 as shopDeposit,
+shop_extras.tech_fee_need/100 as shopTechFee,
+rrs_deposit_account.balance/100 as shopBalance,
+exper_users.loginName,
+exper_ience.experiencename,
+exper_ience.taxRegisterNo,
+        exper_ience.experCode,
+        exper_ience.id as experid,
+        exper_shop.resourceCode as resocode,
+concat('http://home.rrs.com',exper_ience.licence) as licence,
+concat('http://home.rrs.com',exper_ience.certificate) as certificate,
+concat('http://home.rrs.com',exper_ience.openinglicenses) as openinglicenses,
+concat('http://home.rrs.com',exper_ience.Orgcertificate) as orgcertificate,
+concat('http://home.rrs.com',exper_ience.frontlicense) as frontlicense,
+concat('http://home.rrs.com',exper_ience.backlicense) as backlicense,
+concat('http://home.rrs.com',exper_ience.ContractOne) as contractOne,
+concat('http://home.rrs.com',exper_ience.ContractTwo) as contractTwo,
+        exper_shop.status as status,
+        exper_shop.checkStatus as checkstatus,
+ case shops.business_id when 1 then '海尔家电' when 4 then '家饰' when 2 then '家具' when 5 then '水家电' when 3 then '建材' end as businessName
+ from exper_ience inner join exper_shop on exper_shop.experId = exper_ience.id
+inner join shops on exper_shop.shopId = shops.id inner join shop_extras on shops.id = shop_extras.shop_id
+inner join users on shops.user_id = users.id left join rrs_deposit_account on shops.user_id = rrs_deposit_account.seller_id
+inner join exper_users on exper_users.id = exper_ience.experUserId
+where 1=1
+        <if test='shopName != "" and shopName != null '>
+            and shops.name=#{shopName}
+        </if>
+        <if test='sellerName != "" and sellerName != null '>
+            and shops.user_name=#{sellerName}
+        </if>
+    </select>
+
+
+</mapper>

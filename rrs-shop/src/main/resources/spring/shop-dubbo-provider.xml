@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+    <util:properties id="app" location="classpath:app.properties"/>
+    <!-- Application name -->
+    <dubbo:application name="shop-provider" logger="slf4j"/>
+    <!-- registry address, used for service to register itself -->
+    <dubbo:registry address="#{app.dubboRegistry}"/>
+    <!-- expose this service through dubbo protocol, through port 20880 -->
+    <dubbo:protocol name="dubbo" port="#{app.dubboPort}" threads="#{app.dubboThreads}"
+                    heartbeat="#{app.dubboHeartBeats}"/>
+
+
+    <!-- which service interface do we expose? -->
+    <dubbo:service interface="com.aixforce.shop.service.ItemTagService" ref="itemTagServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.shop.service.ShopCategoryService" ref="shopCategoryServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.shop.service.ShopService" ref="shopServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.shop.service.ShopExtraService" ref="shopExtraServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.shop.service.ShopGiftSmsInfoService" ref="shopGiftSmsInfoServiceImpl" retries="0"/>
+
+    <dubbo:service interface="com.aixforce.shop.service.ChannelShopsService" ref="channelShopsServiceImpl" retries="0"/>
+
+    <import resource="shop-service-context.xml"/>
+    <import resource="persistence-context.xml"/>
+
+</beans>

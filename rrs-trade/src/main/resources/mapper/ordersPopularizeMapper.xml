@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="OrdersPopularize">
+
+	<resultMap id="OrdersPopularize" type="com.aixforce.trade.model.OrdersPopularize">
+        <result property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="orderSubId" column="order_sub_id"/>
+        <result property="promoter" column="promoter"/>
+        <result property="source" column="source"/>
+        <result property="channel" column="channel"/>
+        <result property="cid" column="cid"/>
+        <result property="wi" column="wi"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="columns">
+	    <![CDATA[
+		id,order_id,order_sub_id,promoter,source,channel,cid,wi,status,created_at,updated_at
+	    ]]>
+	</sql>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="map">
+    <![CDATA[
+        INSERT INTO orders_popularize (
+        	order_id ,
+        	order_sub_id ,
+        	promoter ,
+        	source ,
+        	channel ,
+        	cid ,
+        	wi ,
+        	status ,
+        	created_at ,
+        	updated_at 
+        ) VALUES (
+        	#{orderId} ,
+        	#{orderSubId} ,
+        	#{promoter} ,
+        	#{source} ,
+        	#{channel} ,
+        	#{cid} ,
+        	#{wi} ,
+        	null ,
+        	#{createdAt} ,
+        	#{updatedAt}
+        )
+    ]]>
+	</insert>
+    
+	<update id="update" >
+        UPDATE orders_popularize SET
+	        order_id = #{orderId} ,
+	        order_sub_id = #{orderSubId} ,
+	        promoter = #{promoter} ,
+	        <if test="source!=null">source = #{source} ,</if>
+            <if test="channel!=null">channel = #{channel} ,</if>
+            <if test="cid!=null">cid = #{cid} ,</if>
+            <if test="wi!=null">wi = #{wi} ,</if>
+            <if test="status!=null">status = #{status} ,</if>
+	        created_at = #{createdAt} ,
+	        updated_at = #{updatedAt} 
+        WHERE 
+	        id = #{id}
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM orders_popularize WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="getByCreatedAt" resultMap="OrdersPopularize" parameterType="map">
+		SELECT <include refid="columns" />
+	    <![CDATA[
+		    FROM orders_popularize 
+	        WHERE 
+		        cid = #{cid} AND created_at >= #{orderStartTime} AND created_at <= #{orderEndTime}
+	    ]]>
+	</select>
+
+    <select id="getByUpdateAt" resultMap="OrdersPopularize" parameterType="map">
+        SELECT <include refid="columns" />
+        <![CDATA[
+		    FROM orders_popularize
+	        WHERE
+		        cid = #{cid} AND updated_at >= #{updateStartTime} AND updated_at <= #{updateEndTime}
+	    ]]>
+    </select>
+
+	
+</mapper>
+

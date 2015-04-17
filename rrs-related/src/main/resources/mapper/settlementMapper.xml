@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Settlement">
+    <resultMap id="settlementMap" type="Settlement">
+        <id property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="sellerName" column="seller_name"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="buyerName" column="buyer_name"/>
+
+        <result property="business" column="business"/>
+        <result property="tradeStatus" column="trade_status"/>
+        <result property="type" column="type"/>
+        <result property="payType" column="pay_type"/>
+        <result property="paymentCode" column="payment_code"/>
+        <result property="multiPaid" column="multi_paid"/>
+        <result property="fee" column="fee"/>
+
+        <result property="totalEarning" column="total_earning"/>
+        <result property="totalExpenditure" column="total_expenditure"/>
+        <result property="sellerEarning" column="seller_earning"/>
+        <result property="rrsCommission" column="rrs_commission"/>
+        <result property="scoreEarning" column="score_earning"/>
+        <result property="presellDeposit" column="presell_deposit"/>
+        <result property="presellCommission" column="presell_commission"/>
+        <result property="thirdPartyCommission" column="third_party_commission"/>
+        <result property="commissionRate" column="commission_rate"/>
+
+        <result property="voucher" column="voucher"/>
+        <result property="thirdPartyReceipt" column="third_party_receipt"/>
+
+        <result property="settleStatus" column="settle_status"/>
+        <result property="fixed" column="fixed"/>
+        <result property="cashed" column="cashed"/>
+        <result property="finished" column="finished"/>
+        <result property="settled" column="settled"/>
+        <result property="confirmed" column="confirmed"/>
+        <result property="synced" column="synced"/>
+        <result property="vouched" column="vouched"/>
+
+        <result property="orderedAt" column="ordered_at"/>
+        <result property="paidAt" column="paid_at"/>
+        <result property="finishedAt" column="finished_at"/>
+        <result property="settledAt" column="settled_at"/>
+
+        <result property="confirmedAt" column="confirmed_at"/>
+        <result property="syncedAt" column="synced_at"/>
+        <result property="vouchedAt" column="vouched_at"/>
+        <result property="thirdPartyReceiptAt" column="third_party_receipt_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="table">
+        rrs_settlements
+    </sql>
+
+    <sql id="columns">
+        order_id, seller_id, seller_name, buyer_id, buyer_name,
+        business, trade_status, `type` ,pay_type, payment_code, multi_paid, fee,
+        total_earning, total_expenditure, seller_earning, rrs_commission, score_earning, presell_deposit, presell_commission, third_party_commission, commission_rate,
+        voucher, third_party_receipt,
+        settle_status, fixed, cashed, finished, settled, confirmed, synced, vouched,
+        ordered_at, paid_at, finished_at, settled_at, confirmed_at, synced_at, vouched_at, third_party_receipt_at, created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="Settlement" useGeneratedKeys="true" keyProperty="id">
+        insert into <include refid="table"/> (<include refid="columns"/>)
+        values
+        (
+        #{orderId}, #{sellerId}, #{sellerName}, #{buyerId}, #{buyerName},
+        #{business}, #{tradeStatus}, #{type}, #{payType}, #{paymentCode}, #{multiPaid}, #{fee},
+        #{totalEarning}, #{totalExpenditure}, #{sellerEarning}, #{rrsCommission}, #{scoreEarning}, #{presellDeposit}, #{presellCommission}, #{thirdPartyCommission}, #{commissionRate},
+        #{voucher}, #{thirdPartyReceipt},
+        0, #{fixed}, 0, 0, 0, 0, 0, 0,
+        #{orderedAt}, #{paidAt}, #{finishedAt}, #{settledAt}, #{confirmedAt}, #{syncedAt}, #{vouchedAt}, #{thirdPartyReceiptAt}, now(), now()
+        )
+    </insert>
+
+
+    <sql id="condition">
+        <where>
+            <if test="criteria != null and criteria.orderId != null">
+                AND order_id = #{criteria.orderId}
+            </if>
+            <if test="criteria != null and criteria.sellerId != null">
+                AND seller_id = #{criteria.sellerId}
+            </if>
+            <if test="criteria != null and criteria.settleStatus != null">
+                AND settle_status = #{criteria.settleStatus}
+            </if>
+            <if test="criteria != null and criteria.tradeStatus != null">
+                AND trade_status = #{criteria.tradeStatus}
+            </if>
+            <if test="criteria != null and criteria.business != null">
+                AND business = #{criteria.business}
+            </if>
+            <if test="criteria != null and criteria.payType != null">
+                AND pay_type = #{criteria.payType}
+            </if>
+            <if test="criteria != null and criteria.paymentCode != null">
+                AND payment_code = #{criteria.paymentCode}
+            </if>
+            <if test="criteria != null and criteria.multiPaid != null">
+                AND multi_paid = #{criteria.multiPaid}
+            </if>
+            <if test="criteria != null and criteria.type != null">
+                AND `type` = #{criteria.type}
+            </if>
+
+            <if test="criteria != null and criteria.cashed != null">
+                AND `cashed` = #{criteria.cashed}
+            </if>
+            <if test="criteria != null and criteria.finished != null">
+                AND `finished` = #{criteria.finished}
+            </if>
+            <if test="criteria != null and criteria.settled != null">
+                AND `settled` = #{criteria.settled}
+            </if>
+            <if test="criteria != null and criteria.confirmed != null">
+                AND `confirmed` = #{criteria.confirmed}
+            </if>
+            <if test="criteria != null and criteria.synced != null">
+                AND `synced` = #{criteria.synced}
+            </if>
+            <if test="criteria != null and criteria.vouched != null">
+                AND `vouched` = #{criteria.vouched}
+            </if>
+
+            <if test="orderedStartAt != null">
+                AND <![CDATA[ ordered_at >= #{orderedStartAt} ]]>
+            </if>
+            <if test="orderedEndAt != null">
+                AND <![CDATA[ ordered_at < #{orderedEndAt} ]]>
+            </if>
+
+            <if test="paidStartAt != null">
+                AND <![CDATA[ paid_at >= #{paidStartAt} ]]>
+            </if>
+            <if test="paidEndAt != null">
+                AND <![CDATA[ paid_at < #{paidEndAt} ]]>
+            </if>
+
+            <if test="finishedStartAt != null">
+                AND <![CDATA[ finished_at >= #{finishedStartAt} ]]>
+            </if>
+            <if test="finishedEndAt != null">
+                AND <![CDATA[ finished_at < #{finishedEndAt} ]]>
+            </if>
+
+            <if test="settledStartAt != null">
+                AND <![CDATA[ settled_at >= #{settledStartAt} ]]>
+            </if>
+            <if test="settledEndAt != null">
+                AND <![CDATA[ settled_at < #{settledEndAt} ]]>
+            </if>
+
+            <if test="confirmedStartAt != null">
+                AND <![CDATA[ confirmed_at >= #{confirmedStartAt} ]]>
+            </if>
+            <if test="confirmedEndAt != null">
+                AND <![CDATA[ confirmed_at < #{confirmedEndAt} ]]>
+            </if>
+
+            <if test="createdStartAt != null">
+                AND <![CDATA[ created_at >= #{createdStartAt} ]]>
+            </if>
+            <if test="createdEndAt != null">
+                AND <![CDATA[ created_at < #{createdEndAt} ]]>
+            </if>
+
+            <if test="cashed != null and cashed">
+                AND NOT (type = 1 and pay_type = 2)
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="get" parameterType="long" resultMap="settlementMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/> where id=#{id}
+    </select>
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table"/>
+        <include refid="condition"/>
+    </select>
+
+    <select id="countOfFinishedAt" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table"/>
+        <where>
+            <if test="startAt != null">
+                AND <![CDATA[ finished_at >= #{startAt} ]]>
+            </if>
+            <if test="endAt != null">
+                AND <![CDATA[ finished_at < #{endAt} ]]>
+            </if>
+        </where>
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="settlementMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <include refid="condition"/>
+        order by paid_at desc
+
+        <if test="offset != null and limit != null">
+          limit #{offset},#{limit}
+        </if>
+
+    </select>
+
+    <select id="getByOrderId" parameterType="map" resultMap="settlementMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where order_id = #{orderId}
+        order by id desc
+    </select>
+
+    <select id="findByFinishedAt" parameterType="map" resultMap="settlementMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <where>
+            <if test="startAt != null">
+                AND <![CDATA[ finished_at >= #{startAt} ]]>
+            </if>
+            <if test="endAt != null">
+                AND <![CDATA[ finished_at < #{endAt} ]]>
+            </if>
+        </where>
+        order by id asc limit #{offset},#{limit}
+    </select>
+
+    <select id="sumSellerSettlement" parameterType="map" resultMap="SellerSettlement.sellerSettlementMap">
+        select  count(1) as order_count,
+                sum(total_earning) as total_earning,
+                sum(total_expenditure) as total_expenditure,
+                sum(seller_earning) as seller_earning,
+                sum(rrs_commission) as rrs_commission,
+                sum(score_earning) as score_earning,
+                sum(presell_deposit) as presell_deposit,
+                sum(third_party_commission) as third_party_commission,
+                sum(presell_commission) as presell_commission
+        from  <include refid="table"/>
+        WHERE seller_id = #{sellerId}
+        AND <![CDATA[ confirmed_at >= #{startAt} AND confirmed_at < #{endAt}]]>
+    </select>
+
+    <select id="sumDailySettlement" parameterType="map" resultMap="DailySettlement.dailySettlementMap">
+        select  count(1) as order_count,
+                sum(total_earning) as total_earning,
+                sum(total_expenditure) as total_expenditure,
+                sum(seller_earning) as seller_earning,
+                sum(rrs_commission) as rrs_commission,
+                sum(score_earning) as score_earning,
+                sum(presell_deposit) as presell_deposit,
+                sum(third_party_commission) as third_party_commission,
+                sum(presell_commission) as presell_commission
+        from  <include refid="table"/>
+        WHERE <![CDATA[ confirmed_at >= #{startAt} AND confirmed_at < #{endAt}]]>
+    </select>
+
+
+    <update id="settled" parameterType="long">
+        update <include refid="table"/>
+        set updated_at = now() , settle_status=3 where id=#{id}
+    </update>
+
+    <update id="closeOrder" parameterType="map">
+        update <include refid="table"/>
+        set updated_at = now() , trade_status=#{tradeStatus} , settled_at=now()
+        where seller_id=#{sellerId} and order_id=#{orderId}
+    </update>
+
+    <update id="settle" parameterType="Settlement">
+        update <include refid="table"/>
+        <set>
+            updated_at = now(), settle_status=2,
+            <if test="sellerEarning!=null">seller_earning=#{sellerEarning},</if>
+            <if test="rrsCommission!=null">rrs_commission=#{rrsCommission},</if>
+            <if test="scoreEarning!=null">score_earning=#{scoreEarning},</if>
+            <if test="presellDeposit!=null">presell_deposit=#{presellDeposit},</if>
+            <if test="presellCommission!=null">presell_commission=#{presellCommission},</if>
+            <if test="thirdPartyCommission!=null">third_partyCommission=#{thirdPartyCommission},</if>
+            <if test="presellCommission!=null">presell_commission=#{presellCommission},</if>
+           <!-- <if test="voucher!=null">voucher=#{voucher},</if>-->
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateVoucher" parameterType="map">
+        update <include refid="table"/>
+        set  updated_at = now(), voucher = #{voucher} where id=#{id}
+    </update>
+
+    <update id="confirmed" parameterType="map">
+        update <include refid="table"/>
+        <set>
+            updated_at = now(),
+            confirmed_at = now(),
+            settle_status = 3,
+            confirmed = 1,
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="update" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            <if test="fee != null">
+                fee = #{fee},
+            </if>
+            <if test="totalEarning != null">
+                total_earning = #{totalEarning},
+            </if>
+            <if test="totalExpenditure != null">
+                total_expenditure = #{totalExpenditure},
+            </if>
+            <if test="sellerEarning != null">
+                seller_earning = #{sellerEarning},
+            </if>
+            <if test="rrsCommission != null">
+                rrs_commission = #{rrsCommission},
+            </if>
+            <if test="scoreEarning != null">
+                score_earning = #{scoreEarning},
+            </if>
+            <if test="presellDeposit != null">
+                presell_deposit = #{presellDeposit},
+            </if>
+            <if test="presellCommission != null">
+                presell_commission = #{presellCommission},
+            </if>
+            <if test="thirdPartyCommission != null">
+                third_party_commission = #{thirdPartyCommission},
+            </if>
+            <if test="presellCommission != null">
+                presell_commission = #{presellCommission},
+            </if>
+            <if test="commissionRate != null">
+                commission_rate = #{commissionRate},
+            </if>
+
+            <if test="settleStatus != null">
+                settle_status = #{settleStatus},
+            </if>
+            <if test="fixed != null">
+                fixed = #{fixed},
+            </if>
+            <if test="tradeStatus != null">
+                trade_status = #{tradeStatus},
+            </if>
+
+            <if test="cashed != null">
+                cashed = #{cashed},
+            </if>
+            <if test="finished != null">
+                finished = #{finished},
+            </if>
+            <if test="settled != null">
+                settled = #{settled},
+            </if>
+            <if test="confirmed != null">
+                confirmed = #{confirmed},
+            </if>
+            <if test="synced != null">
+                synced = #{synced},
+            </if>
+            <if test="vouched != null">
+                vouched = #{vouched},
+            </if>
+
+            <if test="settledAt != null">
+                settled_at = #{settledAt},
+            </if>
+
+            <if test="paidAt != null">
+                paid_at = #{paidAt},
+            </if>
+
+            <if test="finishedAt != null">
+                finished_at = #{finishedAt},
+            </if>
+
+            <if test="confirmedAt != null">
+                confirmed_at = #{confirmedAt},
+            </if>
+            updated_at = now(),
+        </set>
+        WHERE id=#{id}
+    </update>
+
+
+    <update id="finished" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            <if test="tradeStatus != null">trade_status=#{tradeStatus},</if>
+            updated_at = now(),
+            settle_status = #{settleStatus},
+            finished_at = #{finishedAt},
+            finished = 1,
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <update id="batchCashed" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            updated_at = now(),
+            cashed = 1,
+        </set>
+
+        <where>
+            <if test="sellerId != null">
+                AND seller_id = #{sellerId}
+            </if>
+            <if test="paidStartAt != null">
+                AND <![CDATA[ paid_at >= #{paidStartAt} ]]>
+            </if>
+            <if test="paidEndAt != null">
+                AND <![CDATA[ paid_at < #{paidEndAt} ]]>
+            </if>
+        </where>
+    </update>
+
+
+    <update id="batchMarkAsIng" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            updated_at = now(),
+            settle_status = 1,
+        </set>
+
+        <where>
+            <if test="sellerId != null">
+                AND seller_id = #{sellerId}
+            </if>
+            <if test="paidStartAt != null">
+                AND <![CDATA[ paid_at >= #{paidStartAt} ]]>
+            </if>
+            <if test="paidEndAt != null">
+                AND <![CDATA[ paid_at < #{paidEndAt} ]]>
+            </if>
+            and cashed = 1
+            and finished = 1
+            and settled = 0
+        </where>
+    </update>
+
+
+
+
+
+    <update id="batchVouched" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            updated_at = now(),
+            vouched = 1,
+            voucher = #{voucher},
+            vouched_at = #{vouchedAt},
+            <if test="thirdPartyReceipt != null">third_party_receipt = #{thirdPartyReceipt},</if>
+            <if test="thirdPartyReceiptAt != null">third_party_receipt_at = #{thirdPartyReceiptAt},</if>
+        </set>
+        WHERE seller_id = #{sellerId}
+        AND <![CDATA[ confirmed_at >= #{confirmedStartAt}
+        AND confirmed_at < #{confirmedEndAt}]]>
+        AND vouched = 0
+    </update>
+
+
+    <update id="batchSynced" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            updated_at = now(),
+            synced = 1,
+            settle_status = 4,
+            synced_at = now(),
+        </set>
+        WHERE <![CDATA[ confirmed_at >= #{confirmedStartAt}
+        AND confirmed_at < #{confirmedEndAt}]]>
+        AND synced = 0
+    </update>
+
+
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table"/> where id=#{id}
+    </delete>
+
+    <update id="updateSettleStatus" parameterType="map">
+        UPDATE  <include refid="table"/>
+        <set>
+            updated_at = now(),
+            settle_status = #{state}
+        </set>
+        WHERE <![CDATA[ order_id = #{orderNo}]]>
+    </update>
+
+</mapper>

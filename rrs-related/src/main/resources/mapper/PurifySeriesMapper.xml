@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 净水系列名称(Created by Michael Zhao) -->
+<mapper namespace="PurifySeries">
+    <resultMap id="purifySeriesMap" type="PurifySeries">
+        <id property="id" column="id"/>
+        <result property="seriesName" column="series_name"/>
+        <result property="seriesIntroduce" column="series_introduce"/>
+        <result property="seriesImage" column="series_image"/>
+        <result property="siteId" column="site_id"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="column">
+        series_name, series_introduce, series_image, site_id, created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="purifySeries" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO rrs_purify_series (<include refid="column"/>) VALUES (#{seriesName}, #{seriesIntroduce}, #{seriesImage}, #{siteId}, now(), now());
+    </insert>
+
+    <update id="update" parameterType="purifySeries">
+        UPDATE rrs_purify_series
+        <set>
+            <if test="seriesName!=null">series_name=#{seriesName},</if>
+            <if test="seriesIntroduce!=null">series_introduce=#{seriesIntroduce},</if>
+            <if test="seriesImage!=null">series_image=#{seriesImage},</if>
+            <if test="siteId!=null">site_id=#{siteId},</if>
+            updated_at=now()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        delete from rrs_purify_series
+        where id=#{id}
+    </delete>
+
+    <!-- 执行批量删除操作 -->
+    <delete id="deleteBySeriesIds">
+        delete from rrs_purify_series
+        where id in
+        <foreach collection="array" item="seriesId"  open="(" separator="," close=")">
+            #{seriesId}
+        </foreach>
+    </delete>
+
+    <select id="findById" parameterType="long" resultMap="purifySeriesMap">
+        SELECT id, <include refid="column"/> FROM rrs_purify_series WHERE id = #{id}
+    </select>
+
+    <select id="findByName" parameterType="map" resultMap="purifySeriesMap">
+        SELECT id, <include refid="column"/> FROM rrs_purify_series
+        where site_id=#{siteId} and series_name=#{seriesName}
+    </select>
+
+    <!-- 查询站点的系列 -->
+    <select id="findSiteSeries" parameterType="long" resultMap="purifySeriesMap">
+        SELECT id, <include refid="column"/> FROM rrs_purify_series
+        <where>
+            <if test="_parameter!=null">site_id=#{_parameter}</if>
+        </where>
+    </select>
+
+    <select id="findBySeriesIds" resultMap="purifySeriesMap">
+        SELECT id, <include refid="column"/> FROM rrs_purify_series
+        where id in
+        <foreach collection="array" item="seriesId"  open="(" separator="," close=")">
+            #{seriesId}
+        </foreach>
+    </select>
+</mapper>

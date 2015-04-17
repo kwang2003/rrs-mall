@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SellerSettlement">
+    <resultMap id="sellerSettlementMap" type="SellerSettlement">
+        <id property="id" column="id"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="sellerName" column="seller_name"/>
+        <result property="outerCode" column="outer_code"/>
+        <result property="business" column="business"/>
+        <result property="orderCount" column="order_count"/>
+        <result property="totalEarning" column="total_earning"/>
+        <result property="totalExpenditure" column="total_expenditure"/>
+
+        <result property="sellerEarning" column="seller_earning"/>
+        <result property="rrsCommission" column="rrs_commission"/>
+        <result property="scoreEarning" column="score_earning"/>
+        <result property="presellDeposit" column="presell_deposit"/>
+        <result property="presellCommission" column="presell_commission"/>
+        <result property="thirdPartyCommission" column="third_party_commission"/>
+        <result property="voucher" column="voucher"/>
+        <result property="thirdPartyReceipt" column="third_party_receipt"/>
+
+        <result property="settleStatus" column="settle_status"/>
+        <result property="confirmed" column="confirmed"/>
+        <result property="synced" column="synced"/>
+        <result property="vouched" column="vouched"/>
+        <result property="receipted" column="receipted"/>
+        <result property="printed" column="printed"/>
+
+        <result property="confirmedAt" column="confirmed_at"/>
+        <result property="syncedAt" column="synced_at"/>
+        <result property="vouchedAt" column="vouched_at"/>
+        <result property="thirdPartyReceiptAt" column="third_party_receipt_at"/>
+        <result property="printedAt" column="printed_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="table">
+        rrs_seller_settlements
+    </sql>
+
+    <sql id="columns">
+        seller_id, seller_name, outer_code, business, order_count, total_earning, total_expenditure,
+        seller_earning, rrs_commission, score_earning, presell_deposit, presell_commission, third_party_commission, voucher, third_party_receipt,
+        settle_status, confirmed, synced, vouched, receipted, printed,
+        confirmed_at, synced_at, vouched_at, third_party_receipt_at, printed_at, created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="SellerSettlement" useGeneratedKeys="true" keyProperty="id">
+        insert into <include refid="table"/> (<include refid="columns"/>)
+        values
+        (
+            #{sellerId}, #{sellerName}, #{outerCode}, #{business}, #{orderCount}, #{totalEarning}, #{totalExpenditure},
+            #{sellerEarning}, #{rrsCommission}, #{scoreEarning}, #{presellDeposit}, #{presellCommission}, #{thirdPartyCommission}, #{voucher}, #{thirdPartyReceipt},
+            #{settleStatus}, #{confirmed}, #{synced}, #{vouched}, #{receipted}, 0,
+            #{confirmedAt}, #{syncedAt}, #{vouchedAt}, #{thirdPartyReceiptAt}, #{printedAt}, now(), now()
+        )
+    </insert>
+
+
+    <sql id="condition">
+        <where>
+            <if test="criteria !=null and criteria.sellerId != null">
+                AND seller_id = #{criteria.sellerId}
+            </if>
+            <if test="criteria !=null and criteria.settleStatus != null">
+                AND settle_status = #{criteria.settleStatus}
+            </if>
+            <if test="criteria !=null and criteria.confirmed != null">
+                AND confirmed = #{criteria.confirmed}
+            </if>
+            <if test="criteria !=null and criteria.synced != null">
+                AND synced = #{criteria.synced}
+            </if>
+            <if test="criteria !=null and criteria.vouched != null">
+                AND vouched = #{criteria.vouched}
+            </if>
+            <if test="confirmedStartAt != null">
+                AND <![CDATA[ confirmed_at >= #{confirmedStartAt} ]]>
+            </if>
+            <if test="confirmedEndAt != null">
+                AND <![CDATA[ confirmed_at < #{confirmedEndAt} ]]>
+            </if>
+            <if test="createdStartAt != null">
+                AND <![CDATA[ created_at >= #{createdStartAt} ]]>
+            </if>
+            <if test="createdEndAt != null">
+                AND <![CDATA[ created_at < #{createdEndAt} ]]>
+            </if>
+            <if test="filter != null and filter">
+                AND order_count > 0
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table"/>
+        <include refid="condition" />
+    </select>
+
+
+
+    <select id="findBy" parameterType="map" resultMap="sellerSettlementMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <include refid="condition" />
+        ORDER BY id DESC LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="get" parameterType="long" resultMap="sellerSettlementMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where id = #{id}
+    </select>
+
+
+    <update id="update" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            <if test="totalEarning != null">
+                total_earning = #{totalEarning},
+            </if>
+
+            <if test="totalExpenditure != null">
+                total_expenditure = #{totalExpenditure},
+            </if>
+
+            <if test="sellerEarning != null">
+                seller_earning = #{sellerEarning},
+            </if>
+
+            <if test="rrsCommission != null">
+                rrs_commission = #{rrsCommission},
+            </if>
+
+            <if test="scoreEarning != null">
+                score_earning = #{scoreEarning},
+            </if>
+
+            <if test="presellDeposit != null">
+                presell_deposit = #{presellDeposit},
+            </if>
+
+            <if test="presellCommission != null">
+                presell_commission = #{presellCommission},
+            </if>
+
+            <if test="thirdPartyCommission != null">
+                third_party_commission = #{thirdPartyCommission},
+            </if>
+
+            <if test="vouched != null">
+                vouched = #{vouched},
+            </if>
+
+            <if test="receipted != null">
+                receipted = #{receipted},
+            </if>
+
+            <if test="printed != null">
+                printed = #{printed},
+            </if>
+
+            <if test="voucher != null">
+                voucher = #{voucher},
+            </if>
+
+            <if test="thirdPartyReceipt != null">
+                third_party_receipt = #{thirdPartyReceipt},
+            </if>
+
+            <if test="vouchedAt != null">
+                vouched_at = #{vouchedAt},
+            </if>
+
+            <if test="thirdPartyReceiptAt != null">
+                third_party_receipt_at = #{thirdPartyReceiptAt},
+            </if>
+
+            <if test="printedAt != null">
+                printed_at = #{printedAt},
+            </if>
+            updated_at = now(),
+        </set>
+        WHERE id=#{id}
+    </update>
+
+
+    <update id="synced" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            updated_at = now(),
+            synced = 1,
+            synced_at = now(),
+            settle_status = 4
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="syncedFail" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            updated_at = now(),
+            synced = -1,
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="vouched" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            updated_at = now(),
+            vouched = 1,
+            voucher = #{voucher},
+            <if test="vouchedAt!=null">vouched_at=#{vouchedAt},</if>
+            <if test="thirdPartyReceipt!=null">third_party_receipt=#{thirdPartyReceipt},</if>
+            <if test="thirdPartyReceiptAt!=null">third_party_receipt_at=#{thirdPartyReceiptAt},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="batchUpdateOuterCode" parameterType="map">
+        update <include refid="table"/>
+        set outer_code = #{outerCode}
+        where seller_id = #{sellerId}
+    </update>
+
+</mapper>

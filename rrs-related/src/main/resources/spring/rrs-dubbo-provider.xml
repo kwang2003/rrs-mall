@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+    <util:properties id="app" location="classpath:app.properties"/>
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+
+    <!-- Application name -->
+    <dubbo:application name="rrs-provider" logger="slf4j"/>
+    <!-- registry address, used for service to register itself -->
+    <dubbo:registry address="#{app.dubboRegistry}" file="preDeposit"/>
+    <!-- expose this service through dubbo protocol, through port 20880 -->
+    <dubbo:protocol name="dubbo" port="#{app.dubboPort}" threads="#{app.dubboThreads}"
+                    heartbeat="#{app.dubboHeartBeats}"/>
+
+
+    <!-- 支付宝查询凭证 -->
+    <bean class="com.aixforce.alipay.request.Token">
+        <constructor-arg index="0" value="#{app.alipayPid}"/>
+        <constructor-arg index="1" value="#{app.alipayKey}" />
+        <constructor-arg index="2" value="#{app.alipayAccount}" />
+        <constructor-arg index="3" value="#{app.alipayGateway}" />
+    </bean>
+
+    <bean id = "alipayEventBus" class="com.aixforce.alipay.event.AlipayEventBus">
+        <constructor-arg index="0" value="2" />
+    </bean>
+
+    <bean id= "tradeCloseEventListener" class="com.aixforce.alipay.event.TradeCloseEventListener">
+        <constructor-arg index="0" ref="alipayEventBus" />
+    </bean>
+
+
+
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>classpath:related</value>
+            </list>
+        </property>
+        <property name="cacheSeconds" value="3600">
+        </property>
+        <property name="useCodeAsDefaultMessage" value="true"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+
+
+
+    <!-- which service interface do we expose? -->
+    <!-- settle service related -->
+    <dubbo:service interface="com.aixforce.rrs.settle.service.AlipayCashService" ref="alipayCashServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.settle.service.OrderAlipayCashService" ref="orderAlipayCashServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.settle.service.DailySettlementService" ref="dailySettlementServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.settle.service.DepositAccountService" ref="depositAccountServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.settle.service.DepositFeeService" ref="depositFeeServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.settle.service.SellerSettlementService" ref="sellerSettlementServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.settle.service.SettlementService" ref="settlementServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.settle.service.SettlementJobService" ref="settlementJobServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.settle.service.DepositFeeCashService" ref="depositFeeCashServiceImpl" retries="0"/>
+
+    <dubbo:service interface="com.aixforce.rrs.grid.service.BrandsSellersService" ref="brandsSellersServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.grid.service.ShopAuthorizeInfoService" ref="shopAuthorizeInfoServiceImpl" retries="0"/>
+
+    <!-- grid service related -->
+    <dubbo:service interface="com.aixforce.rrs.presale.service.PreSaleService" ref="preSaleServiceImpl" retries="0" timeout="10000"/>
+    <dubbo:service interface="com.aixforce.rrs.grid.service.GridService" ref="gridServiceImpl" retries="0"/>
+
+    <!-- purify service -->
+    <dubbo:service interface="com.aixforce.rrs.purify.service.PurifySeriesService" ref="purifySeriesServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.purify.service.PurifyCategoryService" ref="purifyCategoryServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.purify.service.PurifyAssemblyService" ref="purifyAssemblyServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.purify.service.PurifyRelationService" ref="purifyRelationServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.purify.service.PurifyPageService" ref="purifyPageServiceImpl" retries="0"/>
+
+
+    <!-- coupon service related -->
+    <dubbo:service interface="com.aixforce.rrs.coupon.service.CouponService" ref="couponServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.coupon.service.CouponUsageService" ref="couponUsageServiceImpl" retries="0"/>
+
+    <!-- coupon-code service related -->
+    <dubbo:service interface="com.aixforce.rrs.code.service.ActivityDefinitionService" ref="activityDefinitionServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.code.service.ActivityBindService" ref="activityBindServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.code.service.ActivityCodeService" ref="activityCodeServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.code.service.CodeUsageService" ref="codeUsageServiceImpl" retries="0"/>
+
+    <!-- mock service related -->
+    <dubbo:service interface="com.aixforce.rrs.settle.service.MockedAlipayTransService" ref="mockedAlipayTransServiceImpl" retries="0"/>
+
+
+
+
+    <import resource="rrs-service-context.xml"/>
+    <import resource="persistence-context.xml"/>
+    <!-- buying activity -->
+    <dubbo:service interface="com.aixforce.rrs.buying.service.BuyingActivityDefinitionService" ref="buyingActivityDefinitionServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.buying.service.BuyingItemService" ref="buyingItemServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.buying.service.BuyingOrderRecordService" ref="buyingOrderRecordServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.rrs.buying.service.BuyingTempOrderService" ref="buyingTempOrderServiceImpl" retries="0"/>
+
+    <!-- 净水押金 -->
+    <dubbo:service interface="com.aixforce.rrs.predeposit.service.PreDepositService" ref="preDepositServiceImpl" retries="0"/>
+
+    <dubbo:service interface="com.aixforce.rrs.popularizeurl.service.PopularizeUrlService" ref="popularizeUrlServiceImpl" retries="0"/>
+
+</beans>

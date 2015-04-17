@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ReserveSmsConfig">		
+    <resultMap id="ReserveSmsConfigMap" type="com.rrs.arrivegift.model.ReserveSmsConfig">
+        <id property="id" column="id"/>									
+        <result property="userId" column="userid"/>
+        <result property="shopId" column="shopid"/>
+        <result property="smsInfo" column="smsinfo"/>		
+        <result property="type" column="type"/>
+        <result property="userType" column="usertype"/>
+        <result property="enable" column="enable"/>	
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>		
+			
+	<insert id="create" parameterType="com.rrs.arrivegift.model.ReserveSmsConfig" useGeneratedKeys="true" keyProperty="id" >
+	     insert into rrs_reservesms_config (userid,shopid,smsinfo,type,usertype,enable,created_at,updated_at) values (#{userId},#{shopId},#{smsInfo},#{type},#{userType},#{enable},now(),now())
+	</insert>
+
+     <select id="countOf" parameterType="long" resultType="long">
+        select count(1) from rrs_reservesms_config where useYn=1 and type=1 and userid = #{userId}	
+    </select>
+    
+    <select id="findBy" parameterType="map" resultMap="ReserveSmsConfigMap" >	
+  		 select id,userid,shopid,smsinfo,enable,created_at from rrs_reservesms_config where useYn=1 and type=1 and userid = #{userId}	 order by id desc limit #{offset},#{limit}			
+    </select>		
+    								
+    <delete id="delSmsInfo" parameterType="long">	
+  	  UPDATE rrs_reservesms_config
+        <set>		
+            updated_at=now(),
+            useYn=0	
+        </set>
+       	where id = #{id}	
+    </delete>				
+    				
+    <update id="updateSmsInfo" parameterType="com.rrs.arrivegift.model.ReserveSmsInfos">
+        UPDATE rrs_reservesms_config
+        <set>		
+            updated_at=now(),		
+            <if test="enable != null">enable = #{enable},</if>
+            <if test="smsInfo != null">smsinfo = #{smsInfo},</if>
+        </set>									
+        WHERE id = #{id}
+    </update>
+    
+    <update id="checkSmsOnly" parameterType="long">
+        UPDATE rrs_reservesms_config
+        <set>		
+        	enable =1,
+            updated_at=now(),	
+        </set>									
+        WHERE id != #{id}
+    </update>
+
+    <select id="querySmsConfigInfo" resultMap="ReserveSmsConfigMap" parameterType="map">
+        select id,userid,shopid,smsinfo,enable,created_at from rrs_reservesms_config where enable = 0 and type= #{type} and shopid = #{shopId}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+   -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BrandClubType">
+    <resultMap id="brandClubTypeMap" type="brandClubType">
+        <id property="id" column="id"/>
+        <result property="brandTypeName" column="brandTypeName"/>
+        <result property="typeOrder" column="typeOrder"/>
+    </resultMap>
+
+    <sql id="columns">
+        brandTypeName,typeOrder
+    </sql>
+
+    <select id="findAllBy" resultMap="brandClubTypeMap">
+        select id,
+        <include refid="columns"/>
+        from brand_club_type order by typeOrder asc;
+    </select>
+
+</mapper>

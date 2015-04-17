@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+    <util:properties id="app" location="classpath:app.properties"/>
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+
+    <!-- Application name -->
+    <dubbo:application name="trade-provider" logger="slf4j"/>
+    <!-- registry address, used for service to register itself -->
+    <dubbo:registry address="#{app.dubboRegistry}" file="trade"/>
+    <!-- expose this service through dubbo protocol, through port 20880 -->
+    <dubbo:protocol name="dubbo" port="-1" threads="#{app.dubboThreads}"
+                    heartbeat="#{app.dubboHeartBeats}"/>
+
+    <bean class="com.aixforce.alipay.request.Token">
+        <constructor-arg index="0" value="#{app.alipayPid}"/>
+        <constructor-arg index="1" value="#{app.alipayKey}" />
+        <constructor-arg index="2" value="#{app.alipayAccount}" />
+        <constructor-arg index="3" value="#{app.alipayGateway}" />
+    </bean>
+
+    <bean id = "alipayEventBus" class="com.aixforce.alipay.event.AlipayEventBus">
+        <constructor-arg index="0" value="2" />
+    </bean>
+
+    <bean id= "tradeCloseEventListener" class="com.aixforce.alipay.event.TradeCloseEventListener">
+        <constructor-arg index="0" ref="alipayEventBus" />
+    </bean>
+
+
+
+    <!-- which service interface do we expose? -->
+    <dubbo:service interface="com.aixforce.trade.service.CartService" ref="cartServiceImpl" retries="0" />
+    <dubbo:service interface="com.aixforce.trade.service.CommentService" ref="commentServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.trade.service.OrderQueryService" ref="orderQueryServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.trade.service.OrderWriteService" ref="orderWriteServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.trade.service.UserTradeInfoService" ref="userTradeInfoServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.trade.service.OrderCommentService" ref="orderCommentServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.trade.service.FreightModelService" ref="freightModelServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.trade.service.FreightCountService" ref="freightCountServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.trade.service.LogisticsInfoService" ref="logisticsInfoServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.trade.service.LogisticsRevertService" ref="logisticsRevertServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.trade.service.UserVatInvoiceService" ref="userVatInvoiceServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.trade.service.DeliveryMethodService" ref="deliveryMethodServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.trade.service.OrdersPopularizeService" ref="ordersPopularizeServiceImpl" retries="0"/>
+
+    <dubbo:service interface="com.aixforce.collect.service.CollectedItemService" ref="collectedItemServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.collect.service.CollectedShopService" ref="collectedShopServiceImpl" retries="0"/>
+
+    <!-- express -->
+    <dubbo:service interface="com.aixforce.trade.service.ExpressInfoService" ref="expressInfoServiceImpl"/>
+    <dubbo:service interface="com.aixforce.trade.service.InstallInfoService" ref="installInfoServiceImpl"/>
+    <dubbo:service interface="com.aixforce.trade.service.OrderLogisticsInfoService" ref="orderLogisticsInfoServiceImpl"/>
+    <dubbo:service interface="com.aixforce.trade.service.OrderInstallInfoService" ref="orderInstallInfoServiceImpl"/>
+
+    <!--晒单-->
+    <dubbo:service interface="com.aixforce.trade.service.BaskOrderService" ref="baskOrderServiceImpl" retries="0"/>
+
+    <dubbo:service interface="com.aixforce.trade.service.OrderJobOverDayService" ref="orderJobOverDayServiceImpl"/>
+    <dubbo:service interface="com.aixforce.trade.service.OrderJobOverDayConfigService" ref="orderJobDayConfigServiceImpl"/>
+
+    <dubbo:service interface="com.aixforce.agreements.service.PreAuthorizationDepositOrderService" ref="preAuthorizationDepositOrderServiceImpl" retries="0"/>
+
+    <import resource="trade-service-context.xml"/>
+    <import resource="persistence-context.xml"/>
+</beans>

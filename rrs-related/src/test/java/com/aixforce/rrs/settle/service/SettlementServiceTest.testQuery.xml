@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+
+    <users id="1" name="seller1" mobile="12888888888" encrypted_password="fbd9@92f784700191f6891472" type="2" status="1" tags="1" created_at="2010-11-02 13:58:09.0" updated_at="2014-01-07 10:51:50.0"/>
+    <users id="2" name="seller2" mobile="13888888888" encrypted_password="2153@eb7820bab772a062a9a0" type="2" status="1" tags="1" created_at="2010-12-25 12:30:28.0" updated_at="2014-01-01 14:44:03.0"/>
+    <users id="3" name="seller3" mobile="14888888888" encrypted_password="2153@eb7820bab772a062a9a0" type="2" status="1" tags="1" created_at="2010-12-25 12:30:28.0" updated_at="2014-01-01 14:44:03.0"/>
+    <users id="4" name="buyer" mobile="15888888888" encrypted_password="2153@eb7820bab772a062a9a0" type="1" status="1" tags="1" created_at="2010-12-25 12:30:28.0" updated_at="2014-01-01 14:44:03.0"/>
+
+    <rrs_deposit_account id="1" seller_id="1" seller_name="seller1" balance="200000"/>
+    <rrs_deposit_account id="2" seller_id="2" seller_name="seller2" balance="200000"/>
+    <rrs_deposit_account id="3" seller_id="3" seller_name="seller3" balance="200000"/>
+
+
+    <rrs_settlements id="1" order_id="1" seller_id="1" seller_name="seller1" buyer_id="2" buyer_name="buyer" business="1" trade_status="3" type="1" pay_type="1" fee="200000" total_earning="200000" total_expenditure="0" seller_earning="198000" rrs_commission="1000" score_earning="0" presell_deposit="0" third_party_commission="1000" settle_status="2" cashed="0" finished="1" settled="1" confirmed="0" synced="0" vouched="0" ordered_at="2010-10-10 15:30:00.0" paid_at="2010-10-10 15:40:00.0" confirmed_at="2010-10-10 15:40:00.0" finished_at="2010-10-11 15:40:00.0" settled_at="2010-10-11 15:40:00.0" created_at="2010-10-10 15:40:00.0" updated_at="2010-10-11 15:40:00.0"/>
+    <rrs_settlements id="2" order_id="2" seller_id="1" seller_name="seller1" buyer_id="2" buyer_name="buyer" business="1" trade_status="2" type="1" pay_type="1" fee="200000" total_earning="200000" total_expenditure="0" seller_earning="198000" rrs_commission="1000" score_earning="0" presell_deposit="0" third_party_commission="1000" settle_status="3" cashed="0" finished="1" settled="1" confirmed="0" synced="0" vouched="0" ordered_at="2010-10-10 15:30:00.0" paid_at="2010-10-11 15:40:00.0" confirmed_at="2010-10-11 15:40:00.0" finished_at="2010-10-11 15:40:00.0" settled_at="2010-10-11 15:40:00.0" created_at="2010-10-10 15:40:00.0" updated_at="2010-10-11 15:40:00.0"/>
+    <rrs_settlements id="3" order_id="3" seller_id="2" seller_name="seller2" buyer_id="2" buyer_name="buyer" business="1" trade_status="2" type="1" pay_type="1" fee="200000" total_earning="200000" total_expenditure="0" seller_earning="198000" rrs_commission="1000" score_earning="0" presell_deposit="0" third_party_commission="1000" settle_status="4" cashed="0" finished="1" settled="1" confirmed="0" synced="0" vouched="0" ordered_at="2010-10-10 15:30:00.0" paid_at="2010-10-12 15:40:00.0" confirmed_at="2010-10-12 15:40:00.0" finished_at="2010-10-11 15:40:00.0" settled_at="2010-10-11 15:40:00.0" created_at="2010-10-10 15:40:00.0" updated_at="2010-10-11 15:40:00.0"/>
+
+
+</dataset>
+
+

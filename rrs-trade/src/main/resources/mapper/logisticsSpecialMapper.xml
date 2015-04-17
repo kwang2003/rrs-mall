@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="LogisticsSpecial">
+    <resultMap id="logisticsSpecialMap" type="LogisticsSpecial">
+        <id property="id" column="id"/>
+        <result property="modelId" column="model_id"/>
+        <result property="addressModel" column="address_model"/>
+        <result property="firstAmount" column="first_amount"/>
+        <result property="firstFee" column="first_fee"/>
+        <result property="addAmount" column="add_amount"/>
+        <result property="addFee" column="add_fee"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        model_id, address_model, first_amount, first_fee, add_amount, add_fee, created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="logisticsSpecial" useGeneratedKeys="true" keyProperty="id">
+        insert into logistics_specials (<include refid="columns"/>) values (#{modelId}, #{addressModel},
+        #{firstAmount}, #{firstFee}, #{addAmount}, #{addFee}, now(), now())
+    </insert>
+
+    <!-- 优化性能批量插入 -->
+    <insert id="createBatch" parameterType="logisticsSpecial" useGeneratedKeys="true">
+        insert into logistics_specials (<include refid="columns"/>)
+        values
+        <foreach collection="list" item="special" index="index" separator="," >
+            (#{special.modelId}, #{special.addressModel}, #{special.firstAmount}, #{special.firstFee}, #{special.addAmount}, #{special.addFee}, now(), now())
+        </foreach>
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        delete from logistics_specials where id=#{id}
+    </delete>
+
+    <!-- 通过模板编号删除 -->
+    <delete id="deleteByModelId" parameterType="long">
+        delete from logistics_specials
+        where model_id=#{modelId}
+    </delete>
+
+    <update id="update" parameterType="logisticsSpecial">
+        update logistics_specials
+        <set>
+            <if test="addressModel!=null">address_model=#{addressModel},</if>
+            <if test="firstAmount!=null">first_amount=#{firstAmount},</if>
+            <if test="firstFee!=null">first_fee=#{firstFee},</if>
+            <if test="addAmount!=null">add_amount=#{addAmount},</if>
+            <if test="addFee!=null">add_fee=#{addFee},</if>
+            updated_at = now()
+        </set>
+        where id=#{id}
+    </update>
+
+    <select id="findById" parameterType="long" resultMap="logisticsSpecialMap">
+        select id,
+        <include refid="columns"/>
+        from logistics_specials where id=#{id}
+    </select>
+
+    <!-- 获取模板下的所有特殊区域 -->
+    <select id="findByModelId" parameterType="long" resultMap="logisticsSpecialMap">
+        select id,
+        <include refid="columns"/>
+        from logistics_specials where model_id=#{modelId}
+    </select>
+</mapper>

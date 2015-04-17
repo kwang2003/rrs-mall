@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserImage">
+    <resultMap id="userImageMap" type="UserImage">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="category" column="category"/>
+        <result property="fileName" column="file_name"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        user_id,category,file_name,file_size,created_at
+    </sql>
+
+    <select id="findById" parameterType="long" resultMap="userImageMap">
+        select id,
+        <include refid="columns"/>
+        from user_images where id=#{id}
+    </select>
+
+    <select id="findByUserIdAndCategory" parameterType="map" resultMap="userImageMap">
+        select id,
+        <include refid="columns"/>
+        from user_images where user_id=#{userId}
+        <choose>
+            <when test="category!=null">
+                and category=#{category}
+            </when>
+            <otherwise>
+                and category is null
+            </otherwise>
+        </choose>
+        order by id desc limit #{offset},#{limit}
+    </select>
+
+    <!-- 插入用户： 1.由数据库生成id并赋值到user对象  -->
+    <insert id="create" parameterType="UserImage" useGeneratedKeys="true" keyProperty="id">
+        insert into user_images (
+        <include refid="columns"/>
+        )
+        values (#{userId},#{category},#{fileName},#{fileSize},now())
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        delete from user_images where id=#{id}
+    </delete>
+
+    <delete id="deleteByUserId" parameterType="long">
+        delete from user_images where user_id=#{userId}
+    </delete>
+
+    <select id="totalCountOf" parameterType="long" resultType="int">
+        select count(1) from user_images where user_id = #{userId}
+    </select>
+
+    <select id="countByUserIdAndCategory" parameterType="map" resultType="int">
+        select count(1) from user_images where user_id = #{userId}
+        <choose>
+            <when test="category!=null">
+                and category=#{category}
+            </when>
+            <otherwise>
+                and category is null
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="totalSize" resultType="long">
+        select sum(file_size) from user_images where user_id= #{userId}
+    </select>
+</mapper>

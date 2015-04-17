@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Sku">
+    <resultMap id="SkuMap" type="Sku">
+        <id property="id" column="id"/>
+        <result property="itemId" column="item_id"/>
+        <result property="price" column="price"/>
+        <result property="stock" column="stock"/>
+        <result property="image" column="image"/>
+        <result property="attributeKey1" column="attribute_key1"/>
+        <result property="attributeName1" column="attribute_name1"/>
+        <result property="attributeValue1" column="attribute_value1"/>
+        <result property="attributeKey2" column="attribute_key2"/>
+        <result property="attributeName2" column="attribute_name2"/>
+        <result property="attributeValue2" column="attribute_value2"/>
+        <result property="outerId" column="outer_id"/>
+        <result property="model" column="model"/>
+    </resultMap>
+
+    <sql id="columns">
+        item_id, price, stock, image,attribute_key1, attribute_name1, attribute_value1,attribute_key2,attribute_name2,
+        attribute_value2, outer_id, model
+    </sql>
+
+    <select id="findById" parameterType="long" resultMap="SkuMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM skus WHERE id=#{id}
+    </select>
+
+    <select id="findByItemId" parameterType="long" resultMap="SkuMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM skus WHERE item_id =#{itemId}
+        ORDER BY id ASC
+    </select>
+
+    <select id="findByItemIds" parameterType="list" resultMap="SkuMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM skus WHERE item_id IN
+        <foreach collection="list" open="(" separator="," close=")"
+                 item="itemId">
+            #{itemId}
+        </foreach>
+    </select>
+
+    <select id="findByIds" resultMap="SkuMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM skus WHERE id IN
+        <foreach collection="list" open="(" separator=","
+                 close=")" item="id">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="findSkuByAttributeValuesAndItemId" resultMap="SkuMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM skus WHERE
+        item_id=#{itemId}
+        <if test="attributeValue1!=null">and attribute_value1=#{attributeValue1}</if>
+        <if test="attributeValue2!=null">and attribute_value2=#{attributeValue2}</if>
+    </select>
+
+    <insert id="create" parameterType="Sku" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO skus (<include refid="columns"/>) VALUES (#{itemId},#{price},#{stock},#{image},#{attributeKey1},
+        #{attributeName1},#{attributeValue1},#{attributeKey2},#{attributeName2},#{attributeValue2},#{outerId},#{model})
+    </insert>
+
+    <!--<insert id="batchInsert" parameterType="Sku" useGeneratedKeys="true" keyProperty="id">
+        <selectKey resultType="long" keyProperty="id" order="BEFORE">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO skus (<include refid="columns"/>) VALUES
+        <foreach collection="list" item="sku" index="index" separator="," >
+           (#{sku.itemId},#{sku.price},#{sku.stock},#{sku.image},#{sku.attribute1},#{sku.attribute2})
+        </foreach>
+    </insert>-->
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM skus WHERE id=#{id} <!-- and user_id=#{user_id}-->
+    </delete>
+
+    <delete id="deleteByItemId" parameterType="long">
+        DELETE FROM skus WHERE item_id = #{itemId}
+    </delete>
+
+    <update id="update" parameterType="Sku">
+        UPDATE skus
+        <set>
+            <if test="itemId!=null">item_id=#{itemId},</if>
+            <if test="price!=null">price=#{price},</if>
+            <if test="stock!=null">stock=#{stock},</if>
+            <if test="image!=null">image=#{image},</if>
+            <if test="attributeKey1!=null">attribute_key1=#{attributeKey1},</if>
+            <if test="attributeName1!=null">attribute_name1=#{attributeName1},</if>
+            <if test="attributeValue1!=null">attribute_value1=#{attributeValue1},</if>
+            <if test="attributeKey2!=null">attribute_key2=#{attributeKey2},</if>
+            <if test="attributeName2!=null">attribute_name2=#{attributeName2},</if>
+            <if test="attributeValue2!=null">attribute_value2=#{attributeValue2},</if>
+            <if test="outerId!=null">outer_id=#{outerId},</if>
+            <if test="model!=null">model=#{model},</if>
+        </set>
+        WHERE id=#{id} <!--and user_id=#{user_id}-->
+    </update>
+
+    <update id="changeStock">
+        UPDATE skus SET stock = stock + #{count} WHERE id = #{id}
+    </update>
+</mapper>

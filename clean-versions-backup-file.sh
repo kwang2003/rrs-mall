@@ -1,0 +1,1 @@
+find . -name *.versionsBackup| xargs rm -fr

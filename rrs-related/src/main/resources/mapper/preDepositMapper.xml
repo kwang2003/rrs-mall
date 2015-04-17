@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PreDeposit">
+    <resultMap id="preDepositMap" type="PreDeposit">
+        <id property="id" column="id"/>
+        <result property="spuId" column="spu_id"/>
+        <result property="itemId" column="item_id"/>
+        <result property="shopIds" column="shop_ids"/>
+        <result property="plainBuyLimit" column="plain_buy_limit"/>
+
+
+        <result property="byStorage" column="by_storage"/>
+        <result property="earnest" column="earnest"/>
+        <result property="remainMoney" column="remain_money"/>
+        <result property="advertise" column="advertise"/>
+
+        <result property="price" column="price"/>
+        <result property="fakeSoldQuantity" column="fake_sold_quantity"/>
+        <result property="status" column="status" />
+        <result property="earnestTimeLimit" column="earnest_time_limit"/>
+
+
+        <result property="releasedAt" column="released_at"/>
+        <result property="preSaleStartAt" column="presale_start_at"/>
+        <result property="preSaleFinishAt" column="presale_finish_at"/>
+        <result property="remainStartAt" column="remain_start_at"/>
+        <result property="remainFinishAt" column="remain_finish_at"/>
+
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="table">
+        pre_deposits
+    </sql>
+
+    <sql id="column">
+        spu_id, item_id, shop_ids, plain_buy_limit,
+        by_storage, earnest, remain_money, advertise,
+        price, fake_sold_quantity, status, earnest_time_limit,
+        released_at, presale_start_at, presale_finish_at,  remain_start_at, remain_finish_at,
+        created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="preDeposit" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO <include refid="table"/>
+        (<include refid="column"/>) VALUES
+        (
+            #{spuId}, #{itemId}, #{shopIds}, #{plainBuyLimit},
+            #{byStorage}, #{earnest}, #{remainMoney}, #{advertise},
+            #{price}, #{fakeSoldQuantity}, #{status}, #{earnestTimeLimit},
+            #{releasedAt}, #{preSaleStartAt}, #{preSaleFinishAt}, #{remainStartAt}, #{remainFinishAt},
+            now(), now()
+        );
+    </insert>
+
+    <update id="update" parameterType="preDeposit">
+        UPDATE <include refid="table"/>
+        <set>
+            updated_at=now(),
+            <if test="shopIds != null">
+                shop_ids = #{shopIds},
+            </if>
+            <if test="plainBuyLimit != null">
+                plain_buy_limit = #{plainBuyLimit},
+            </if>
+            <if test="byStorage != null">
+                by_storage=#{byStorage},
+            </if>
+            <if test="earnest != null">
+                earnest = #{earnest},
+            </if>
+            <if test="remainMoney != null">
+                remain_money = #{remainMoney},
+            </if>
+            <if test="advertise != null">
+                advertise = #{advertise},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="fakeSoldQuantity != null">
+                fake_sold_quantity = #{fakeSoldQuantity},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="earnestTimeLimit != null">
+                earnest_time_limit = #{earnestTimeLimit},
+            </if>
+            <if test="preSaleStartAt != null">
+                presale_start_at = #{preSaleStartAt},
+            </if>
+            <if test="preSaleFinishAt != null">
+                presale_finish_at = #{preSaleFinishAt},
+            </if>
+            <if test="remainStartAt != null">
+                remain_start_at = #{remainStartAt},
+            </if>
+            <if test="remainFinishAt != null">
+                remain_finish_at = #{remainFinishAt},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="get" parameterType="long" resultMap="preDepositMap">
+        SELECT id, <include refid="column"/> FROM <include refid="table"/> WHERE id = #{id}
+    </select>
+
+    <select id="getBySpuId" parameterType="long" resultMap="preDepositMap">
+        SELECT id, <include refid="column"/> FROM <include refid="table"/> WHERE spu_id = #{spuId}
+    </select>
+
+    <select id="findByIds" resultMap="preDepositMap">
+        SELECT id, <include refid="column"/> FROM <include refid="table"/>
+        WHERE id IN
+        <foreach collection="list" open="(" separator="," close=")"
+                 item="id">
+            #{id}
+        </foreach>
+    </select>
+    
+    <select id="findByCriterion" parameterType="map" resultMap="preDepositMap">
+        SELECT id, <include refid="column"/> FROM <include refid="table"/>
+        <where>
+            <if test="criterion.status!=null">
+                status = #{criterion.status}
+            </if>
+        </where>
+        order by id desc limit #{offset},#{limit}
+    </select>
+
+
+    <sql id="condition">
+        <where>
+            <if test="criteria != null and criteria.itemId != null">
+                AND item_id = #{criteria.itemId}
+            </if>
+            <if test="criteria != null and criteria.status != null">
+                AND status = #{criteria.status}
+            </if>
+            <if test="createdStartAt != null">
+                AND <![CDATA[ created_at >= #{createdStartAt} ]]>
+            </if>
+            <if test="createdEndAt != null">
+                AND <![CDATA[ created_at < #{createdEndAt} ]]>
+            </if>
+        </where>
+    </sql>
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table"/>
+        <include refid="condition"/>
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="preDepositMap">
+        select id,
+        <include refid="column"/>
+        from <include refid="table"/>
+        <include refid="condition"/>
+        order by created_at desc
+        limit #{offset},#{limit}
+    </select>
+
+
+    <select id="countBy" parameterType="PreDeposit" resultType="long">
+        SELECT count(1) FROM <include refid="table"/>
+        <where>
+            <if test="status != null">
+                status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="findByItemId" parameterType="long" resultMap="preDepositMap">
+        SELECT id,  <include refid="column"/> FROM <include refid="table"/> WHERE item_id=#{itemId}
+    </select>
+</mapper>

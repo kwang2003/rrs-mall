@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ShopExtra">
+    <resultMap id="shopExtraMap" type="ShopExtra">
+        <id property="id" column="id"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="outerCode" column="outer_code"/>
+        <result property="ntalkerId" column="ntalker_id"/>
+        <result property="rate" column="rate"/>
+        <result property="rateUpdating" column="rate_updating"/>
+        <result property="depositNeed" column="deposit_need"/>
+        <result property="techFeeNeed" column="tech_fee_need"/>
+
+        <result property="rQuality"  column="r_quality"/>
+        <result property="rDescribe" column="r_describe"/>
+        <result property="rService"  column="r_service"/>
+        <result property="rExpress"  column="r_express"/>
+        <result property="tradeQuantity" column="trade_quantity"/>
+        <result property="isStorePay" column="is_storePay"/>
+
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        shop_id, outer_code, ntalker_id, rate, rate_updating, deposit_need, tech_fee_need,
+        r_quality, r_describe, r_service, r_express, trade_quantity,is_storePay,
+        created_at, updated_at
+    </sql>
+
+    <sql id="table">
+        shop_extras
+    </sql>
+
+
+    <select id="findById" parameterType="long" resultMap="shopExtraMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/> where id=#{id}
+    </select>
+
+    <select id="findByShopId" resultMap="shopExtraMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/> where shop_id=#{shopId}
+    </select>
+
+    <select id="findByOuterCode" resultMap="shopExtraMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM <include refid="table"/> WHERE outer_code=#{outerCode}
+    </select>
+
+    <insert id="create" parameterType="ShopExtra" useGeneratedKeys="true" keyProperty="id">
+        insert into <include refid="table"/> (<include refid="columns"/>) values (
+        #{shopId}, #{outerCode}, #{ntalkerId}, #{rate}, #{rateUpdating}, #{depositNeed}, #{techFeeNeed},
+        #{rQuality}, #{rDescribe}, #{rService}, #{rExpress}, #{tradeQuantity},#{isStorePay},
+        now(), now())
+    </insert>
+
+    <update id="update" parameterType="ShopExtra">
+        update <include refid="table"/>
+        <set>
+            updated_at = now(),
+            <if test="outerCode != null">
+                outer_code = #{outerCode},
+            </if>
+            <if test="ntalkerId != null">
+                ntalker_id = #{ntalkerId},
+            </if>
+            <if test="rate != null">
+                rate = #{rate},
+            </if>
+            <if test="rateUpdating != null">
+                rate_updating = #{rateUpdating},
+            </if>
+            <if test="rateUpdating == null">
+                rate_updating = null,
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <update id="updateByShopId" parameterType="ShopExtra">
+        update <include refid="table"/>
+        <set>
+            updated_at = now(),
+            <if test="outerCode != null">
+                outer_code = #{outerCode},
+            </if>
+            <if test="ntalkerId != null">
+                ntalker_id = #{ntalkerId},
+            </if>
+            <if test="rate != null">
+                rate = #{rate},
+            </if>
+            <if test="rateUpdating != null">
+                rate_updating = #{rateUpdating},
+            </if>
+            <if test="rQuality != null">
+                r_quality = #{rQuality},
+            </if>
+            <if test="rDescribe != null">
+                r_describe = #{rDescribe},
+            </if>
+            <if test="rService != null">
+                r_service = #{rService},
+            </if>
+            <if test="rExpress != null">
+                r_express = #{rExpress},
+            </if>
+            <if test="tradeQuantity != null">
+                trade_quantity = #{tradeQuantity},
+            </if>
+            <if test="depositNeed != null">
+                deposit_need = #{depositNeed},
+            </if>
+            <if test="techFeeNeed != null">
+                tech_fee_need = #{techFeeNeed},
+            </if>
+        </set>
+        where shop_id = #{shopId}
+    </update>
+
+    <sql id="condition">
+        <where>
+
+        </where>
+    </sql>
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table"/>
+        <include refid="condition"/>
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="shopExtraMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <include refid="condition"/>
+        order by id asc
+        <if test="offset != null and limit != null">
+            limit #{offset},#{limit}
+        </if>
+    </select>
+
+    <select id="maxId" resultType="long">
+        select max(id)
+        from <include refid="table"/>
+    </select>
+
+    <select id="idForDump" resultType="long">
+        select `id`
+        from <include refid="table"/>
+        where `id` &lt; #{lastId}
+        order by `id` desc
+        limit #{limit}
+    </select>
+
+    <!-- 修改到店支付 -->
+    <update id="updateIsStorePayByShopid" parameterType="ShopExtra">
+        update <include refid="table"/>
+        <set>
+            updated_at = now()
+            <if test="isStorePay != null">
+                ,is_storePay = #{isStorePay}
+            </if>
+        </set>
+        where shop_id = #{shopId}
+    </update>
+</mapper>

@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Order">
+    <resultMap id="orderMap" type="Order">
+        <id property="id" column="id"/>
+        <result property="originId" column="origin_id"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="business" column="business"/>
+        <result property="status" column="status"/>
+        <result property="type" column="type"/>
+
+        <result property="tradeInfoId" column="trade_info_id"/>
+        <result property="deliverFee" column="deliver_fee"/>
+        <result property="paymentType" column="payment_type"/>
+        <result property="paymentCode" column="payment_code"/>
+        <result property="fee" column="fee"/>
+        <result property="channel" column="channel"/>
+        <result property="isBuying" column="is_buying"/>
+
+        <result property="paidAt" column="paid_at"/>
+        <result property="deliveredAt" column="delivered_at"/>
+        <result property="doneAt" column="done_at"/>
+        <result property="canceledAt" column="canceled_at"/>
+        <result property="finishedAt" column="finished_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+
+        <result property="paymentPlatform" column="payment_platform"></result>
+    </resultMap>
+
+    <sql id="columns">
+        origin_id, buyer_id, seller_id, business, status, `type`,
+        trade_info_id, deliver_fee, payment_type, payment_code, fee, channel, is_buying,
+        paid_at, delivered_at, done_at, canceled_at, finished_at, created_at, updated_at
+    </sql>
+
+    <select id="findById" parameterType="long" resultMap="orderMap">
+        select id,
+        <include refid="columns"/>
+        ,payment_platform
+        from orders where id=#{id}
+    </select>
+
+    <select id="findByOriginId" parameterType="long" resultMap="orderMap">
+        select id,
+        <include refid="columns"/>
+        from orders where origin_id=#{id}
+    </select>
+
+    <select id="findByIds" parameterType="long" resultMap="orderMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM orders WHERE id IN
+        <foreach item="id" collection="list"
+                 open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ORDER BY id DESC
+    </select>
+
+
+
+
+    <select id="countOfFinished" parameterType="map" resultType="long">
+        select count(1)
+        from orders
+        <where>
+            <if test="startAt != null">
+                <![CDATA[ finished_at >= #{startAt} ]]>
+            </if>
+            <if test="sellerId != null">
+                <![CDATA[ finished_at < #{endAt} ]]>
+            </if>
+        </where>
+    </select>
+
+
+    <sql id="updatedCondition">
+        <where>
+            <![CDATA[ updated_at >= #{startAt} and updated_at <= #{endAt} ]]>
+            <if test="businesses != null">
+                and business in
+                <foreach collection="businesses" separator="," open="("
+                         close=")" item="business">
+                    #{business}
+                </foreach>
+            </if>
+            <if test="sellerIds != null">
+                and seller_id in
+                <foreach collection="sellerIds" separator="," open="("
+                         close=")" item="sellerId">
+                    #{sellerId}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+
+
+
+    <select id="countOfUpdated" parameterType="map" resultType="long">
+        select count(1)
+        from orders
+        <include refid="updatedCondition" />
+    </select>
+
+
+    <select id="findUpdated" parameterType="map" resultMap="orderMap">
+        select id,
+        <include refid="columns"/>
+        from orders
+        <include refid="updatedCondition" />
+        order by id desc limit #{offset},#{limit}
+    </select>
+
+
+    <select id="findFinished" parameterType="map" resultMap="orderMap">
+        select id,
+        <include refid="columns"/>
+        from orders
+        <where>
+            <![CDATA[ finished_at >= #{startAt} and finished_at < #{endAt} ]]>
+        </where>
+        order by id desc limit #{offset},#{limit}
+    </select>
+
+    <select id="maxId" resultType="long">
+        SELECT
+        max(id)
+        FROM orders;
+    </select>
+
+    <select id="findNotFinished" resultMap="orderMap" parameterType="map">
+        select id,
+        <include refid="columns"/>
+        from orders where status not in
+        (3,-1,-2,-3,-4,-5,-6)
+        <![CDATA[ AND id < #{lastId}
+        AND created_at >= #{compared}]]>
+        ORDER BY id DESC LIMIT #{limit}
+    </select>
+
+    <select id="findNotPaid" resultMap="orderMap" parameterType="map">
+        select id,
+        <include refid="columns"/>
+        from orders where status = 0
+        <![CDATA[ AND id < #{lastId}
+        AND created_at <= #{endAt} AND created_at >= #{startAt}]]>
+        ORDER BY id DESC LIMIT #{limit}
+    </select>
+
+    <select id="findNotConfirmDeliver" resultMap="orderMap" parameterType="map">
+        select id,
+        <include refid="columns"/>
+        from orders where status = 2
+        <![CDATA[ AND id < #{lastId}
+        AND delivered_at <= #{endAt} AND delivered_at >= #{startAt}]]>
+        ORDER BY id DESC LIMIT #{limit}
+    </select>
+
+    <insert id="create" parameterType="Order" useGeneratedKeys="true" keyProperty="id">
+        insert into orders (<include refid="columns"/>) values (#{originId},#{buyerId},#{sellerId},#{business},
+        #{status}, #{type}, #{tradeInfoId},
+        #{deliverFee}, #{paymentType}, #{paymentCode}, #{fee},  #{channel}, #{isBuying},
+        #{paidAt}, #{deliveredAt}, #{doneAt}, #{canceledAt}, #{finishedAt}, now(), now()
+        )
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        delete from orders where id=#{id} <!-- and user_id=#{user_id}-->
+    </delete>
+
+    <update id="update" parameterType="Order">
+        update orders
+        <set>
+            <if test="status!=null">status=#{status},</if>
+            <if test="deliverFee!=null">deliver_fee=#{deliverFee},</if>
+            <if test="paymentCode!=null">payment_code=#{paymentCode},</if>
+            <if test="paidAt!=null">paid_at=#{paidAt},</if>
+            <if test="deliveredAt!=null">delivered_at=#{deliveredAt},</if>
+            <if test="fee!=null">fee=#{fee},</if>
+            <if test="doneAt!=null">done_at=#{doneAt},</if>
+            <if test="canceledAt!=null">canceled_at=#{canceledAt},</if>
+            <if test="finishedAt!=null">finished_at=#{finishedAt},</if>
+            <if test="channel!=null">channel=#{channel},</if>
+            <if test="paymentPlatform!=null">payment_platform=#{paymentPlatform},</if>
+            updated_at = now()
+        </set>
+        where id=#{id} <!--and user_id=#{user_id}-->
+    </update>
+
+
+    <update id="expired" parameterType="Order">
+        update orders
+        <set>
+            <if test="createdAt!=null">created_at=#{createdAt},</if>
+            <if test="deliveredAt!=null">delivered_at=#{deliveredAt},</if>
+        </set>
+        where id=#{id}
+    </update>
+
+
+    <update id="emptyCanceledAndFinishedAt" parameterType="long">
+        update orders set canceled_at = null, finished_at = null
+        where id = #{id}
+    </update>
+
+
+    <sql id="condition">
+        <where>
+            <if test="criteria != null and criteria.id != null">
+                id = #{criteria.id}
+            </if>
+            <if test="criteria != null and criteria.buyerId != null">
+                buyer_id = #{criteria.buyerId}
+            </if>
+            <if test="criteria != null and criteria.type != null">
+                AND type = #{criteria.type}
+            </if>
+            <if test="criteria != null and criteria.paymentType != null">
+                payment_type = #{criteria.paymentType}
+            </if>
+            <if test="criteria != null and criteria.sellerId != null">
+                AND seller_id = #{criteria.sellerId}
+            </if>
+            <if test="criteria != null and criteria.status != null">
+                AND status = #{criteria.status}
+            </if>
+            <if test="criteria != null and criteria.business != null">
+                AND business = #{criteria.business}
+            </if>
+            <if test="createdStartAt != null">
+                AND <![CDATA[ created_at >= #{createdStartAt} ]]>
+            </if>
+            <if test="createdEndAt != null">
+                AND <![CDATA[ created_at < #{createdEndAt} ]]>
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from orders
+        <include refid="condition"/>
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="orderMap">
+        select id,
+        <include refid="columns"/>
+        from orders
+        <include refid="condition"/>
+        limit #{offset},#{limit}
+    </select>
+
+    <select id="findOnTrialTimeOutOrder" parameterType="long" resultType="long">
+        SELECT id
+        FROM orders WHERE id IN
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        <![CDATA[ and date_format(now()- INTERVAL 43 DAY,'%Y-%m-%d %H:%i:%S') >= date_format(created_at,'%Y-%m-%d %H:%i:%S')]]>
+        ORDER BY id
+    </select>
+</mapper>

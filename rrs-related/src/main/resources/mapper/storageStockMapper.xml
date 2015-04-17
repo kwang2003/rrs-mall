@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StorageStock">
+    <resultMap id="storageStockMap" type="StorageStock">
+        <id property="id" column="id"/>
+        <result property="itemId" column="item_id"/>
+        <result property="storageId" column="storage_id"/>
+        <result property="initStock" column="init_stock"/>
+        <result property="soldCount" column="sold_count"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="column">
+        item_id, storage_id, init_stock, sold_count, created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="StorageStock" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO storage_stocks (<include refid="column"/>) VALUES (#{itemId}, #{storageId},#{initStock}, #{soldCount}, now(), now());
+    </insert>
+
+    <update id="update" parameterType="StorageStock">
+        UPDATE storage_stocks
+        <set>
+            updated_at=now(),
+            <if test="initStock!=null">init_stock=#{initStock},</if>
+            <if test="soldCount!=null">sold_count=#{soldCount},</if>
+        </set>
+        WHERE item_id = #{itemId} and storage_id=#{storageId}
+    </update>
+
+    <update id="changeSoldCount" parameterType="map">
+        UPDATE storage_stocks set updated_at=now(), sold_count=sold_count+#{delta} where item_id=#{itemId} and storage_id=#{storageId}
+    </update>
+
+    <select id="findByItemIdAndStorageId" parameterType="map" resultMap="storageStockMap">
+        SELECT id, <include refid="column"/> FROM storage_stocks WHERE item_id = #{itemId} and storage_id=#{storageId}
+    </select>
+
+    <select id="findById" parameterType="long" resultMap="storageStockMap">
+        SELECT id, <include refid="column"/> FROM storage_stocks WHERE id = #{id}
+    </select>
+</mapper>

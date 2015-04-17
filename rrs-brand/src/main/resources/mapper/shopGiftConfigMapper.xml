@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ShopGiftConfig">		
+    <resultMap id="ShopGiftMap" type="com.rrs.arrivegift.model.ShopGiftConfig">
+        <id property="id" column="id"/>									
+        <result property="userid" column="userid"/>
+        <result property="shopid" column="shopid"/>
+        <result property="weekday" column="weekday"/>		
+        <result property="amstart" column="am_start"/>
+        <result property="amend" column="am_end"/>
+        <result property="pmstart" column="pm_start"/>
+        <result property="pmend" column="pm_end"/>
+        <result property="enable" column="enable"/>	
+        <result property="createdat" column="created_at"/>
+        <result property="updatedat" column="updated_at"/>
+    </resultMap>		
+			
+	<insert id="create" parameterType="com.rrs.arrivegift.model.ShopGiftConfig" useGeneratedKeys="true" keyProperty="id" >
+	        insert into rrs_shopgift_config (userid,shopid,weekday,am_start,am_end,pm_start,pm_end,enable,created_at,updated_at) values (#{userid},#{shopid},#{weekday},#{amstart},#{amend},#{pmstart},#{pmend},#{enable},now(),now())
+	</insert>
+    
+    <select id="findByShopId" resultMap="ShopGiftMap" parameterType="long">	
+        select id,shopid,userid,shopid,weekday,am_start,am_end,pm_start,pm_end,enable,created_at,updated_at from rrs_shopgift_config where 1=1 and shopid = #{shopid}
+      								
+    </select>					
+    
+    <update id="updateShopGift" parameterType="com.rrs.arrivegift.model.ShopGiftConfig">
+        UPDATE rrs_shopgift_config
+        <set>		
+            updated_at=now(),
+            <if test="enable != null">enable = #{enable},</if>
+            <if test="weekday != null">weekday = #{weekday},</if>
+            <if test="amstart != null">am_start = #{amstart},</if>
+            <if test="amend != null">am_end = #{amend},</if>		
+            <if test="pmstart != null">pm_start = #{pmstart},</if>
+            <if test="pmend != null">pm_end = #{pmend}</if>
+        </set>
+        WHERE shopid = #{shopid}
+    </update>
+    
+</mapper>

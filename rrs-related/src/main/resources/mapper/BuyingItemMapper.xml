@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2014 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BuyingItem">
+    <resultMap id="BuyingItemMap" type="BuyingItem">
+        <id property="id" column="id"/>
+        <result property="itemId" column="item_id"/>
+        <result property="buyingActivityId" column="buying_activity_id"/>
+        <result property="itemOriginPrice" column="item_origin_price"/>
+        <result property="itemBuyingPrice" column="item_buying_price"/>
+        <result property="discount" column="discount"/>
+        <result property="buyLimit" column="buy_limit"/>
+        <result property="fakeSoldQuantity" column="fake_sold_quantity"/>
+        <result property="isStorage" column="is_storage"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="column">
+        item_id, buying_activity_id, item_origin_price, item_buying_price, discount, buy_limit, fake_sold_quantity,
+        is_storage,created_at, updated_at
+    </sql>
+
+    <insert id="create" parameterType="BuyingItem" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO buying_activity_items (<include refid="column"/>)
+        VALUES (#{itemId}, #{buyingActivityId}, #{itemOriginPrice}, #{itemBuyingPrice}, #{discount}, #{buyLimit}, #{fakeSoldQuantity},
+        #{isStorage},now(), now());
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        DELETE from buying_activity_items WHERE id = #{id}
+    </delete>
+
+    <update id="update" parameterType="BuyingItem">
+        UPDATE buying_activity_items
+        <set>
+            updated_at=now(),
+            <if test="itemId != null">item_id = #{itemId},</if>
+            <if test="buyingActivityId != null">buying_activity_id = #{buyingActivityId},</if>
+            <if test="itemOriginPrice != null">item_origin_price = #{itemOriginPrice},</if>
+            <if test="itemBuyingPrice != null">item_buying_price = #{itemBuyingPrice},</if>
+            <if test="discount != null">discount = #{discount},</if>
+            <if test="buyLimit != null">buy_limit = #{buyLimit},</if>
+            <if test="fakeSoldQuantity != null">fake_sold_quantity = #{fakeSoldQuantity},</if>
+            <if test="isStorage != null">is_storage = #{isStorage},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="findById" parameterType="long" resultMap="BuyingItemMap">
+        SELECT id, <include refid="column"/> FROM buying_activity_items WHERE id = #{id}
+    </select>
+
+    <select id="findByActivityId" parameterType="long" resultMap="BuyingItemMap">
+        SELECT id, <include refid="column"/> FROM buying_activity_items WHERE buying_activity_id = #{id}
+    </select>
+
+    <select id="findByActivityIdAnditemId" parameterType="map" resultMap="BuyingItemMap">
+        SELECT id, <include refid="column"/> FROM buying_activity_items WHERE buying_activity_id = #{activityId} AND
+        item_id = #{itemId}
+    </select>
+
+    <select id="findLatestByItemId" parameterType="long" resultMap="BuyingItemMap">
+        SELECT id, <include refid="column"/> FROM buying_activity_items WHERE item_id = #{id} ORDER BY id DESC LIMIT 1
+    </select>
+
+    <delete id="deleteByActivityId" parameterType="long">
+        DELETE from buying_activity_items WHERE buying_activity_id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2014 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="OrderLogisticsInfo">
+    <resultMap id="OrderLogisticsInfoMap" type="OrderLogisticsInfo">
+        <id column="id" property="id"/>
+        <result column="order_id" property="orderId"/>
+        <result column="express_name" property="expressName"/>
+        <result column="express_code" property="expressCode"/>
+        <result column="express_no" property="expressNo"/>
+        <result column="type" property="type"/>
+        <result column="remark" property="remark"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <sql id="tb">
+        order_logistics_infos
+    </sql>
+
+    <sql id="cols_all">
+        id, <include refid="cols_exclude_id" />
+    </sql>
+
+    <sql id="cols_exclude_id">
+        order_id, express_name, express_code, express_no, type, remark, created_at, updated_at
+    </sql>
+
+    <sql id="vals">
+        #{orderId}, #{expressName}, #{expressCode}, #{expressNo}, #{type}, #{remark}, now(), now()
+    </sql>
+
+    <insert id="create" parameterType="OrderLogisticsInfo" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO
+        <include refid="tb" />
+        (<include refid="cols_exclude_id" />)
+        VALUES
+        (<include refid="vals" />)
+    </insert>
+
+    <update id="update" parameterType="OrderLogisticsInfo">
+        UPDATE <include refid="tb"/>
+        <set>
+            <if test="name != null"> name = #{name}, </if>
+            <if test="code != null"> code = #{code}, </if>
+            <if test="status != null"> status = #{status}, </if>
+            <if test="interfaceName != null"> interface_name = #{interfaceName}, </if>
+            updated_at=now()
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        UPDATE <include refid="tb" />
+        SET status = -1, updated_at = now()
+        WHERE id = #{id}
+    </delete>
+
+    <select id="load" parameterType="long" resultMap="OrderLogisticsInfoMap" >
+        SELECT <include refid="cols_all" />
+        FROM <include refid="tb" />
+        WHERE id = #{id} AND status != -1
+    </select>
+
+    <select id="findByOrderId" parameterType="string" resultMap="OrderLogisticsInfoMap" >
+        SELECT <include refid="cols_all" />
+        FROM <include refid="tb" />
+        WHERE order_id = #{orderId}
+    </select>
+
+</mapper>

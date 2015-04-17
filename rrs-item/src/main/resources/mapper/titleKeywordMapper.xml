@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="TitleKeyword">
+
+    <resultMap id="titleKeywordResultMap" type="TitleKeyword">
+        <id     property="id" column="id"/>
+        <result property="nameId" column="name_id"/>
+        <result property="path" column="path"/>
+        <result property="title" column="title"/>
+        <result property="keyword" column="keyword"/>
+        <result property="desc" column="desc"/>
+        <result property="friendLinks" column="friend_links"/>
+    </resultMap>
+
+    <!-- 通用列 -->
+    <sql id="titlekeyword_columns">
+      name_id, path, title, keyword, `desc`, friend_links,created_at,updated_at
+    </sql>
+
+    <!-- 通用分页判断 -->
+    <sql id="paging">
+        <if test="start != null and limit != null">
+            limit #{start}, #{limit}
+        </if>
+    </sql>
+
+
+    <!-- 通用查询条件 -->
+    <sql id="conditions">
+        <where>
+            <if test="nameId != null"> AND name_id = #{nameId}</if>
+            <if test="path != null"> AND path = #{path}</if>
+            <if test="title != null">  AND title   like concat(concat('%', #{title}),'%')</if>
+            <if test="keyword != null">AND keyword like concat(concat('%', #{keyword}),'%')</if>
+            <if test="friendLinks != null">AND friend_links like concat(concat('%', #{friendLinks}),'%')</if>
+        </where>
+    </sql>
+
+
+    <!-- 新增 -->
+    <insert id="create" parameterType="TitleKeyword" useGeneratedKeys="true" keyProperty="id">
+      INSERT INTO title_keyword (<include refid="titlekeyword_columns"/>)
+      VALUES (#{nameId}, #{path}, #{title}, #{keyword}, #{desc}, #{friendLinks}, now(), now())
+    </insert>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM title_keyword where id = #{id}
+    </delete>
+
+    <!-- 通过唯一ID查询记录 -->
+    <select id="findById" parameterType="long" resultMap="titleKeywordResultMap">
+        SELECT id,
+        <include refid="titlekeyword_columns"/>
+        FROM title_keyword
+        WHERE id = #{id}
+    </select>
+
+    <!-- 根据 nameId 查询记录 -->
+    <select id="findByNameId" parameterType="long" resultMap="titleKeywordResultMap">
+        SELECT id, <include refid="titlekeyword_columns"/>
+          FROM title_keyword
+        WHERE name_id = #{nameId}
+    </select>
+
+
+    <select id="countByTitle" parameterType="string">
+        SELECT COUNT(1)
+          FROM title_keyword
+        WHERE title LIKIE concat(concat('%', #{title}),'%')
+          ORDER BY id DESC
+    </select>
+
+    <!-- 根据标题 title 查询记录 -->
+    <select id="findByTitle" resultMap="titleKeywordResultMap" parameterType="java.lang.String">
+        SELECT id, <include refid="titlekeyword_columns" />
+          FROM title_keyword
+        WHERE title like concat(concat('%', #{title}),'%')
+          ORDER BY id DESC
+    </select>
+
+
+    <select id="countByPath" parameterType="string">
+        SELECT COUNT(1)
+          FROM title_keyword
+        WHERE path = #{path}
+          ORDER BY id DESC
+        <include refid="paging"/>
+    </select>
+
+    <select id="findByPath" parameterType="string" resultMap="titleKeywordResultMap">
+        SELECT id, <include refid="titlekeyword_columns"/>
+        FROM title_keyword
+        WHERE path = #{path}
+    </select>
+
+    <!-- 查询记录数(含查询条件) -->
+    <select id="selectCount" resultType="int">
+        select count(1)
+          from title_keyword
+        <where>
+            <if test="nameId != null"> AND name_id = #{nameId}</if>
+            <if test="path != null"> AND path = #{path}</if>
+        </where>
+    </select>
+
+    <!-- 查询记录(带条件,分页) -->
+    <select id="findAll" resultMap="titleKeywordResultMap">
+        SELECT id, <include refid="titlekeyword_columns"/>
+          FROM title_keyword
+        <where>
+            <if test="nameId != null"> AND name_id = #{nameId}</if>
+            <if test="path != null"> AND path = #{path}</if>
+        </where>
+        ORDER BY id DESC
+        <include refid="paging"/>
+    </select>
+
+    <!-- 根据唯一 ID 或 name_id 更新记录-->
+    <update id="update" parameterType="TitleKeyword">
+        UPDATE title_keyword
+        <set>
+            <if test="nameId!=null">    name_id = #{nameId},</if>
+            <if test="path!=null">    path = #{path},</if>
+            <if test="title != null">   title   = #{title},</if>
+            <if test="keyword != null"> keyword = #{keyword},</if>
+            <if test="desc != null">    `desc`  = #{desc},</if>
+            <if test="friendLinks != null">    friend_links  = #{friendLinks},</if>
+            updated_at = now()
+        </set>
+        WHERE id=#{id}
+    </update>
+
+
+</mapper>

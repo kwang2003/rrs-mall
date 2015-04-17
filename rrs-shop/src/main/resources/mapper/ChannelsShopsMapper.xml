@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="ChannelShops">
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="columns">
+	    <![CDATA[
+		id,channel,secret,origin,type,business_id, role1,role2,role3, role4, role5
+	    ]]>
+	</sql>
+
+    <select id="authSelect" resultType="java.util.Map">
+		SELECT
+	    <![CDATA[
+		        method,cats,
+				concat(
+					role1,',',IFNULL(role2,0),','
+					,IFNULL(role3,0),','
+					,IFNULL(role4,0),','
+					,IFNULL(role5,0),','
+					,IFNULL(role6,0),','
+					,IFNULL(role7,0),','
+					,IFNULL(role8,0)) as roles
+		    FROM open_channels_auth
+		    WHERE method = #{method}
+		         AND is_delete=0
+	    ]]>
+    </select>
+
+    <select id="getSmsById" resultType="java.util.Map">
+        <![CDATA[
+        SELECT content
+		    FROM open_channels_sms_template
+	        WHERE
+		        id = #{id}
+	    ]]>
+    </select>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO open_channels (
+        	id ,
+        	channel ,
+        	secret ,
+        	origin ,
+        	type ,
+        	role1 ,
+        	role2 ,
+        	role3 ,
+        	is_active 
+        ) VALUES (
+        	#{id} ,
+        	#{channel} ,
+        	#{secret} ,
+        	#{origin} ,
+        	#{type} ,
+        	#{role1} ,
+        	#{role2} ,
+        	#{role3} ,
+        	#{isActive} 
+        )
+    ]]>
+		<!--	
+			oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL 
+			DB2: order="BEFORE"" values nextval for sequenceName
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+			SELECT sequenceName.nextval AS ID FROM DUAL 
+        </selectKey>
+		-->
+	</insert>
+    
+	<update id="update" >
+    <![CDATA[
+        UPDATE open_channels SET
+	        channel = #{channel} ,
+	        secret = #{secret} ,
+	        origin = #{origin} ,
+	        type = #{type} ,
+	        role1 = #{role1} ,
+	        role2 = #{role2} ,
+	        role3 = #{role3} ,
+	        is_active = #{isActive} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM open_channels WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="select" resultType="java.util.Map">
+		SELECT
+	    <![CDATA[
+		    o.channel, o.key, o.business_id, o.origin, o.role1, o.role2, o.role3, o.role4, o.role5,
+		    GROUP_CONCAT(s.shop_id) as shopIds, GROUP_CONCAT(s.user_id) as userIds
+		    FROM open_channels o LEFT JOIN open_channels_shops s ON o.channel = s.channel and s.is_delete = 0
+		    WHERE o.is_delete = 0 AND o.channel = #{channel}
+		    GROUP BY o.channel
+	    ]]>
+	</select>
+	
+	<sql id="findPageWhere">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND id = #{id}
+			</if>
+	       <if test="@Ognl@isNotEmpty(channel)">
+				AND channel = #{channel}
+			</if>
+	       <if test="@Ognl@isNotEmpty(secret)">
+				AND secret = #{secret}
+			</if>
+	       <if test="@Ognl@isNotEmpty(origin)">
+				AND origin = #{origin}
+			</if>
+	       <if test="@Ognl@isNotEmpty(type)">
+				AND type = #{type}
+			</if>
+	       <if test="@Ognl@isNotEmpty(role1)">
+				AND role1 = #{role1}
+			</if>
+	       <if test="@Ognl@isNotEmpty(role2)">
+				AND role2 = #{role2}
+			</if>
+	       <if test="@Ognl@isNotEmpty(role3)">
+				AND role3 = #{role3}
+			</if>
+	       <if test="@Ognl@isNotEmpty(isActive)">
+				AND is_active = #{isActive}
+			</if>
+		</where>
+	</sql>
+		
+    <select id="getCount" resultType="long">
+        SELECT count(*) FROM open_channels 
+		<include refid="findPageWhere"/>
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findPage" resultType="java.util.Map">
+    	SELECT <include refid="columns" />
+	    FROM open_channels 
+		<include refid="findPageWhere"/>
+		
+		<if test="@Ognl@isNotEmpty(sortColumns)">
+			ORDER BY ${sortColumns}
+		</if>
+    </select>
+
+	
+</mapper>
+

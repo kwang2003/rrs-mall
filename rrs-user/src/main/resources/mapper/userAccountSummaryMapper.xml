@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<mapper namespace="UserAccountSummary">
+    <resultMap id="userAccountSummaryMap" type="UserAccountSummary">
+        <id property="id" column="id"/>
+        <result property="activity" column="activity"/>
+        <result property="channel" column="channel"/>
+        <result property="from" column="from"/>
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="loginType" column="login_type"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        activity, channel, `from`,
+        user_id, user_name, login_type,
+        created_at,updated_at
+    </sql>
+
+    <sql id="table">
+        user_account_summary
+    </sql>
+
+    <insert id="create" parameterType="UserAccountSummary" useGeneratedKeys="true" keyProperty="id">
+      insert into <include refid="table"/> (<include refid="columns"/>)
+      values
+      (
+        #{activity}, #{channel}, #{from},
+        #{userId}, #{userName}, #{loginType},
+        now(), now()
+      )
+    </insert>
+
+    <select id="get" parameterType="long" resultMap="userAccountSummaryMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where id = #{id}
+    </select>
+
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table"/>
+        where id = #{id}
+    </delete>
+
+</mapper>

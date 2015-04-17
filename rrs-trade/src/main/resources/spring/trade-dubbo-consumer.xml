@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- Shop Service here -->
+    <dubbo:reference interface="com.aixforce.shop.service.ShopService" id="shopService"/>
+    <!-- Item Service here -->
+    <dubbo:reference interface="com.aixforce.item.service.ItemService" id="itemService"/>
+    <dubbo:reference interface="com.aixforce.item.service.ItemBundleService" id="itemBundleService"/>
+
+    <!-- User Service here -->
+    <dubbo:reference interface="com.aixforce.user.service.AccountService" id="accountService"/>
+    <dubbo:reference interface="com.aixforce.user.service.AddressService" id="addressService"/>
+
+    <dubbo:reference interface="com.rrs.coupons.service.CouponsRrsService" id="couponsRrsService"/>
+    <dubbo:reference interface="com.rrs.coupons.service.LqCouponService" id="lqCouponService"/>
+    <dubbo:reference interface="com.rrs.coupons.service.RrsCouOrderItemService" id="rrsCouOrderItemService"/>
+    <dubbo:reference interface="com.rrs.coupons.service.RrsCouUserService" id="rrsCouUserService"/>
+    <dubbo:reference interface="com.rrs.coupons.service.CouponsItemListService" id="couponsItemListService"/>
+
+    <!-- ShopExtra Service here -->
+    <dubbo:reference interface="com.aixforce.shop.service.ShopExtraService" id="shopExtraService"/>
+
+    <dubbo:reference interface="com.aixforce.agreements.service.PreAuthorizationDepositOrderService" id="preAuthorizationDepositOrderService"/>
+
+    <dubbo:reference interface="com.aixforce.rrs.buying.service.BuyingItemService" id="buyingItemService"/>
+
+    <!-- rrs-related -->
+    <dubbo:reference interface="com.aixforce.rrs.presale.service.PreSaleService" id="preSaleService"/>
+    <dubbo:reference interface="com.aixforce.rrs.predeposit.service.PreDepositService" id="preDepositService"/>
+
+    <dubbo:reference interface="com.aixforce.rrs.buying.service.BuyingActivityDefinitionService" id="buyingActivityDefinitionService" />
+</beans>

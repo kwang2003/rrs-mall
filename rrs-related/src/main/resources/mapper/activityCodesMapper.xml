@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ActivityCode">
+
+    <resultMap id="activityCodeResult" type="ActivityCode">
+        <id     property="id"           column="id"/>
+        <result property="activityId"   column="activity_id"/>
+        <result property="activityName" column="activity_name"/>
+        <result property="code"         column="code"/>
+        <result property="activityType" column="activity_type"/>
+        <result property="usage"        column="usage"/>
+        <result property="createdAt"    column="created_at"/>
+        <result property="updatedAt"    column="updated_at"/>
+    </resultMap>
+
+
+    <sql id="columns">
+        activity_id,    activity_name,    code,     activity_type,      `usage`,
+        created_at,     updated_at
+    </sql>
+
+
+    <sql id="query_conditions">
+        <if test="activityId!=null"> AND activity_id   = #{activityId} </if>
+        <if test="activityName!=null">AND activity_name = #{activityName} </if>
+        <if test="code!=null">      AND  code          = #{code}</if>
+        <if test="activityType!=null">AND activity_type = #{activityType}</if>
+        <if test="usage!=null">   AND    `usage`       = #{usage}</if>
+        <if test="ids!=null">
+           AND id IN <foreach collection="ids" open="(" separator="," close=")" item="id">
+                  #{id}
+            </foreach>
+        </if>
+    </sql>
+
+
+    <insert id="create" parameterType="ActivityCode" useGeneratedKeys="true" keyProperty="id">
+      INSERT INTO activity_codes(<include refid="columns"/>)
+        VALUES(
+         #{activityId},    #{activityName},    #{code},     #{activityType},      #{usage},
+         now(),             now()
+        )
+    </insert>
+
+
+    <select id="findById" parameterType="long" resultMap="activityCodeResult">
+        SELECT id, <include refid="columns"/>
+          FROM activity_codes
+        WHERE
+          `id` = #{id}
+    </select>
+
+
+    <select id="countBy" parameterType="java.util.Map" resultType="int">
+        SELECT COUNT(1)
+          FROM activity_codes
+        <where>
+            <include refid="query_conditions"/>
+        </where>
+    </select>
+
+
+    <select id="findBy" parameterType="java.util.Map" resultMap="activityCodeResult">
+        SELECT id, <include refid="columns"/>
+          FROM activity_codes
+        <where>
+            <include refid="query_conditions"/>
+        </where>
+        ORDER BY id DESC
+        <if test="offset!=null and limit!=null">
+          LIMIT #{offset}, #{limit}
+        </if>
+    </select>
+
+
+    <select id="findOneByActivityIdAndCode" parameterType="java.util.Map" resultMap="activityCodeResult">
+        SELECT id, <include refid="columns"/>
+          FROM activity_codes
+        WHERE activity_id = #{activityId}
+              AND code = #{code}
+    </select>
+
+
+    <select id="findByCode" parameterType="java.lang.String" resultMap="activityCodeResult">
+        SELECT id, activity_id,    activity_name,    code,     activity_type,      `usage`
+          FROM activity_codes
+        WHERE code = #{code}
+          ORDER BY id DESC
+    </select>
+
+
+    <select id="countUsageByActivityId" parameterType="long" resultType="int">
+        SELECT SUM(`usage`)
+          FROM activity_codes
+        WHERE activity_id = #{activityId}
+    </select>
+
+
+    <update id="update" parameterType="ActivityCode">
+        UPDATE activity_codes
+          <set>
+              updated_at = now(),
+              <if test="activityName!=null"> activity_name  = #{activityName},</if>
+              <if test="code!=null">         code           = #{code},</if>
+              <if test="activityType!=null"> activity_type  = #{activityType},</if>
+              <if test="usage!=null">        `usage`        = #{usage},</if>
+          </set>
+        WHERE
+          id = #{id}
+    </update>
+
+
+    <update id="updateUsageById" parameterType="java.util.Map">
+        UPDATE activity_codes
+          SET
+            updated_at = now(),
+            `usage` = `usage` + #{usage}
+        WHERE
+            id = #{id}
+    </update>
+
+
+
+    <delete id="deleteByIds" parameterType="list">
+        DELETE
+          FROM activity_codes
+        WHERE
+          id IN <foreach collection="list" open="(" separator="," close=")" item="id">
+            #{id}
+          </foreach>
+    </delete>
+
+
+    <delete id="deleteByActivityIds" parameterType="list">
+        DELETE
+          FROM activity_codes
+        WHERE
+          activity_id IN <foreach collection="list" open="(" separator="," close=")" item="id">
+            #{id}
+          </foreach>
+    </delete>
+
+
+    <select id="findActivityIdsByCode" resultType="long">
+        select activity_id
+        from activity_codes
+        where code = #{code}
+    </select>
+
+
+    <select id="countLikeName" parameterType="long" resultType="long">
+        select count(1)
+        from activity_codes
+            where activity_id =#{activityId}
+    </select>
+
+
+    <select id="pagingCodesByActivityId" parameterType="map" resultMap="activityCodeResult">
+        select id,
+        <include refid="columns"/>
+        from activity_codes
+            where activity_id = #{activityId}
+        limit #{pageNo},#{count}
+    </select>
+
+    <select id="findCodesByActivityId" parameterType="long" resultMap="activityCodeResult">
+        select id,
+        <include refid="columns"/>
+        from activity_codes
+        where activity_id = #{activityId}
+    </select>
+</mapper>

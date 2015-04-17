@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="DepositAccount">
+    <resultMap id="depositAccountMap" type="DepositAccount">
+        <id property="id" column="id"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="sellerName" column="seller_name"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="shopName" column="shop_name"/>
+        <result property="business" column="business"/>
+        <result property="outerCode" column="outer_code"/>
+        <result property="balance" column="balance"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="table" >
+      rrs_deposit_account
+    </sql>
+
+    <sql id="columns">
+        seller_id, seller_name, shop_id, shop_name, business, outer_code, balance, created_at, updated_at
+    </sql>
+
+    <sql id="condition" >
+        <where>
+            <if test="criteria != null and criteria.sellerId != null">
+                and seller_id = #{criteria.sellerId}
+            </if>
+            <if test="criteria != null and criteria.shopId != null">
+                and shop_id = #{criteria.shopId}
+            </if>
+            <if test="criteria != null and criteria.business != null">
+                and business = #{criteria.business}
+            </if>
+            <if test="lower != null">
+                and balance &gt;= #{lower}
+            </if>
+            <if test="upper != null">
+                and balance &lt;= #{upper}
+            </if>
+        </where>
+    </sql>
+
+
+    <insert id="create" parameterType="DepositAccount" useGeneratedKeys="true" keyProperty="id">
+        insert into <include refid="table"/> (<include refid="columns"/>)
+        values
+        (#{sellerId},
+        #{sellerName},
+        #{shopId},
+        #{shopName},
+        #{business},
+        #{outerCode},
+        #{balance},
+        now(),
+        now())
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        delete from <include refid="table"/> where id=#{id}
+    </delete>
+
+
+    <select id="get" parameterType="map" resultMap="depositAccountMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where id = #{id}
+    </select>
+
+    <select id="findBySellerId" parameterType="map" resultMap="depositAccountMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where seller_id = #{sellerId}
+    </select>
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table"/>
+        <include refid="condition"/>
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="depositAccountMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <include refid="condition"/>
+        order by id desc limit #{offset}, #{limit}
+    </select>
+
+    <update id="updateBal" parameterType="map">
+        UPDATE <include refid="table"/>
+        set balance = #{balance}
+        WHERE id=#{id}
+    </update>
+
+    <update id="updateOuterCode" parameterType="map">
+        UPDATE <include refid="table"/>
+        set outer_code = #{outerCode}
+        WHERE seller_id = #{sellerId}
+    </update>
+
+
+</mapper>

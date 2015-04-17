@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="OrderAlipayCash">
+    <resultMap id="orderAlipayCashMap" type="OrderAlipayCash">
+        <id property="id" column="id"/>
+
+        <result property="orderId" column="order_id"/>
+        <result property="orderItemId" column="order_item_id"/>
+        <result property="type" column="type"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="buyerName" column="buyer_name"/>
+
+        <result property="sellerId" column="seller_id"/>
+        <result property="sellerName" column="seller_name"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="shopName" column="shop_name"/>
+
+        <result property="totalFee" column="total_fee"/>
+        <result property="alipayFee" column="alipay_fee"/>
+        <result property="cashFee" column="cash_fee"/>
+        <result property="refundFee" column="refund_fee"/>
+        <result property="voucher" column="voucher"/>
+        <result property="operator" column="operator"/>
+        <result property="status" column="status"/>
+        <result property="fixed" column="fixed"/>
+
+        <result property="tradedAt" column="traded_at"/>
+        <result property="cashedAt" column="cashed_at"/>
+        <result property="cashType" column="cash_type"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        order_id, order_item_id, `type`, buyer_id, buyer_name,
+        seller_id, seller_name, shop_id, shop_name,
+        total_fee, alipay_fee, cash_fee, refund_fee, voucher, operator, status, fixed,
+        traded_at, cashed_at,cash_type, created_at, updated_at
+    </sql>
+
+    <sql id="table">
+        rrs_order_alipay_cash
+    </sql>
+
+    <insert id="create" parameterType="OrderAlipayCash" useGeneratedKeys="true" keyProperty="id">
+        insert into <include refid="table"/> (<include refid="columns"/>)
+        values
+        (
+            #{orderId}, #{orderItemId}, #{type}, #{buyerId}, #{buyerName},
+            #{sellerId}, #{sellerName}, #{shopId}, #{shopName},
+            #{totalFee}, #{alipayFee}, #{cashFee}, #{refundFee}, #{voucher}, #{operator}, #{status}, #{fixed},
+            #{tradedAt}, #{cashedAt},#{cashType}, now(),now()
+        )
+    </insert>
+
+    <select id="get" parameterType="long" resultMap="orderAlipayCashMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where id = #{id}
+    </select>
+
+    <select id="getByOrderIdAndDate" parameterType="map" resultMap="orderAlipayCashMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where order_id = #{orderId} and traded_at = #{tradedAt}
+    </select>
+
+    <select id="getByOrderIdAndOrderItemId" parameterType="map" resultMap="orderAlipayCashMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where order_id = #{orderId} and order_item_id = #{orderItemId}
+    </select>
+
+    <select id="getByOrderIdAndCashType" parameterType="map" resultMap="orderAlipayCashMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where order_id = #{orderId} and cash_type = #{cashType}
+    </select>
+
+    <sql id="condition">
+        <where>
+            <if test="criteria != null and criteria.sellerId != null">
+                AND seller_id = #{criteria.sellerId}
+            </if>
+            <if test="criteria != null and criteria.status != null">
+                AND status = #{criteria.status}
+            </if>
+            <if test="criteria != null and criteria.orderId != null">
+                AND order_id = #{criteria.orderId}
+            </if>
+            <if test="criteria != null and criteria.type != null">
+                AND `type` = #{criteria.type}
+            </if>
+            <if test="tradedStartAt != null">
+                AND <![CDATA[ traded_at >= #{tradedStartAt} ]]>
+            </if>
+            <if test="tradedEndAt != null">
+                AND <![CDATA[ traded_at < #{tradedEndAt} ]]>
+            </if>
+
+            <if test="cashedStartAt != null">
+                AND <![CDATA[ cashed_at >= #{cashedStartAt} ]]>
+            </if>
+            <if test="cashedEndAt != null">
+                AND <![CDATA[ cashed_at < #{cashedEndAt} ]]>
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table"/>
+        <include refid="condition"/>
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="orderAlipayCashMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <include refid="condition"/>
+        ORDER BY id DESC LIMIT #{offset}, #{limit}
+    </select>
+
+
+    <select id="sumSellerAlipayCash" parameterType="map" resultMap="SellerAlipayCash.sellerAlipayCashMap">
+        select  count(1) as cash_total_count,
+        sum(alipay_fee) as alipay_fee,
+        sum(total_fee) as total_fee,
+        sum(cash_fee) as cash_fee,
+        sum(refund_fee) as refund_fee
+        from  <include refid="table"/>
+        WHERE  seller_id = #{sellerId}
+        <![CDATA[ AND cashed_at >= #{startAt}
+        AND cashed_at < #{endAt}]]>
+        AND status = 1
+    </select>
+
+
+    <select id="summaryCashesDaily" parameterType="map" resultMap="AlipayCash.alipayCashMap">
+        select  count(1) as cash_total_count,
+        sum(alipay_fee) as alipay_fee,
+        sum(total_fee) as total_fee,
+        sum(cash_fee) as cash_fee,
+        sum(refund_fee) as refund_fee
+        from  <include refid="table"/>
+        WHERE <![CDATA[ cashed_at >= #{startAt}
+        AND cashed_at < #{endAt}]]>
+        AND status = 1
+    </select>
+
+    <update id="update" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="fixed != null">
+                fixed = #{fixed},
+            </if>
+            <if test="cashedAt != null">
+                cashed_at = #{cashedAt},
+            </if>
+            <if test="operator != null">
+                operator = #{operator},
+            </if>
+            <if test="voucher != null">
+                voucher = #{voucher},
+            </if>
+            updated_at = now(),
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <select id="findByIds" resultMap="orderAlipayCashMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM <include refid="table"/>
+        WHERE id IN
+        <foreach collection="list" separator="," open="("
+                 close=")" item="id">
+            #{id}
+        </foreach>
+    </select>
+    
+    <select id="sumCashedAmountOfSellerDaily" parameterType="map" resultType="long">
+        SELECT sum(cash_fee)
+        FROM <include refid="table"/>
+        WHERE <![CDATA[ seller_id = #{sellerId} and cashed_at >= #{cashedStartAt} and cashed_at < #{cashedEndAt} and status = 1 ]]>
+    </select>
+
+
+    <select id="sumCashedAmountOfDaily" parameterType="map" resultType="long">
+        SELECT sum(cash_fee)
+        FROM <include refid="table"/>
+        WHERE <![CDATA[ cashed_at >= #{cashedStartAt} and cashed_at < #{cashedEndAt} and status = 1 ]]>
+    </select>
+
+    <select id="findByOrderId" parameterType="long" resultMap="orderAlipayCashMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM <include refid="table"/>
+        WHERE order_id = #{orderId}
+    </select>
+
+
+    <update id="batchCashingOfSeller" parameterType="map" >
+        UPDATE <include refid="table"/>
+        SET updated_at = now(),
+        cashed_at = now(),
+        status = 1
+        WHERE <![CDATA[seller_id = #{sellerId}
+        AND traded_at >= #{tradedStartAt}
+        AND traded_at < #{tradedEndAt}]]>
+    </update>
+
+    <update id="batchVouching" parameterType="map">
+        UPDATE <include refid="table"/>
+        SET voucher = #{voucher}
+        WHERE <![CDATA[ seller_id = #{sellerId} and cashed_at >= #{cashedStartAt} and cashed_at < #{cashedEndAt}]]>
+    </update>
+
+
+</mapper>

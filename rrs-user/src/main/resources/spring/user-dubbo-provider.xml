@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <util:properties id="app" location="classpath:app.properties"/>
+
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+
+    <!-- 提供方应用信息，用于计算依赖关系 -->
+    <dubbo:application name="user-provider" logger="slf4j"/>
+
+    <import resource="classpath*:spring/user-service-context.xml"/>
+    <import resource="classpath*:spring/persistence-context.xml"/>
+
+    <!-- 使用zookeeper播注册中心暴露服务地址 -->
+    <dubbo:registry address="#{app.dubboRegistry}"/>
+    <!-- 用dubbo协议在20880端口暴露服务 -->
+    <dubbo:protocol name="dubbo" port="#{app.dubboPort}"/>
+    <!-- 声明需要暴露的服务接口-->
+    <dubbo:service interface="com.aixforce.user.service.AccountService" ref="accountServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.user.service.AddressService" ref="addressServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.user.service.UserProfileService" ref="userProfileServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.user.service.ImageService" ref="imageServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.user.service.UserExtraService" ref="userExtraServiceImpl" retries="0"/>
+    <dubbo:service interface="com.aixforce.user.service.UserAccountSummaryService" ref="userAccountSummaryServiceImpl" retries="0"/>
+    <!--第三方登录接口-->
+    <dubbo:service interface="com.rrs.third.service.ThirdPartLoginService" ref="thirdPartLoginServiceImpl" retries="0"/>
+</beans>

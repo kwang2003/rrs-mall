@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Brand">
+    <resultMap id="brandMap" type="Brand">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="englishName" column="english_name"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="description" column="description"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+
+    <sql id="columns">
+        `name`, english_name, parent_id, description, created_at, updated_at
+    </sql>
+
+    <select id="findAll" resultMap="brandMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM brands
+    </select>
+
+    <select id="findById" resultMap="brandMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM brands WHERE id=#{id}
+    </select>
+
+    <select id="findByIds" resultMap="brandMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM brands
+        WHERE id IN
+        <foreach collection="list" separator="," open="("
+                 close=")" item="id">
+            #{id}
+        </foreach>
+    </select>
+
+    <insert id="create" parameterType="Brand" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO brands (<include refid="columns"/>) VALUES (#{name}, #{englishName}, #{parentId}, #{description}, now(), now())
+    </insert>
+
+    <update id="update" parameterType="Brand">
+        UPDATE brands
+        <set>
+            updated_at = now(),
+            <if test="name!=null">`name`=#{name},</if>
+            <if test="englishName!=null">english_name=#{englishName},</if>
+            <if test="description!=null">description=#{description},</if>
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="long">
+        DELETE FROM brands WHERE id=#{id}
+    </delete>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(1) FROM brands
+    </select>
+
+    <select id="pagination" resultMap="brandMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM brands
+        LIMIT #{offset},#{limit}
+    </select>
+
+    <select id="findByName" resultMap="brandMap">
+        SELECT id,
+        <include refid="columns"/>
+        FROM brands
+        WHERE name=#{name}
+    </select>
+
+    <select id="countLikeName" parameterType="map" resultType="long">
+        select count(1)
+        from brands
+        <if test="name!=null">
+          where name like concat('%', #{name},'%')
+        </if>
+    </select>
+
+    <select id="pagingByName" parameterType="map" resultMap="brandMap">
+        select id,
+        <include refid="columns"/>
+        from brands
+        <if test="name!=null">
+            where name like concat('%', #{name},'%')
+        </if>
+        limit #{offset},#{limit}
+    </select>
+    <select id="findItems" parameterType="map" resultType="map">
+	SELECT
+	a.`name` AS userName,
+	b.*
+	FROM
+	users a
+	INNER JOIN (
+	SELECT DISTINCT
+	c.shop_id AS shopId,
+	c.id,
+	c.brand_id AS brandId,
+	c.`name`,
+	c.price,
+	c.spu_id,
+	c.main_image,
+	c.user_id,
+	c.region
+	FROM
+	brands_club_key a
+	INNER JOIN brand_club b ON a.brandClub_id = b.brand_id
+	INNER JOIN
+	items c ON a.shop_id = c.shop_id
+	WHERE
+	c.spu_id = #{spuId} AND a.`status`=0 <!-- AND c.region like concat('%', #{rid},'%')
+	OR c.region LIKE CONCAT('%',#{cid} ,'%') OR c.region LIKE
+	CONCAT('%',#{pid} ,'%') -->
+	) AS b ON a.id = b.user_id
+</select>
+    
+    <!-- <select id="findItems" parameterType="String" resultType="map">
+     select c.shop_id as shopId,c.id,c.brand_id as brandId,c.`name`,d.`name` as userName,c.price/100 as price,c.spu_id,c.main_image from items c 
+     inner join users d on c.user_id = d.id  where spu_id=#{spuId}
+    </select>
+    <select id="findCount" parameterType="map" resultType="Integer">
+    SELECT
+	count(*) AS count
+FROM
+	brands_club_key a
+INNER JOIN brand_club b ON a.brandClub_id = b.brand_id
+WHERE
+	a.`status` = 1
+AND a.shop_id =#{shopId}
+AND b.brand_outer_id =#{brandId}
+    </select> -->
+</mapper>

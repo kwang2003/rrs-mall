@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SellerAlipayCash">
+    <resultMap id="sellerAlipayCashMap" type="SellerAlipayCash">
+        <id property="id" column="id"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="sellerName" column="seller_name"/>
+        <result property="outerCode" column="outer_code"/>
+        <result property="business" column="business"/>
+        <result property="cashTotalCount" column="cash_total_count"/>
+
+        <result property="totalFee" column="total_fee"/>
+        <result property="alipayFee" column="alipay_fee"/>
+        <result property="cashFee" column="cash_fee"/>
+        <result property="refundFee" column="refund_fee"/>
+        <result property="voucher" column="voucher"/>
+
+        <result property="status" column="status"/>
+        <result property="synced" column="synced"/>
+        <result property="vouched" column="vouched"/>
+
+        <result property="syncedAt" column="synced_at"/>
+        <result property="vouchedAt" column="vouched_at"/>
+        <result property="summedAt" column="summed_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="columns">
+        seller_id, seller_name, outer_code, business, cash_total_count,
+        total_fee, alipay_fee, cash_fee, refund_fee, voucher,
+        status, synced, vouched,
+        synced_at, summed_at, vouched_at, created_at, updated_at
+    </sql>
+
+    <sql id="table">
+        rrs_seller_alipay_cash
+    </sql>
+
+    <insert id="create" parameterType="SellerAlipayCash" useGeneratedKeys="true" keyProperty="id">
+        insert into <include refid="table"/> (<include refid="columns"/>)
+        values
+        (
+            #{sellerId}, #{sellerName}, #{outerCode}, #{business}, #{cashTotalCount},
+            #{totalFee}, #{alipayFee}, #{cashFee}, #{refundFee}, #{voucher},
+            #{status}, #{synced}, #{vouched},
+            #{syncedAt}, #{summedAt}, #{vouchedAt}, now(),now()
+        )
+    </insert>
+
+    <update id="update" parameterType="map">
+        UPDATE  <include refid="table"/>
+        <set>
+            <if test="voucher != null">
+                voucher = #{voucher},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="synced != null">
+                synced = #{synced},
+            </if>
+            <if test="vouched != null">
+                vouched = #{vouched},
+            </if>
+            <if test="syncedAt != null">
+                synced_at = #{syncedAt},
+            </if>
+            <if test="vouchedAt != null">
+                vouched_at = #{vouchedAt},
+            </if>
+
+            <if test="cashTotalCount != null">
+                cash_total_count = #{cashTotalCount},
+            </if>
+
+            updated_at = now(),
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <sql id="condition">
+        <where>
+            <if test="criteria != null and criteria.sellerId != null">
+                AND seller_id = #{criteria.sellerId}
+            </if>
+            <if test="criteria != null and criteria.status != null">
+                AND status = #{criteria.status}
+            </if>
+            <if test="criteria !=null and criteria.synced != null">
+                AND synced = #{criteria.synced}
+            </if>
+            <if test="criteria !=null and criteria.vouched != null">
+                AND vouched = #{criteria.vouched}
+            </if>
+            <if test="summedStartAt != null">
+                AND <![CDATA[ summed_at >= #{summedStartAt} ]]>
+            </if>
+            <if test="summedEndAt != null">
+                AND <![CDATA[ summed_at < #{summedEndAt} ]]>
+            </if>
+            <if test="filter != null and filter">
+                AND ( total_fee != 0 OR alipay_fee != 0 OR cash_fee != 0 OR refund_fee != 0 )
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="countOf" parameterType="map" resultType="long">
+        select count(1)
+        from <include refid="table"/>
+        <include refid="condition"/>
+    </select>
+
+    <select id="findBy" parameterType="map" resultMap="sellerAlipayCashMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <include refid="condition"/>
+        ORDER BY id DESC LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="get" parameterType="long" resultMap="sellerAlipayCashMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where id = #{id}
+    </select>
+
+    <select id="getBy" parameterType="long" resultMap="sellerAlipayCashMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where <![CDATA[ summed_at >= #{summedStartAt}
+        AND summed_at < #{summedEndAt}]]>
+        AND seller_id = #{sellerId}
+    </select>
+
+    <update id="synced" parameterType="map" >
+        update <include refid="table"/>
+        set synced = 1,
+        synced_at = now(),
+        updated_at = now()
+        where id = #{id} and synced = 0
+    </update>
+
+
+    <update id="batchCashing" parameterType="map" >
+        update <include refid="table"/>
+        set status = 1,
+        updated_at = now()
+        where summed_at = #{summedAt}
+    </update>
+
+    <update id="cashing" parameterType="map">
+        update <include refid="table"/>
+        set  updated_at = now(), status = 1 where id=#{id}
+    </update>
+
+
+    <select id="sumAlipayCash" parameterType="map" resultMap="AlipayCash.alipayCashMap">
+        select sum(cash_total_count) as cash_total_count,
+        sum(alipay_fee) as alipay_fee,
+        sum(total_fee) as total_fee,
+        sum(cash_fee) as cash_fee,
+        sum(refund_fee) as refund_fee
+        from  <include refid="table"/>
+        where <![CDATA[ summed_at >= #{summedStartAt} AND summed_at < #{summedEndAt}]]>
+    </select>
+
+    <select id="findNotCashedOfDaily" parameterType="map" resultMap="sellerAlipayCashMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where <![CDATA[ summed_at >= #{summedStartAt} AND summed_at < #{summedEndAt}]]>
+        AND status = 0
+        AND ( total_fee != 0 OR alipay_fee != 0 OR cash_fee != 0 OR refund_fee != 0 )
+    </select>
+
+
+
+    <update id="batchUpdateOuterCode" parameterType="map">
+        update <include refid="table"/>
+        set outer_code = #{outerCode}
+        where seller_id = #{sellerId}
+    </update>
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+   -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BrandClubSlide">
+    <resultMap id="brandClubSlideMap" type="brandClubSlide">
+        <id property="id" column="id"/>
+        <result property="httpUrl" column="httpUrl"/>
+        <result property="mainImage" column="mainImage"/>
+        <result property="imageType" column="imageType"/>
+        <result property="brandId" column="brandId"/>
+    </resultMap>
+
+    <sql id="columns">
+        httpUrl,mainImage,imageType,brandId
+    </sql>
+
+    <select id="findAllByIdAndType" resultMap="brandClubSlideMap">
+        select id,
+        <include refid="columns"/>
+        from brand_club_slide where 1=1
+        <if test='imageType != "" and imageType != null '>
+            and imageType=#{imageType}
+        </if>
+        <if test='brandId != "" and brandId != null '>
+            and brandId=#{brandId}
+        </if>
+    </select>
+
+    <update id="updateBrandClubSlide"  parameterType="brandClubSlide">
+        update brand_club_slide set httpUrl =  #{httpUrl}
+        where id = #{id}
+    </update>
+
+    <insert id="insertBrandClubSlide" parameterType="brandClubSlide">
+        insert into brand_club_slide
+        (httpUrl,mainImage,imageType,brandId)
+        values
+        (#{httpUrl},#{mainImage},#{imageType},#{brandId})
+    </insert>
+    <delete id="deleteBrandClubSlide" parameterType="brandClubSlide">
+        delete from brand_club_slide where id = #{id};
+    </delete>
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+   -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        <!--table rrs_coupons_users-->
+<mapper namespace="RrsCouponsUser">
+    <resultMap id="rrsCouponsUserMap" type="RrsCouponsUser">
+        <id property="id" column="id"/>
+        <result property="couponId" column="couponId"/>
+        <result property="userId" column="userId"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <select id="findUseCount" resultType="java.lang.Integer" parameterType="int">
+        SELECT COUNT(*) FROM rrs_coupons_users WHERE couponId=#{couponId}
+    </select>
+
+    <select id="findUserUseCount" resultType="java.lang.Integer" parameterType="map">
+        SELECT COUNT(*) FROM rrs_coupons_users WHERE couponId=#{couponId} AND userId=#{userid}
+    </select>
+
+    <insert id="addUserCoupon" parameterType="map">
+        insert into rrs_coupons_users (userId,couponId,status)
+        values (#{userId},#{couponId},1)
+    </insert>
+
+    <select id="queryCouponsUserBy" resultMap="rrsCouponsUserMap">
+        SELECT * FROM rrs_coupons_users where status = 1 and couponId = #{couponId}
+        and userId = #{userId}
+    </select>
+
+    <update id="updateCouponUser" parameterType="int">
+        update rrs_coupons_users set status= 2  where id=#{id}
+    </update>
+
+</mapper>

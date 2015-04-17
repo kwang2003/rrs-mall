@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2014 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="InstallInfo">
+    <resultMap id="InstallInfoMap" type="InstallInfo">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="interface_name" property="interfaceName"/>
+        <result column="status" property="status"/>
+        <result column="type" property="type"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <sql id="tb">
+        install_infos
+    </sql>
+
+    <sql id="cols_all">
+        id, <include refid="cols_exclude_id" />
+    </sql>
+
+    <sql id="cols_exclude_id">
+        name, code, interface_name, status, type, created_at, updated_at
+    </sql>
+
+    <sql id="vals">
+        #{name}, #{code}, #{interfaceName}, #{status}, #{type}, now(), now()
+    </sql>
+
+    <sql id="criteria">
+        WHERE 1 = 1
+        <if test="name != null"> AND name LIKE CONCAT('%', #{name}, '%') </if>
+        <choose>
+            <when test="status != null"> AND status = #{status} </when>
+            <otherwise> AND status != -1 </otherwise>
+        </choose>
+        <if test="type != null"> AND type = #{type} </if>
+    </sql>
+
+    <insert id="create" parameterType="InstallInfo" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO
+        <include refid="tb" />
+        (<include refid="cols_exclude_id" />)
+        VALUES
+        (<include refid="vals" />)
+    </insert>
+
+    <update id="update" parameterType="InstallInfo">
+        UPDATE <include refid="tb"/>
+        <set>
+            <if test="name != null"> name = #{name}, </if>
+            <if test="code != null"> code = #{code}, </if>
+            <if test="status != null"> status = #{status}, </if>
+            <if test="type != null"> type = #{type}, </if>
+            <if test="interfaceName != null"> interface_name = #{interfaceName}, </if>
+            updated_at=now()
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <update id="updatesStatus" parameterType="InstallInfo">
+        UPDATE <include refid="tb"/>
+        SET status = #{status}, updated_at = now()
+        WHERE id IN
+        <foreach collection="ids" separator="," open="("
+                 close=")" item="id">
+            #{id}
+        </foreach>
+    </update>
+
+    <delete id="delete" parameterType="long">
+        UPDATE <include refid="tb" />
+        SET status = -1, updated_at = now()
+        WHERE id = #{id}
+    </delete>
+
+    <select id="load" parameterType="long" resultMap="InstallInfoMap" >
+        SELECT <include refid="cols_all" />
+        FROM <include refid="tb" />
+        WHERE id = #{id} AND status != -1
+    </select>
+
+    <select id="findByName" parameterType="string" resultMap="InstallInfoMap" >
+        SELECT <include refid="cols_all" />
+        FROM <include refid="tb" />
+        WHERE name = #{name}
+    </select>
+
+    <select id="findByNames" parameterType="list" resultMap="InstallInfoMap" >
+        SELECT <include refid="cols_all" />
+        FROM <include refid="tb" />
+        WHERE name IN
+        <foreach collection="list" separator="," open="("
+                 close=")" item="name">
+            #{name}
+        </foreach>
+    </select>
+
+    <select id="list" parameterType="InstallInfo" resultMap="InstallInfoMap">
+        SELECT id,
+        <include refid="cols_all"/>
+        FROM
+        <include refid="tb"/>
+        <include refid="criteria"/>
+    </select>
+
+    <!-- 计数 -->
+    <select id="count" parameterType="map" resultType="long">
+        SELECT COUNT(1)
+        FROM <include refid="tb"/>
+        <include refid="criteria"/>
+    </select>
+
+    <!-- 分页查询 -->
+    <select id="paging" parameterType="map" resultMap="InstallInfoMap">
+        SELECT
+        <include refid="cols_all"/>
+        FROM <include refid="tb"/>
+        <include refid="criteria"/>
+        LIMIT #{offset}, #{limit}
+    </select>
+
+</mapper>

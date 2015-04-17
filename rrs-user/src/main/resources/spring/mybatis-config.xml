@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2012 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <typeAliases>
+        <!--user related entity-->
+        <typeAlias alias="User" type="com.aixforce.user.model.User"/>
+        <typeAlias alias="UserProfile" type="com.aixforce.user.model.UserProfile"/>
+        <typeAlias alias="Address" type="com.aixforce.user.model.Address"/>
+        <typeAlias alias="UserExtra" type="com.aixforce.user.model.UserExtra"/>
+        <typeAlias alias="UserImage" type="com.aixforce.user.model.UserImage"/>
+        <typeAlias alias="UserQuota" type="com.aixforce.user.model.UserQuota"/>
+        <typeAlias alias="UserAccountSummary" type="com.aixforce.user.model.UserAccountSummary"/>
+        <typeAlias alias="ThirdUser" type="com.rrs.third.model.ThirdUser"/>
+    </typeAliases>
+</configuration>

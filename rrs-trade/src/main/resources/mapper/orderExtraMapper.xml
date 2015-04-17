@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="OrderExtra">
+    <resultMap id="OrderExtraMap" type="OrderExtra">
+        <id property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="buyerNotes" column="buyer_notes"/>
+        <result property="invoice" column="invoice"/>
+        <result property="deliverTime" column="deliver_time"/>
+        <result property="hasLogistics" column="has_logistics"/>
+        <result property="logisticsInfo" column="logistics_info"/>
+        <result property="hasInstall" column="has_install"/>
+        <result property="installType" column="install_type"/>
+        <result property="installName" column="install_name"/>
+        <result property="deliverType" column="deliver_type"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="source" column="source"/>
+    </resultMap>
+
+    <sql id="columns">
+        order_id, buyer_notes, invoice, deliver_time, has_logistics, logistics_info, has_install, install_type, install_name, deliver_type, updated_at,source
+    </sql>
+
+    <select id="findById" parameterType="long" resultMap="OrderExtraMap">
+        select id,
+        <include refid="columns"/>
+        from order_extras where id=#{id}
+    </select>
+
+    <select id="findByOrderId" resultMap="OrderExtraMap">
+        select id,
+        <include refid="columns"/>
+        from order_extras where order_id=#{orderId}
+    </select>
+
+    <select id="findInOrderIds"  resultMap="OrderExtraMap">
+        select id,
+        <include refid="columns"/>
+        from order_extras where order_id in
+        <foreach item="orderId" index="index" collection="ids" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </select>
+
+    <insert id="create" parameterType="OrderExtra" useGeneratedKeys="true" keyProperty="id">
+        insert into order_extras (<include refid="columns"/>) values
+        (#{orderId},#{buyerNotes},#{invoice}, #{deliverTime}, #{hasLogistics}, #{logisticsInfo}, #{hasInstall}, #{installType}, #{installName}, #{deliverType}, now(), #{source})
+    </insert>
+
+    <delete id="delete" parameterType="long">
+        delete from order_extras where id=#{id} <!-- and user_id=#{user_id}-->
+    </delete>
+
+    <update id="updateByOrderId" parameterType="OrderExtra">
+        update order_extras
+        <set>
+            <if test="buyerNotes!=null">buyer_notes=#{buyerNotes},</if>
+            <if test="invoice!=null">invoice=#{invoice},</if>
+            <if test="deliverTime!=null">deliver_time=#{deliverTime},</if>
+            <if test="hasLogistics!=null">has_logistics=#{hasLogistics},</if>
+            <if test="logisticsInfo!=null">logistics_info=#{logisticsInfo},</if>
+            <if test="hasInstall!=null">has_install=#{hasInstall},</if>
+            <if test="installName!=null">install_name=#{installName},</if>
+            <if test="installType!=null">install_type=#{installType},</if>
+            <if test="source!=null">source=#{source},</if>
+        </set>
+        where order_id=#{orderId}
+    </update>
+
+    <update id="updateOrderId">
+        UPDATE order_extras
+        <set>
+            updated_at = now(),
+            order_id = #{newId},
+        </set>
+        WHERE order_id = #{oldId}
+    </update>
+</mapper>

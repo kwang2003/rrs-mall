@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2013 杭州端点网络科技有限公司
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AlipayTransLoad">
+    <resultMap id="alipayTransLoadMap" type="AlipayTransLoad">
+        <id property="id" column="id"/>
+        <result property="queryStart" column="query_start"/>
+        <result property="queryEnd" column="query_end"/>
+        <result property="pageNo" column="page_no"/>
+        <result property="pageSize" column="page_size"/>
+        <result property="status" column="status"/>
+        <result property="next" column="next"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="table">
+        rrs_alipay_trans_load
+    </sql>
+
+    <sql id="columns">
+        query_start, query_end, page_no, page_size, status, next,
+        created_at, updated_at
+    </sql>
+
+    <sql id="condition">
+        <where>
+            <if test="queryStart != null">
+                AND <![CDATA[ query_start >= #{queryStart} ]]>
+            </if>
+            <if test="queryEnd != null">
+                AND <![CDATA[ query_end <= #{queryEnd} ]]>
+            </if>
+            <if test="pageNo != null">
+                AND <![CDATA[ page_no = #{pageNo} ]]>
+            </if>
+        </where>
+    </sql>
+
+    <insert id="create" parameterType="AlipayTransLoad" useGeneratedKeys="true" keyProperty="id">
+        insert into <include refid="table"/> (<include refid="columns"/>)
+        values
+        (
+          #{queryStart}, #{queryEnd}, #{pageNo}, #{pageSize}, #{status}, #{next},
+          now(), now()
+        )
+    </insert>
+
+    <select id="get" parameterType="long" resultMap="alipayTransLoadMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        where id = #{id}
+    </select>
+
+    <select id="getBy" parameterType="AlipayTransLoad" resultMap="alipayTransLoadMap">
+        select id,
+        <include refid="columns"/>
+        from <include refid="table"/>
+        <include refid="condition"/>
+        limit 1
+    </select>
+
+
+    <update id="update" parameterType="map">
+        UPDATE <include refid="table"/>
+        <set>
+            <if test="queryStart != null">
+                query_start = #{queryStart},
+            </if>
+            <if test="queryEnd != null">
+                query_end = #{queryEnd},
+            </if>
+            <if test="pageNo != null">
+                page_no = #{pageNo},
+            </if>
+            <if test="pageSize != null">
+                page_size = #{pageSize},
+            </if>
+            updated_at = now(),
+        </set>
+        WHERE id=#{id}
+    </update>
+
+</mapper>
